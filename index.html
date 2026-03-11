@@ -48,8 +48,27 @@
       <button class="btn-icon" id="btn-palette" title="Commands  Cmd+P">
         <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
       </button>
+      <button class="btn-icon" id="btn-ports" title="Port Manager  Cmd+Shift+P">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      </button>
+      <button class="btn-icon" id="btn-tailscale" title="Tailscale Devices">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="12" cy="19" r="2"/><line x1="12" y1="7" x2="12" y2="17"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+      </button>
+      <button class="btn-icon" id="btn-pipeline" title="Pipeline Runner">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="20" r="2"/><line x1="12" y1="6" x2="12" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/></svg>
+      </button>
+      <button class="btn-icon" id="btn-cmd-bookmarks" title="Command Bookmarks">
+        <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+      </button>
       <button class="btn-icon" id="btn-theme" title="Theme">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 010 18" fill="currentColor"/></svg>
+      </button>
+      <div class="btn-divider"></div>
+      <button class="btn-icon" id="btn-ai-chat" title="AI Chat  Cmd+Shift+A" style="color:#a78bfa">
+        <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 017 7c0 3-2 5.5-4.5 6.5L12 22l-2.5-6.5C7 14.5 5 12 5 9a7 7 0 017-7z"/><circle cx="10" cy="9" r="1" fill="currentColor"/><circle cx="14" cy="9" r="1" fill="currentColor"/></svg>
+      </button>
+      <button class="btn-icon" id="btn-ide-mode" title="IDE Mode  Cmd+Shift+I">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18" rx="1.5"/><rect x="14" y="3" width="7" height="18" rx="1.5"/></svg>
       </button>
       <button class="btn-icon" id="btn-settings" title="Settings  Cmd+,">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -83,6 +102,74 @@
       <div class="editor-buttons">
         <button class="btn-cancel" id="project-cancel">Cancel</button>
         <button class="btn-save" id="project-save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Remote Connection Dialog -->
+  <div class="remote-overlay" id="remote-overlay">
+    <div class="remote-dialog">
+      <div class="remote-header">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="url(#rg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="8" rx="2"/>
+          <rect x="2" y="14" width="20" height="8" rx="2"/>
+          <line x1="6" y1="6" x2="6.01" y2="6"/>
+          <line x1="6" y1="18" x2="6.01" y2="18"/>
+          <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#5ac8fa"/><stop offset="100%" stop-color="#bf5af2"/></linearGradient></defs>
+        </svg>
+        <h3>Connect to Remote</h3>
+        <button class="remote-close" id="remote-close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="remote-body" id="remote-body">
+        <div class="remote-form" id="remote-form">
+          <div class="remote-row">
+            <label>Host</label>
+            <input type="text" id="remote-host" placeholder="192.168.1.100 or hostname" />
+          </div>
+          <div class="remote-row">
+            <label>User</label>
+            <input type="text" id="remote-user" placeholder="username" />
+          </div>
+          <div class="remote-row">
+            <label>Password</label>
+            <input type="password" id="remote-password" placeholder="SSH password" />
+          </div>
+          <div class="remote-row-split">
+            <div class="remote-row">
+              <label>Port</label>
+              <input type="number" id="remote-port" value="22" min="1" max="65535" />
+            </div>
+            <div class="remote-row">
+              <label>Remote Terminator Path <span class="remote-optional">optional</span></label>
+              <input type="text" id="remote-terminator-path" placeholder="Auto-detect" />
+            </div>
+          </div>
+          <div class="remote-actions">
+            <button class="remote-btn-cancel" id="remote-cancel">Cancel</button>
+            <button class="remote-btn-connect" id="remote-connect">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              Discover Sessions
+            </button>
+          </div>
+        </div>
+        <div class="remote-sessions" id="remote-sessions" style="display:none">
+          <div class="remote-sessions-header">
+            <span class="remote-sessions-host" id="remote-sessions-host"></span>
+            <button class="remote-btn-back" id="remote-back">Back</button>
+          </div>
+          <div class="remote-sessions-list" id="remote-sessions-list"></div>
+          <div class="remote-actions">
+            <button class="remote-btn-cancel" id="remote-sessions-cancel">Cancel</button>
+            <button class="remote-btn-connect" id="remote-open-all">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              Open All Locally
+            </button>
+          </div>
+        </div>
+        <div class="remote-status" id="remote-status" style="display:none">
+          <div class="remote-spinner"></div>
+          <span id="remote-status-text">Connecting...</span>
+        </div>
       </div>
     </div>
   </div>
@@ -161,6 +248,34 @@
           <label>Auto-save Interval (sec)</label>
           <input type="number" id="setting-auto-save-interval" class="settings-input" min="10" max="600" value="60" step="10" />
         </div>
+        <div class="settings-row">
+          <label>IDE Mode (sidebar)</label>
+          <input type="checkbox" id="setting-ide-mode" />
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">AI Autocomplete</div>
+        <div class="settings-row">
+          <label>Enable AI suggestions</label>
+          <input type="checkbox" id="setting-ai-autocomplete" />
+        </div>
+        <div class="settings-row">
+          <label>API Key</label>
+          <input type="password" id="setting-ai-api-key" class="settings-input-wide" placeholder="sk-ant-..." />
+          <span style="font-size:10px;color:#888;margin-left:4px">Stored locally in plaintext</span>
+        </div>
+        <div class="settings-row">
+          <label>Provider</label>
+          <select id="setting-ai-provider" class="settings-select">
+            <option value="anthropic">Anthropic (Claude)</option>
+          </select>
+        </div>
+        <div class="settings-row" style="opacity:0.6">
+          <label style="font-size:11px">Ghost text appears as you type. Press Tab to accept.</label>
+        </div>
+        <div class="settings-row" style="opacity:0.6">
+          <label style="font-size:10px;color:#f5a623">When AI is enabled, commands and terminal context are sent to Anthropic's API for suggestions.</label>
+        </div>
       </div>
       <div class="settings-section">
         <div class="settings-section-title">Keyboard Shortcuts</div>
@@ -185,29 +300,35 @@
   </div>
 
   <!-- Onboarding overlay (first run) -->
-  <div class="palette-overlay" id="onboarding-overlay">
-    <div class="palette" style="width:500px;max-height:520px">
-      <div style="padding:24px 24px 0;text-align:center">
-        <div style="font-size:36px;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,#5ac8fa,#007aff,#bf5af2);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Terminator</div>
-        <div style="color:#888;font-size:13px;margin:8px 0 20px">Welcome! Let's set up your terminal.</div>
+  <div class="onboarding-overlay" id="onboarding-overlay">
+    <div class="onboarding-card">
+      <div class="onboarding-header">
+        <svg viewBox="0 0 48 48" width="44" height="44">
+          <rect x="4" y="4" width="40" height="40" rx="10" fill="none" stroke="url(#og)" stroke-width="2.5"/>
+          <polyline points="14 28 20 22 14 16" fill="none" stroke="url(#og)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="22" y1="30" x2="34" y2="30" stroke="url(#og)" stroke-width="2.5" stroke-linecap="round"/>
+          <defs><linearGradient id="og" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#5ac8fa"/><stop offset="50%" stop-color="#007aff"/><stop offset="100%" stop-color="#bf5af2"/></linearGradient></defs>
+        </svg>
+        <h2>Welcome to Terminator</h2>
+        <p>Let's personalize your experience</p>
       </div>
-      <div style="padding:0 24px 24px;display:flex;flex-direction:column;gap:14px">
-        <div>
-          <label style="display:block;font-size:11px;color:#888;margin-bottom:4px">Theme</label>
-          <select id="onboard-theme" class="settings-select" style="width:100%"></select>
+      <div class="onboarding-body">
+        <div class="onboarding-field">
+          <label>Theme</label>
+          <select id="onboard-theme" class="onboarding-select"></select>
         </div>
-        <div>
-          <label style="display:block;font-size:11px;color:#888;margin-bottom:4px">Font Size</label>
-          <input type="number" id="onboard-font-size" class="settings-input" style="width:100%" min="8" max="24" value="13" />
+        <div class="onboarding-field">
+          <label>Font Size</label>
+          <input type="number" id="onboard-font-size" class="onboarding-input" min="8" max="24" value="13" />
         </div>
-        <div>
-          <label style="display:block;font-size:11px;color:#888;margin-bottom:4px">Add a project (optional)</label>
-          <div style="display:flex;gap:6px">
-            <input type="text" id="onboard-project-name" class="settings-input-wide" placeholder="Name" style="flex:1" />
-            <input type="text" id="onboard-project-path" class="settings-input-wide" placeholder="/path/to/project" style="flex:2" />
+        <div class="onboarding-field">
+          <label>Quick Project <span class="onboarding-optional">optional</span></label>
+          <div class="onboarding-row">
+            <input type="text" id="onboard-project-name" class="onboarding-input" placeholder="Name" />
+            <input type="text" id="onboard-project-path" class="onboarding-input onboarding-input-wide" placeholder="/path/to/project" />
           </div>
         </div>
-        <button id="onboard-done" style="background:#007aff;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;margin-top:8px;transition:background 0.15s">Get Started</button>
+        <button id="onboard-done" class="onboarding-cta">Get Started</button>
       </div>
     </div>
   </div>
@@ -277,6 +398,119 @@
     <div class="side-panel-body" id="docker-body"></div>
   </div>
 
+  <!-- AI Chat side panel -->
+  <div class="side-panel" id="ai-chat-panel">
+    <div class="side-panel-header">
+      <h3>AI Chat</h3>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="side-panel-close" id="ai-chat-clear" title="Clear chat" style="color:#5ac8fa"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
+        <button class="side-panel-close" id="ai-chat-close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="side-panel-body" id="ai-chat-body">
+      <div class="ai-chat-messages" id="ai-chat-messages">
+        <div class="ai-chat-welcome">
+          <strong>AI Terminal Assistant</strong><br><br>
+          Ask about errors, get commands explained,<br>debug issues, or get help with shell tasks.<br><br>
+          <span style="color:#555">Powered by Claude</span>
+        </div>
+      </div>
+      <div class="ai-chat-input-area">
+        <div class="ai-chat-options">
+          <label><input type="checkbox" id="ai-chat-context" checked> Include terminal context</label>
+        </div>
+        <div class="ai-chat-input-row">
+          <textarea class="ai-chat-input" id="ai-chat-input" placeholder="Ask about an error, command, etc..." rows="1"></textarea>
+          <button class="ai-chat-send" id="ai-chat-send">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Port Manager side panel -->
+  <div class="side-panel" id="port-panel">
+    <div class="side-panel-header">
+      <h3>Ports</h3>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="side-panel-close" id="port-refresh" title="Refresh" style="color:#5ac8fa"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></button>
+        <button class="side-panel-close" id="port-close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="side-panel-body" id="port-body"></div>
+  </div>
+
+  <!-- History search overlay -->
+  <div class="history-search-overlay" id="history-overlay" style="display:none">
+    <input type="text" id="history-input" placeholder="Search command history (Ctrl+R)..." />
+    <div class="history-results" id="history-results"></div>
+  </div>
+
+  <!-- Tailscale panel -->
+  <div class="side-panel" id="tailscale-panel">
+    <div class="side-panel-header">
+      <h3>Tailscale Devices</h3>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="side-panel-close" id="tailscale-refresh" title="Refresh" style="color:#5ac8fa"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></button>
+        <button class="side-panel-close" id="tailscale-close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="side-panel-body" id="tailscale-body">
+      <div class="tailscale-loading">Scanning network...</div>
+    </div>
+    <div class="side-panel-footer" id="tailscale-footer">
+      <div class="tailscale-sync-section">
+        <div class="tailscale-sync-header">
+          <span style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Sync</span>
+          <span class="tailscale-sync-status" id="tailscale-sync-status">Ready</span>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="tailscale-sync-btn" id="tailscale-export-btn">Export Data</button>
+          <button class="tailscale-sync-btn" id="tailscale-import-btn">Import Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pipeline Runner panel -->
+  <div class="side-panel" id="pipeline-panel">
+    <div class="side-panel-header">
+      <h3>Pipeline</h3>
+      <button class="side-panel-close" id="pipeline-close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="side-panel-body" id="pipeline-body">
+      <div class="pipeline-steps" id="pipeline-steps"></div>
+      <div class="pipeline-add-row">
+        <input type="text" id="pipeline-new-step" placeholder="Add command..." />
+        <button id="pipeline-add-btn">+</button>
+      </div>
+      <div class="pipeline-controls">
+        <button id="pipeline-run" class="pipeline-run-btn">Run Pipeline</button>
+        <button id="pipeline-save" class="pipeline-save-btn">Save</button>
+        <button id="pipeline-load" class="pipeline-load-btn">Load</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Command Bookmarks panel -->
+  <div class="side-panel" id="cmd-bookmarks-panel">
+    <div class="side-panel-header">
+      <h3>Bookmarks</h3>
+      <button class="side-panel-close" id="cmd-bookmarks-close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="side-panel-body" id="cmd-bookmarks-body">
+      <div class="bookmark-search-row">
+        <input type="text" id="bookmark-search" placeholder="Search bookmarks..." />
+      </div>
+      <div class="bookmark-categories" id="bookmark-categories"></div>
+      <div class="bookmark-list" id="bookmark-list"></div>
+      <div class="bookmark-add-row">
+        <input type="text" id="bookmark-cmd" placeholder="Command" />
+        <input type="text" id="bookmark-tag" placeholder="Tag (e.g. git, docker)" />
+        <button id="bookmark-add-btn">+</button>
+      </div>
+    </div>
+  </div>
+
   <!-- File preview panel -->
   <div class="file-preview-panel" id="file-preview-panel">
     <div class="file-preview-header">
@@ -290,46 +524,140 @@
     <div class="file-preview-content" id="file-preview-content"></div>
   </div>
 
-  <div class="welcome" id="welcome">
-    <div class="welcome-logo">Terminator</div>
-    <div class="welcome-sub">Terminal multiplexer for power users</div>
-    <div class="welcome-actions">
-      <button class="welcome-btn" id="welcome-new">
-        <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-        New Terminal
-        <kbd>&#x2318;T</kbd>
-      </button>
-      <button class="welcome-btn" id="welcome-restore">
-        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-        Restore Session
-      </button>
-      <button class="welcome-btn" id="welcome-palette">
-        <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-        Commands
-        <kbd>&#x2318;P</kbd>
-      </button>
-    </div>
-    <div class="welcome-shortcuts">
-      <span><kbd>&#x2318;D</kbd> Split</span>
-      <span><kbd>&#x2318;W</kbd> Close</span>
-      <span><kbd>&#x2318;&#x2191;&#x2193;</kbd> Navigate</span>
-      <span><kbd>&#x2318;1-9</kbd> Jump</span>
-    </div>
-  </div>
-
   <!-- Quick command input -->
   <div class="quick-cmd" id="quick-cmd">
     <input type="text" id="quick-cmd-input" placeholder="Run command in active terminal..." />
     <div class="quick-cmd-hint">Enter to run &middot; Shift+Enter to run in new split &middot; Esc to cancel</div>
   </div>
 
-  <div class="grid" id="grid"></div>
+  <div class="ide-content-wrapper" id="ide-content-wrapper">
+    <!-- IDE Sidebar (shown in IDE mode) -->
+    <div class="ide-sidebar" id="ide-sidebar">
+      <div class="ide-sidebar-header">
+        <span class="ide-sidebar-title">TERMINALS</span>
+        <div class="ide-sidebar-actions">
+          <button class="ide-sidebar-btn" id="ide-new-terminal" title="New Terminal">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <button class="ide-sidebar-btn" id="ide-collapse-sidebar" title="Collapse Sidebar">
+            <svg viewBox="0 0 24 24"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="ide-sidebar-body" id="ide-sidebar-body"></div>
+      <div class="ide-sidebar-footer">
+        <div class="ide-sidebar-stat" id="ide-sidebar-stat"></div>
+      </div>
+      <div class="ide-sidebar-resize" id="ide-sidebar-resize"></div>
+    </div>
+    <!-- Welcome screen (shown when no terminals) -->
+    <div class="welcome" id="welcome">
+      <div class="welcome-side">
+        <div class="welcome-brand">
+          <svg viewBox="0 0 48 48" width="36" height="36">
+            <rect x="4" y="4" width="40" height="40" rx="10" fill="none" stroke="url(#wg)" stroke-width="2.5"/>
+            <polyline points="14 28 20 22 14 16" fill="none" stroke="url(#wg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="22" y1="30" x2="34" y2="30" stroke="url(#wg)" stroke-width="2.5" stroke-linecap="round"/>
+            <defs><linearGradient id="wg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#5ac8fa"/><stop offset="50%" stop-color="#007aff"/><stop offset="100%" stop-color="#bf5af2"/></linearGradient></defs>
+          </svg>
+          <span class="welcome-brand-name">Terminator</span>
+        </div>
+        <nav class="welcome-nav">
+          <button class="welcome-nav-item active" data-tab="sessions" id="welcome-tab-sessions">
+            <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            Sessions
+          </button>
+          <button class="welcome-nav-item" data-tab="remote" id="welcome-tab-remote">
+            <svg viewBox="0 0 24 24" width="16" height="16"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+            Remote
+          </button>
+          <button class="welcome-nav-item" data-tab="customize" id="welcome-tab-customize">
+            <svg viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Customize
+          </button>
+        </nav>
+        <div class="welcome-side-footer">
+          <div class="welcome-keys">
+            <div class="welcome-key-row"><kbd>&#x2318;T</kbd><span>New Terminal</span></div>
+            <div class="welcome-key-row"><kbd>&#x2318;D</kbd><span>Split Right</span></div>
+            <div class="welcome-key-row"><kbd>&#x2318;P</kbd><span>Commands</span></div>
+            <div class="welcome-key-row"><kbd>&#x2318;,</kbd><span>Settings</span></div>
+          </div>
+          <div class="welcome-version" id="welcome-version"></div>
+        </div>
+      </div>
+      <div class="welcome-main">
+        <div class="welcome-main-header">
+          <div>
+            <h1 class="welcome-title">Welcome to Terminator</h1>
+            <p class="welcome-subtitle">Terminal multiplexer for power users</p>
+          </div>
+          <div class="welcome-header-actions">
+            <button class="welcome-action-btn" id="welcome-new">
+              <svg viewBox="0 0 24 24" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New Terminal
+            </button>
+            <button class="welcome-action-btn secondary" id="welcome-restore">
+              <svg viewBox="0 0 24 24" width="14" height="14"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+              Restore Session
+            </button>
+          </div>
+        </div>
+        <div class="welcome-section" id="welcome-section-sessions">
+          <div class="welcome-section-title">Projects</div>
+          <div class="welcome-projects" id="welcome-projects"></div>
+          <div class="welcome-empty" id="welcome-empty">
+            <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#444" stroke-width="1.5"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            <p>No projects configured</p>
+            <span>Add projects via Settings or Command Palette (&#x2318;P)</span>
+          </div>
+        </div>
+        <div class="welcome-section" id="welcome-section-remote" style="display:none">
+          <div class="welcome-section-title">Remote Connections</div>
+          <div class="welcome-remote-hint">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#444" stroke-width="1.5"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+            <p>Connect to a remote host running Terminator</p>
+            <span>Discover and mirror remote terminal sessions locally</span>
+            <button class="welcome-action-btn" id="welcome-remote-connect">
+              <svg viewBox="0 0 24 24" width="14" height="14"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              Connect to Remote
+            </button>
+          </div>
+        </div>
+        <div class="welcome-section" id="welcome-section-customize" style="display:none">
+          <div class="welcome-section-title">Appearance</div>
+          <div class="welcome-customize">
+            <div class="welcome-customize-row">
+              <label>Theme</label>
+              <select id="welcome-theme-select" class="welcome-select"></select>
+            </div>
+            <div class="welcome-customize-row">
+              <label>Font Size</label>
+              <input type="number" id="welcome-font-size" class="welcome-input" min="8" max="24" value="13" />
+            </div>
+            <div class="welcome-customize-row">
+              <label>IDE Mode</label>
+              <label class="welcome-toggle">
+                <input type="checkbox" id="welcome-ide-toggle" />
+                <span class="welcome-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Editor area (shown when terminals exist) -->
+    <div class="ide-editor-area" id="ide-editor-area">
+      <div class="ide-editor-tabs" id="ide-editor-tabs"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
 
   <div class="bottombar">
-    <span><kbd>&#x2318;T</kbd> New</span>
-    <span><kbd>&#x2318;D</kbd> Split</span>
-    <span><kbd>&#x2318;;</kbd> Run</span>
-    <span><kbd>&#x2318;P</kbd> Commands</span>
+    <div class="bottombar-left">
+      <span class="bottombar-branch" id="bottombar-branch" title="Git branch"></span>
+      <span class="bottombar-cwd" id="bottombar-cwd" title="Current directory"></span>
+    </div>
     <span class="spacer"></span>
     <div class="sys-stats" id="sys-stats">
       <span id="stat-cpu">CPU <span class="sys-stat-bar"><span class="sys-stat-fill cpu" id="cpu-bar" style="width:0%"></span></span> <span id="cpu-pct">--</span>%</span>
@@ -337,6 +665,7 @@
     </div>
     <span class="status-indicator" id="broadcast-indicator" style="color:#ff9f0a">BROADCAST</span>
     <span class="status-indicator" id="skip-perms-indicator" style="color:#ff453a">SKIP PERMS</span>
+    <span class="bottombar-shell" id="bottombar-shell"></span>
     <span id="pane-count" style="font-family:'SF Mono',monospace"></span>
   </div>
 

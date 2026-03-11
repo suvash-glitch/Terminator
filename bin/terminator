@@ -1,0 +1,28 @@
+#!/bin/bash
+# Terminator — smart launcher
+# If called with a subcommand (list, attach, new, send, kill, rename), run CLI.
+# Otherwise, launch the Electron app.
+
+DIR="$(cd "$(dirname "$0")/.." && pwd)"
+CLI="$DIR/bin/terminator-cli.js"
+
+case "${1:-}" in
+  list|ls|attach|new|send|kill|rename|remote|-h|--help|-v|--version)
+    exec node "$CLI" "$@"
+    ;;
+  *)
+    # Launch Electron app (or focus existing instance)
+    if [ -S "$HOME/.terminator/terminator.sock" ]; then
+      # App might already be running — try to talk to it
+      if node "$CLI" list &>/dev/null; then
+        # Already running, just bring to front if no args
+        if [ $# -eq 0 ]; then
+          osascript -e 'tell application "Terminator" to activate' 2>/dev/null || true
+        fi
+        exit 0
+      fi
+    fi
+    cd "$DIR" && exec npx electron . &>/dev/null &
+    disown
+    ;;
+esac

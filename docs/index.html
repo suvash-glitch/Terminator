@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terminator — AI-Powered Terminal Multiplexer</title>
+<meta name="description" content="Split, organize, and supercharge your terminal workflow with Claude intelligence built in. AI autocomplete, multiplexing, IDE mode, and more.">
+<meta name="theme-color" content="#1a1a2e">
+<link rel="icon" type="image/svg+xml" href="../assets/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-deep:#0a0a1a;
+  --bg-primary:#1a1a2e;
+  --bg-card:#16213e;
+  --bg-card-hover:#1a2745;
+  --accent:#e94560;
+  --accent-glow:rgba(233,69,96,0.4);
+  --blue:#0f3460;
+  --blue-light:#1a5276;
+  --text:#e8e8f0;
+  --text-muted:#8892b0;
+  --text-dim:#5a6380;
+  --gradient-primary:linear-gradient(135deg,#e94560 0%,#0f3460 100%);
+  --gradient-hero:linear-gradient(160deg,#0a0a1a 0%,#1a1a2e 40%,#0f3460 100%);
+  --glass:rgba(22,33,62,0.6);
+  --glass-border:rgba(233,69,96,0.15);
+  --radius:16px;
+  --radius-sm:10px;
+  --font-sans:'Inter',system-ui,-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','SF Mono','Fira Code',monospace;
+}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{
+  font-family:var(--font-sans);
+  background:var(--bg-deep);
+  color:var(--text);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+a{color:var(--accent);text-decoration:none;transition:color .2s}
+a:hover{color:#ff6b81}
+
+/* ---- Utility ---- */
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.fade-in{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+.section-label{
+  font-size:.8rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:12px;
+}
+.section-title{
+  font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;
+  line-height:1.2;margin-bottom:16px;
+}
+.section-desc{
+  font-size:1.05rem;color:var(--text-muted);max-width:640px;margin:0 auto 48px;
+}
+section{padding:100px 0;text-align:center;position:relative}
+
+/* ---- Background blobs ---- */
+.blob{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+.blob-1{width:600px;height:600px;background:rgba(233,69,96,0.08);top:-200px;left:-200px}
+.blob-2{width:500px;height:500px;background:rgba(15,52,96,0.15);bottom:-150px;right:-150px}
+
+/* ---- Nav ---- */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(10,10,26,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  transition:background .3s;
+}
+nav .inner{
+  display:flex;align-items:center;justify-content:space-between;
+  max-width:1200px;margin:0 auto;padding:14px 24px;
+}
+nav .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;color:#fff}
+nav .logo svg{width:32px;height:32px}
+nav .links{display:flex;align-items:center;gap:28px}
+nav .links a{color:var(--text-muted);font-size:.9rem;font-weight:500;transition:color .2s}
+nav .links a:hover{color:#fff}
+nav .links .btn-nav{
+  background:var(--accent);color:#fff;padding:8px 20px;border-radius:8px;font-weight:600;font-size:.85rem;
+  transition:transform .2s,box-shadow .2s;
+}
+nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(--accent-glow)}
+@media(max-width:640px){nav .links a:not(.btn-nav){display:none}}
+
+/* ---- Hero ---- */
+#hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:var(--gradient-hero);
+  padding:140px 24px 100px;
+  position:relative;overflow:hidden;
+}
+#hero::before{
+  content:'';position:absolute;top:50%;left:50%;width:800px;height:800px;
+  background:radial-gradient(circle,rgba(233,69,96,0.07) 0%,transparent 70%);
+  transform:translate(-50%,-50%);pointer-events:none;
+}
+.hero-grid{
+  display:grid;grid-template-columns:1fr;gap:40px;
+  max-width:900px;text-align:center;position:relative;z-index:1;
+}
+.hero-icon{
+  width:100px;height:100px;margin:0 auto 8px;
+  filter:drop-shadow(0 0 40px rgba(233,69,96,0.3));
+  animation:float 6s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hero-title{
+  font-size:clamp(3rem,8vw,5.5rem);font-weight:800;
+  line-height:1.05;letter-spacing:-.03em;
+  background:linear-gradient(135deg,#ffffff 0%,#e94560 50%,#0f3460 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-tagline{
+  font-size:clamp(1.1rem,2.5vw,1.5rem);
+  color:var(--text-muted);max-width:600px;margin:0 auto;
+  line-height:1.5;
+}
+.hero-tagline strong{color:#fff;font-weight:600}
+.hero-buttons{
+  display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:8px;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 32px;border-radius:12px;font-weight:600;font-size:1rem;
+  transition:transform .2s,box-shadow .3s;cursor:pointer;border:none;
+}
+.btn-primary{
+  background:var(--accent);color:#fff;
+  box-shadow:0 4px 30px var(--accent-glow);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 40px var(--accent-glow);color:#fff}
+.btn-secondary{
+  background:rgba(255,255,255,0.06);color:#fff;
+  border:1px solid rgba(255,255,255,0.1);
+  backdrop-filter:blur(10px);
+}
+.btn-secondary:hover{background:rgba(255,255,255,0.1);transform:translateY(-2px);color:#fff}
+.hero-meta{
+  display:flex;gap:32px;justify-content:center;flex-wrap:wrap;
+  font-size:.85rem;color:var(--text-dim);margin-top:8px;
+}
+.hero-meta span{display:flex;align-items:center;gap:6px}
+
+/* ---- Features ---- */
+#features{background:var(--bg-deep)}
+.feature-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  text-align:left;
+}
+@media(max-width:900px){.feature-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.feature-grid{grid-template-columns:1fr}}
+.feature-card{
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  border-radius:var(--radius);
+  padding:28px;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:transform .3s,border-color .3s,box-shadow .3s;
+  position:relative;overflow:hidden;
+}
+.feature-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.feature-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(233,69,96,0.3);
+  box-shadow:0 12px 40px rgba(0,0,0,0.3);
+}
+.feature-card:hover::before{opacity:1}
+.feature-icon{
+  width:44px;height:44px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:12px;
+  background:linear-gradient(135deg,rgba(233,69,96,0.15),rgba(15,52,96,0.3));
+  margin-bottom:16px;font-size:1.3rem;
+}
+.feature-card h3{font-size:1.05rem;font-weight:700;margin-bottom:8px;color:#fff}
+.feature-card p{font-size:.88rem;color:var(--text-muted);line-height:1.55}
+
+/* ---- Screenshot ---- */
+#screenshot{background:var(--bg-primary);position:relative;overflow:hidden}
+.screenshot-wrap{
+  position:relative;max-width:960px;margin:0 auto;
+  border-radius:var(--radius);overflow:hidden;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 24px 80px rgba(0,0,0,0.5),
+    0 0 120px rgba(233,69,96,0.08);
+}
+.screenshot-wrap img{width:100%;display:block;border-radius:var(--radius)}
+.screenshot-glow{
+  position:absolute;top:50%;left:50%;width:120%;height:120%;
+  background:radial-gradient(ellipse,rgba(233,69,96,0.06) 0%,transparent 60%);
+  transform:translate(-50%,-50%);pointer-events:none;
+}
+
+/* ---- Shortcuts ---- */
+#shortcuts{background:var(--bg-deep)}
+.shortcuts-table{
+  max-width:720px;margin:0 auto;text-align:left;
+  border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius);
+  overflow:hidden;
+  background:var(--glass);backdrop-filter:blur(12px);
+}
+.shortcuts-table table{width:100%;border-collapse:collapse}
+.shortcuts-table th{
+  background:rgba(233,69,96,0.1);
+  font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);padding:14px 20px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.shortcuts-table td{
+  padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.04);
+  font-size:.9rem;
+}
+.shortcuts-table tr:last-child td{border-bottom:none}
+.shortcuts-table tr:hover{background:rgba(255,255,255,0.02)}
+.shortcuts-table kbd{
+  display:inline-block;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:6px;padding:2px 8px;
+  font-family:var(--font-mono);font-size:.8rem;color:#fff;
+  box-shadow:0 2px 0 rgba(0,0,0,0.3);
+}
+.shortcuts-table .action{color:var(--text-muted)}
+
+/* ---- Install ---- */
+#install{background:var(--bg-primary)}
+.install-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  text-align:left;
+}
+@media(max-width:800px){.install-grid{grid-template-columns:1fr}}
+.install-card{
+  background:var(--glass);border:1px solid var(--glass-border);
+  border-radius:var(--radius);padding:32px;
+  backdrop-filter:blur(12px);
+  transition:transform .3s,box-shadow .3s;
+}
+.install-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.3)}
+.install-card h3{font-size:1.1rem;font-weight:700;margin-bottom:4px;color:#fff}
+.install-card .subtitle{font-size:.82rem;color:var(--text-dim);margin-bottom:16px}
+.install-card pre{
+  background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.06);
+  border-radius:var(--radius-sm);padding:16px;overflow-x:auto;
+  font-family:var(--font-mono);font-size:.82rem;line-height:1.7;
+  color:var(--text);
+}
+.install-card pre .comment{color:var(--text-dim)}
+.install-card pre .cmd{color:var(--accent)}
+
+/* ---- Footer ---- */
+footer{
+  background:var(--bg-deep);
+  border-top:1px solid rgba(255,255,255,0.05);
+  padding:48px 24px;text-align:center;
+}
+.footer-stack{
+  font-size:.85rem;color:var(--text-dim);
+  display:flex;flex-direction:column;gap:12px;align-items:center;
+}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+.footer-links a{color:var(--text-muted);font-size:.85rem}
+.footer-links a:hover{color:#fff}
+.footer-tech{font-size:.78rem;color:var(--text-dim)}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg-deep)}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.2)}
+
+/* selection */
+::selection{background:rgba(233,69,96,0.3)}
+</style>
+</head>
+<body>
+
+<!-- ======== NAV ======== -->
+<nav>
+  <div class="inner">
+    <a href="#hero" class="logo">
+      <svg viewBox="0 0 512 512" width="32" height="32">
+        <defs>
+          <linearGradient id="nav-bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#e94560"/>
+            <stop offset="100%" stop-color="#0f3460"/>
+          </linearGradient>
+        </defs>
+        <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#nav-bg)"/>
+        <text x="148" y="296" font-family="monospace" font-size="180" font-weight="700" fill="#fff" text-anchor="middle">&#x203A;</text>
+        <rect x="220" y="270" width="56" height="10" rx="3" fill="#fff" opacity=".9"/>
+      </svg>
+      Terminator
+    </a>
+    <div class="links">
+      <a href="#features">Features</a>
+      <a href="#shortcuts">Shortcuts</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/suvash-glitch/Terminator" class="btn-nav">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ======== HERO ======== -->
+<section id="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="hero-grid fade-in">
+    <div>
+      <img src="../assets/icon.svg" alt="Terminator Logo" class="hero-icon" width="100" height="100">
+      <h1 class="hero-title">Terminator</h1>
+      <p class="hero-tagline">
+        The <strong>AI-powered</strong> terminal multiplexer.<br>
+        Split, organize, and supercharge your workflow with <strong>Claude intelligence</strong> built in.
+      </p>
+    </div>
+    <div class="hero-buttons">
+      <a href="https://github.com/suvash-glitch/Terminator/releases" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download
+      </a>
+      <a href="https://github.com/suvash-glitch/Terminator" class="btn btn-secondary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+    <div class="hero-meta">
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        macOS, Windows, Linux
+      </span>
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        Electron v35
+      </span>
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        MIT License
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ======== FEATURES ======== -->
+<section id="features">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">Features</p>
+      <h2 class="section-title">Everything you need in one terminal</h2>
+      <p class="section-desc">Terminator replaces your terminal, tmux, and half your DevOps dashboard. Built for developers who demand more.</p>
+    </div>
+    <div class="feature-grid">
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M12 2a7 7 0 0 1 7 7c0 3-2 5-3.5 6.5L12 19l-3.5-3.5C7 14 5 12 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2"/><path d="M8 21h8"/></svg>
+        </div>
+        <h3>AI Autocomplete &amp; Chat</h3>
+        <p>Claude-powered ghost text suggestions as you type. Launch Claude Code sessions for inline AI assistance directly from any pane.</p>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="12" y1="12" x2="21" y2="12"/></svg>
+        </div>
+        <h3>Terminal Multiplexing</h3>
+        <p>Horizontal and vertical splits, tabs, and flexible grid layout with drag-to-resize. Zoom any pane to fullscreen and back.</p>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="3" x2="8" y2="21"/><line x1="2" y1="9" x2="8" y2="9"/></svg>
+        </div>
+        <h3>IDE Mode</h3>
+        <p>Toggle a sidebar with project grouping, editor-style tabs, and single-pane focus. Think VS Code's terminal, but it is the whole app.</p>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <h3>Command Palette</h3>
+        <p>Cmd+P opens a searchable palette for every action: switch panes, change themes, open SSH bookmarks, run snippets, and more.</p>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+        </div>
+        <h3>Pipeline Runner</h3>
+        <p>Define and run multi-step command pipelines. View and manage cron jobs visually. Automate complex workflows with ease.</p>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg>
+        </div>
+        <h3>Session Save &amp; Restore</h3>
+        <p>Save your entire workspace -- layout, directories, scroll history -- and auto-restore on next launch. Never lose your setup again.</p>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><circle cx="6" cy="6" r="1" fill="var(--accent)"/><circle cx="6" cy="18" r="1" fill="var(--accent)"/></svg>
+        </div>
+        <h3>SSH &amp; Remote Discovery</h3>
+        <p>Save SSH connections, manage bookmarks from the UI, and discover running tmux and screen sessions on remote hosts.</p>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h3>Port Manager</h3>
+        <p>View listening ports, identify processes, and kill them from a built-in UI. See Docker containers with status, image, and uptime.</p>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </div>
+        <h3>6 Built-in Themes</h3>
+        <p>Dark, Solarized Dark, Dracula, Monokai, Nord, and Light. Cycle through themes with a single keyboard shortcut.</p>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>
+        </div>
+        <h3>Docker Integration</h3>
+        <p>List running containers with status, image, and uptime at a glance. Manage your containerized environments without leaving the terminal.</p>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        </div>
+        <h3>CLI with Zsh Completion</h3>
+        <p>Control Terminator from any shell: create, list, attach, send commands, and kill sessions. Full Zsh tab completion included.</p>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        </div>
+        <h3>Broadcast Mode</h3>
+        <p>Send keystrokes to every pane simultaneously. Ideal for configuring multiple servers at once or running identical commands.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ======== SCREENSHOT ======== -->
+<section id="screenshot">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">See it in action</p>
+      <h2 class="section-title">A terminal built for the modern developer</h2>
+      <p class="section-desc">Split panes, AI suggestions, and a command palette -- all in a sleek, GPU-accelerated interface.</p>
+    </div>
+    <div class="screenshot-wrap fade-in">
+      <div class="screenshot-glow"></div>
+      <img src="../assets/screenshot.png" alt="Terminator terminal multiplexer screenshot" loading="lazy" width="960" height="600">
+    </div>
+  </div>
+</section>
+
+<!-- ======== SHORTCUTS ======== -->
+<section id="shortcuts">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">Keyboard-first</p>
+      <h2 class="section-title">Shortcuts that keep you in flow</h2>
+      <p class="section-desc">Every action is one shortcut away. On Windows and Linux, substitute Ctrl for Cmd.</p>
+    </div>
+    <div class="shortcuts-table fade-in">
+      <table>
+        <thead>
+          <tr><th>Shortcut</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><kbd>Cmd</kbd> + <kbd>D</kbd></td><td class="action">Split pane right</td></tr>
+          <tr><td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd></td><td class="action">Split pane down</td></tr>
+          <tr><td><kbd>Cmd</kbd> + <kbd>T</kbd></td><td class="action">New tab</td></tr>
+          <tr><td><kbd>Cmd</kbd> + <kbd>W</kbd></td><td class="action">Close pane</td></tr>
+          <tr><td><kbd>Cmd</kbd> + <kbd>P</kbd></td><td class="action">Command palette</td></tr>
+          <tr><td><kbd>Cmd</kbd> + <kbd>F</kbd></td><td class="action">Find in terminal</td></tr>
+          <tr><td><kbd>Cmd</kbd> + <kbd>K</kbd></td><td class="action">Clear terminal</td></tr>
+          <tr><td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd></td><td class="action">Zoom / unzoom pane</td></tr>
+          <tr><td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd></td><td class="action">Toggle broadcast mode</td></tr>
+          <tr><td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></td><td class="action">Save session</td></tr>
+          <tr><td><kbd>Cmd</kbd> + <kbd>Arrow</kbd></td><td class="action">Navigate between panes</td></tr>
+          <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd></td><td class="action">Cycle theme</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ======== INSTALL ======== -->
+<section id="install">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">Get started</p>
+      <h2 class="section-title">Install in seconds</h2>
+      <p class="section-desc">Available on macOS, Windows, and Linux. Choose the method that works for you.</p>
+    </div>
+    <div class="install-grid">
+
+      <div class="install-card fade-in">
+        <h3>Homebrew</h3>
+        <p class="subtitle">Recommended for macOS</p>
+        <pre><span class="cmd">brew install</span> --cask terminator-terminal</pre>
+      </div>
+
+      <div class="install-card fade-in">
+        <h3>Download Binary</h3>
+        <p class="subtitle">macOS (.dmg) / Windows (.exe) / Linux (.AppImage)</p>
+        <pre><span class="comment"># Grab the latest release from GitHub</span>
+<a href="https://github.com/suvash-glitch/Terminator/releases" style="color:var(--accent)">github.com/suvash-glitch/Terminator/releases</a></pre>
+      </div>
+
+      <div class="install-card fade-in">
+        <h3>Build from Source</h3>
+        <p class="subtitle">For contributors and tinkerers</p>
+        <pre><span class="cmd">git clone</span> https://github.com/suvash-glitch/Terminator.git
+<span class="cmd">cd</span> Terminator
+<span class="cmd">npm install</span>
+<span class="cmd">npm run</span> rebuild  <span class="comment"># rebuild node-pty</span>
+<span class="cmd">npm start</span></pre>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ======== FOOTER ======== -->
+<footer>
+  <div class="container">
+    <div class="footer-stack">
+      <div class="footer-links">
+        <a href="https://github.com/suvash-glitch/Terminator">GitHub</a>
+        <a href="https://github.com/suvash-glitch/Terminator/releases">Releases</a>
+        <a href="https://github.com/suvash-glitch/Terminator/issues">Issues</a>
+        <a href="https://github.com/suvash-glitch/Terminator/blob/main/LICENSE">MIT License</a>
+      </div>
+      <p class="footer-tech">Built with Electron, xterm.js, node-pty, and Claude AI</p>
+      <p>&copy; 2026 Suvash Bhusal. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ======== SCROLL ANIMATIONS ======== -->
+<script>
+(function(){
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Stagger feature card animations
+  document.querySelectorAll('.feature-card').forEach((card, i) => {
+    card.style.transitionDelay = `${i * 60}ms`;
+  });
+
+  // Smooth nav background on scroll
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 60) {
+      nav.style.background = 'rgba(10,10,26,0.95)';
+    } else {
+      nav.style.background = 'rgba(10,10,26,0.8)';
+    }
+  }, { passive: true });
+})();
+</script>
+
+</body>
+</html>

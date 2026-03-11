@@ -5,6 +5,14 @@
   "main": "main.js",
   "author": "Suvash Bhusal",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/suvash-glitch/Terminator.git"
+  },
+  "homepage": "https://github.com/suvash-glitch/Terminator#readme",
+  "bin": {
+    "terminator": "./bin/terminator-cli.js"
+  },
   "scripts": {
     "start": "electron .",
     "rebuild": "electron-rebuild",
@@ -26,13 +34,14 @@
     "node-pty": "^1.0.0"
   },
   "devDependencies": {
+    "@electron/notarize": "^2.3.0",
     "electron-builder": "^25.0.0",
     "eslint": "^9.0.0"
   },
   "build": {
     "appId": "com.terminator.app",
     "productName": "Terminator",
-    "icon": "assets/icon.svg",
+    "icon": "assets/icon.png",
     "directories": {
       "output": "dist"
     },
@@ -42,18 +51,27 @@
       "index.html",
       "styles.css",
       "renderer.js",
+      "bin/**/*",
       "node_modules/**/*"
     ],
+    "afterSign": "scripts/notarize.js",
     "mac": {
       "category": "public.app-category.developer-tools",
-      "target": ["dmg", "zip"]
+      "target": ["dmg", "zip"],
+      "icon": "assets/icon.icns",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
     },
     "win": {
-      "target": ["nsis", "zip"]
+      "target": ["nsis", "zip"],
+      "icon": "assets/icon.ico"
     },
     "linux": {
       "target": ["AppImage", "deb"],
-      "category": "Development"
+      "category": "Development",
+      "icon": "assets/icon.png"
     }
   }
 }
