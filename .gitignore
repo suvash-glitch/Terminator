@@ -1,2 +1,9 @@
 node_modules/
 .DS_Store
+dist/
+*.dmg
+*.AppImage
+*.exe
+.env
+credentials.json
+*.log

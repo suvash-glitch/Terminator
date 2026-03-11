@@ -43,7 +43,13 @@ contextBridge.exposeInMainWorld("terminator", {
   readFile: (filePath, maxBytes) => ipcRenderer.invoke("read-file", filePath, maxBytes),
   saveBookmarks: (data) => ipcRenderer.send("save-bookmarks", data),
   loadBookmarks: () => ipcRenderer.invoke("load-bookmarks"),
+  saveProjects: (data) => ipcRenderer.send("save-projects", data),
+  loadProjects: () => ipcRenderer.invoke("load-projects"),
   getProcessTree: (id) => ipcRenderer.invoke("get-process-tree", id),
+  loadSettings: () => ipcRenderer.invoke("load-settings"),
+  saveSettings: (data) => ipcRenderer.send("save-settings", data),
+  getAppVersion: () => ipcRenderer.invoke("get-app-version"),
+  getDefaultShell: () => ipcRenderer.invoke("get-default-shell"),
   onData: (callback) => ipcRenderer.on("terminal-data", (_, id, data) => callback(id, data)),
   onExit: (callback) => ipcRenderer.on("terminal-exit", (_, id, exitCode) => callback(id, exitCode)),
 });

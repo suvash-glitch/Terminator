@@ -3,6 +3,14 @@ const pty = require("node-pty");
 const path = require("path");
 const os = require("os");
 const fs = require("fs");
+const { execFileSync, execSync } = require("child_process");
+
+function log(level, msg, ...args) {
+  const timestamp = new Date().toISOString();
+  const logLine = `[${timestamp}] [${level}] ${msg}`;
+  if (args.length) console[level === 'error' ? 'error' : 'log'](logLine, ...args);
+  else console[level === 'error' ? 'error' : 'log'](logLine);
+}
 
 let mainWindow;
 const ptys = new Map();
@@ -22,21 +30,36 @@ function writeJSON(p, data) {
 }
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  const windowOpts = {
     width: 1200,
     height: 800,
     backgroundColor: "#1e1e1e",
-    titleBarStyle: "hiddenInset",
-    trafficLightPosition: { x: 13, y: 13 },
-    vibrancy: "titlebar",
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      sandbox: true,
       preload: path.join(__dirname, "preload.js"),
     },
-  });
+  };
+  if (process.platform === "darwin") {
+    windowOpts.titleBarStyle = "hiddenInset";
+    windowOpts.trafficLightPosition = { x: 13, y: 13 };
+    windowOpts.vibrancy = "titlebar";
+  } else {
+    windowOpts.frame = false;
+  }
+  mainWindow = new BrowserWindow(windowOpts);
 
   mainWindow.loadFile("index.html");
+
+  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': ["default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'"]
+      }
+    });
+  });
   mainWindow.setFullScreen(true);
 
   mainWindow.on("closed", () => {
@@ -51,7 +74,9 @@ app.on("window-all-closed", () => app.quit());
 
 // Create terminal with optional cwd
 ipcMain.handle("create-terminal", (_, cwd) => {
-  const shellPath = process.env.SHELL || "/bin/zsh";
+  const shellPath = process.platform === "win32"
+    ? process.env.COMSPEC || "powershell.exe"
+    : process.env.SHELL || "/bin/zsh";
   const id = nextId++;
   const p = pty.spawn(shellPath, [], {
     name: "xterm-256color",
@@ -106,14 +131,24 @@ ipcMain.handle("get-terminal-cwd", async (_, id) => {
   const p = ptys.get(id);
   if (!p) return null;
   try {
-    const { execSync } = require("child_process");
-    const pid = p.pid;
-    const result = execSync(
-      `lsof -p ${pid} -Fn 2>/dev/null | grep '^n/' | grep cwd || lsof -d cwd -p ${pid} -Fn 2>/dev/null | grep '^n/'`,
-      { encoding: "utf8", timeout: 2000 }
-    ).trim();
-    for (const line of result.split("\n")) {
-      if (line.startsWith("n/")) return line.slice(1);
+    const pid = String(p.pid);
+    if (process.platform === "win32") {
+      // Windows: use wmic or PowerShell
+      try {
+        const result = execFileSync("powershell", ["-Command", `(Get-Process -Id ${pid}).Path`], {
+          encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
+        }).trim();
+        return result || null;
+      } catch { return null; }
+    }
+    const result = execFileSync("lsof", ["-p", pid, "-Fn"], {
+      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
+    }).trim();
+    const lines = result.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i] === "fcwd" && i + 1 < lines.length && lines[i + 1].startsWith("n")) {
+        return lines[i + 1].slice(1);
+      }
     }
     return null;
   } catch { return null; }
@@ -124,12 +159,25 @@ ipcMain.handle("get-terminal-process", async (_, id) => {
   const p = ptys.get(id);
   if (!p) return null;
   try {
-    const { execSync } = require("child_process");
-    // Get child processes of the pty shell
-    const result = execSync(
-      `ps -o comm= -p $(pgrep -P ${p.pid} 2>/dev/null | head -1) 2>/dev/null || ps -o comm= -p ${p.pid} 2>/dev/null`,
-      { encoding: "utf8", timeout: 2000 }
-    ).trim();
+    const pid = String(p.pid);
+    if (process.platform === "win32") {
+      try {
+        const result = execFileSync("powershell", ["-Command",
+          `(Get-CimInstance Win32_Process -Filter "ParentProcessId=${pid}" | Select-Object -First 1).Name`
+        ], { encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"] }).trim();
+        return result || null;
+      } catch { return null; }
+    }
+    let childPid;
+    try {
+      childPid = execFileSync("pgrep", ["-P", pid], {
+        encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
+      }).trim().split("\n")[0];
+    } catch {}
+    const targetPid = childPid || pid;
+    const result = execFileSync("ps", ["-o", "comm=", "-p", targetPid], {
+      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
+    }).trim();
     return result.split("/").pop() || null;
   } catch { return null; }
 });
@@ -138,9 +186,8 @@ ipcMain.handle("get-terminal-process", async (_, id) => {
 ipcMain.handle("get-git-branch", async (_, dirPath) => {
   if (!dirPath) return null;
   try {
-    const { execSync } = require("child_process");
-    const branch = execSync(`git -C "${dirPath}" rev-parse --abbrev-ref HEAD 2>/dev/null`, {
-      encoding: "utf8", timeout: 2000
+    const branch = execFileSync("git", ["-C", dirPath, "rev-parse", "--abbrev-ref", "HEAD"], {
+      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
     }).trim();
     return branch || null;
   } catch { return null; }
@@ -150,9 +197,8 @@ ipcMain.handle("get-git-branch", async (_, dirPath) => {
 ipcMain.handle("get-git-status", async (_, dirPath) => {
   if (!dirPath) return null;
   try {
-    const { execSync } = require("child_process");
-    const status = execSync(`git -C "${dirPath}" status --porcelain 2>/dev/null | head -1`, {
-      encoding: "utf8", timeout: 2000
+    const status = execFileSync("git", ["-C", dirPath, "status", "--porcelain"], {
+      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
     }).trim();
     return status ? "dirty" : "clean";
   } catch { return null; }
@@ -168,18 +214,21 @@ ipcMain.on("show-notification", (_, title, body) => {
 // Open file in default editor
 ipcMain.on("open-in-editor", (_, filePath) => {
   try {
-    const { execSync } = require("child_process");
-    // Try VS Code first, then fall back to open
-    try {
-      execSync(`code "${filePath}"`, { timeout: 3000 });
-    } catch {
-      shell.openPath(filePath);
-    }
-  } catch {}
+    execFileSync("code", [filePath], { timeout: 3000, stdio: ["pipe", "pipe", "pipe"] });
+  } catch {
+    shell.openPath(filePath);
+  }
 });
 
-// Session
-ipcMain.on("save-session", (_, data) => writeJSON(SESSION_PATH, data));
+// Session (async write for large scrollback buffers)
+ipcMain.on("save-session", (_, data) => {
+  try {
+    const json = JSON.stringify(data);
+    fs.writeFile(SESSION_PATH, json, (err) => {
+      if (err) log('error', "Session save error:", err);
+    });
+  } catch (e) { log('error', "Session serialize error:", e); }
+});
 ipcMain.handle("load-session", () => readJSON(SESSION_PATH, null));
 
 // Config
@@ -199,36 +248,51 @@ ipcMain.on("save-recents", (_, data) => writeJSON(RECENTS_PATH, data));
 ipcMain.handle("load-recents", () => readJSON(RECENTS_PATH, []));
 
 // Cron management
+function getCrontab() {
+  try {
+    return execFileSync("crontab", ["-l"], {
+      encoding: "utf8", stdio: ["pipe", "pipe", "pipe"]
+    });
+  } catch { return ""; }
+}
+
+function setCrontab(content) {
+  const tmpFile = path.join(app.getPath("temp"), "terminator-crontab.tmp");
+  fs.writeFileSync(tmpFile, content);
+  try {
+    execFileSync("crontab", [tmpFile], { timeout: 3000, stdio: ["pipe", "pipe", "pipe"] });
+  } finally {
+    try { fs.unlinkSync(tmpFile); } catch {}
+  }
+}
+
 ipcMain.handle("cron-list", async () => {
   try {
-    const { execSync } = require("child_process");
-    const raw = execSync("crontab -l 2>/dev/null || true", { encoding: "utf8" });
+    const raw = getCrontab();
     return raw.trim().split("\n").filter(l => l && !l.startsWith("#")).map((line, i) => ({ id: i, line, enabled: true }));
   } catch { return []; }
 });
 
 ipcMain.handle("cron-add", async (_, cronLine) => {
   try {
-    const { execSync } = require("child_process");
-    const existing = execSync("crontab -l 2>/dev/null || true", { encoding: "utf8" }).trim();
+    const existing = getCrontab().trim();
     const newCron = existing ? existing + "\n" + cronLine : cronLine;
-    execSync(`echo "${newCron.replace(/"/g, '\\"')}" | crontab -`, { encoding: "utf8" });
+    setCrontab(newCron);
     return true;
   } catch { return false; }
 });
 
 ipcMain.handle("cron-remove", async (_, index) => {
   try {
-    const { execSync } = require("child_process");
-    const lines = execSync("crontab -l 2>/dev/null || true", { encoding: "utf8" }).trim().split("\n");
+    const lines = getCrontab().trim().split("\n");
     const active = lines.filter(l => l && !l.startsWith("#"));
     active.splice(index, 1);
     const comments = lines.filter(l => l.startsWith("#"));
     const newCron = [...comments, ...active].join("\n");
     if (newCron.trim()) {
-      execSync(`echo "${newCron.replace(/"/g, '\\"')}" | crontab -`, { encoding: "utf8" });
+      setCrontab(newCron);
     } else {
-      execSync("crontab -r 2>/dev/null || true", { encoding: "utf8" });
+      try { execFileSync("crontab", ["-r"], { timeout: 3000, stdio: ["pipe", "pipe", "pipe"] }); } catch {}
     }
     return true;
   } catch { return false; }
@@ -237,19 +301,25 @@ ipcMain.handle("cron-remove", async (_, index) => {
 // Fuzzy file finder
 ipcMain.handle("find-files", async (_, query, dirs) => {
   try {
-    const { execSync } = require("child_process");
-    const searchDirs = dirs.map(d => `"${d}"`).join(" ");
-    const result = execSync(
-      `find ${searchDirs} -maxdepth 5 -type f -not -path '*/node_modules/*' -not -path '*/.git/*' -not -path '*/dist/*' -not -path '*/.next/*' 2>/dev/null | head -5000`,
-      { encoding: "utf8", timeout: 5000 }
-    ).trim();
+    const args = [];
+    for (const d of dirs) args.push(d);
+    args.push("-maxdepth", "5", "-type", "f",
+      "-not", "-path", "*/node_modules/*",
+      "-not", "-path", "*/.git/*",
+      "-not", "-path", "*/dist/*",
+      "-not", "-path", "*/.next/*");
+    const result = execFileSync("find", args, {
+      encoding: "utf8", timeout: 5000, stdio: ["pipe", "pipe", "pipe"],
+      maxBuffer: 1024 * 1024
+    }).trim();
     if (!result) return [];
-    const files = result.split("\n");
+    const files = result.split("\n").slice(0, 5000);
     const q = query.toLowerCase();
+    const homeDir = os.homedir();
     return files
       .filter(f => f.toLowerCase().includes(q))
       .slice(0, 50)
-      .map(f => ({ path: f, name: f.split("/").pop(), dir: f.replace(/\/[^/]+$/, "").replace(new RegExp("^" + os.homedir()), "~") }));
+      .map(f => ({ path: f, name: f.split("/").pop(), dir: f.replace(/\/[^/]+$/, "").replace(homeDir, "~") }));
   } catch { return []; }
 });
 
@@ -282,9 +352,21 @@ ipcMain.handle("system-stats", async () => {
     // Disk usage
     let diskUsage = null;
     try {
-      const { execSync } = require("child_process");
-      const df = execSync("df -h / | tail -1", { encoding: "utf8", timeout: 2000 }).trim().split(/\s+/);
-      diskUsage = { used: df[2], total: df[1], percent: parseInt(df[4]) };
+      if (process.platform === "win32") {
+        const result = execFileSync("powershell", ["-Command",
+          "Get-PSDrive C | Select-Object Used,Free | ConvertTo-Json"
+        ], { encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"] }).trim();
+        const info = JSON.parse(result);
+        const usedGB = (info.Used / 1073741824).toFixed(0) + "G";
+        const totalGB = ((info.Used + info.Free) / 1073741824).toFixed(0) + "G";
+        const pct = Math.round(info.Used / (info.Used + info.Free) * 100);
+        diskUsage = { used: usedGB, total: totalGB, percent: pct };
+      } else {
+        const df = execFileSync("df", ["-h", "/"], {
+          encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
+        }).trim().split("\n").pop().split(/\s+/);
+        diskUsage = { used: df[2], total: df[1], percent: parseInt(df[4]) };
+      }
     } catch {}
     return { cpuUsage, memUsage, memGB, totalGB, diskUsage, uptime: Math.round(os.uptime() / 60) };
   } catch { return null; }
@@ -316,9 +398,8 @@ ipcMain.handle("get-log-path", (_, paneId) => {
 // Docker containers
 ipcMain.handle("docker-ps", async () => {
   try {
-    const { execSync } = require("child_process");
-    const result = execSync('docker ps --format "{{.ID}}\\t{{.Names}}\\t{{.Image}}\\t{{.Status}}\\t{{.Ports}}" 2>/dev/null', {
-      encoding: "utf8", timeout: 5000
+    const result = execFileSync("docker", ["ps", "--format", "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"], {
+      encoding: "utf8", timeout: 5000, stdio: ["pipe", "pipe", "pipe"]
     }).trim();
     if (!result) return [];
     return result.split("\n").map(line => {
@@ -330,9 +411,8 @@ ipcMain.handle("docker-ps", async () => {
 
 ipcMain.handle("docker-ps-all", async () => {
   try {
-    const { execSync } = require("child_process");
-    const result = execSync('docker ps -a --format "{{.ID}}\\t{{.Names}}\\t{{.Image}}\\t{{.Status}}" 2>/dev/null', {
-      encoding: "utf8", timeout: 5000
+    const result = execFileSync("docker", ["ps", "-a", "--format", "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"], {
+      encoding: "utf8", timeout: 5000, stdio: ["pipe", "pipe", "pipe"]
     }).trim();
     if (!result) return [];
     return result.split("\n").map(line => {
@@ -344,40 +424,34 @@ ipcMain.handle("docker-ps-all", async () => {
 
 // Environment variables for a terminal
 ipcMain.handle("get-terminal-env", async (_, id) => {
-  const p = ptys.get(id);
-  if (!p) return [];
-  try {
-    const { execSync } = require("child_process");
-    const result = execSync(
-      `ps eww -o command= -p ${p.pid} 2>/dev/null || cat /proc/${p.pid}/environ 2>/dev/null | tr '\\0' '\\n'`,
-      { encoding: "utf8", timeout: 3000 }
-    ).trim();
-    // Fallback: just return process.env filtered
-    const envPairs = [];
-    for (const [k, v] of Object.entries(process.env)) {
-      envPairs.push({ key: k, value: v });
-    }
-    return envPairs.sort((a, b) => a.key.localeCompare(b.key));
-  } catch {
-    const envPairs = [];
-    for (const [k, v] of Object.entries(process.env)) {
-      envPairs.push({ key: k, value: v });
-    }
-    return envPairs.sort((a, b) => a.key.localeCompare(b.key));
+  // Return process.env (the pty inherits it)
+  const envPairs = [];
+  for (const [k, v] of Object.entries(process.env)) {
+    envPairs.push({ key: k, value: v });
   }
+  return envPairs.sort((a, b) => a.key.localeCompare(b.key));
 });
 
 // File preview
 ipcMain.handle("read-file", async (_, filePath, maxBytes) => {
   try {
+    // Validate path doesn't contain directory traversal
+    const resolved = path.resolve(filePath);
+    if (!resolved.startsWith(os.homedir()) && !resolved.startsWith('/tmp') && !resolved.startsWith(os.tmpdir())) {
+      return { error: "Access denied: path outside allowed directories" };
+    }
     const stat = fs.statSync(filePath);
     if (stat.isDirectory()) return { error: "Is a directory", isDir: true };
     const limit = maxBytes || 50000;
     if (stat.size > limit) {
       const buf = Buffer.alloc(limit);
-      const fd = fs.openSync(filePath, "r");
-      fs.readSync(fd, buf, 0, limit, 0);
-      fs.closeSync(fd);
+      let fd;
+      try {
+        fd = fs.openSync(filePath, "r");
+        fs.readSync(fd, buf, 0, limit, 0);
+      } finally {
+        if (fd !== undefined) fs.closeSync(fd);
+      }
       return { content: buf.toString("utf8"), truncated: true, size: stat.size };
     }
     return { content: fs.readFileSync(filePath, "utf8"), truncated: false, size: stat.size };
@@ -389,28 +463,64 @@ const BOOKMARKS_PATH = path.join(app.getPath("userData"), "bookmarks.json");
 ipcMain.on("save-bookmarks", (_, data) => writeJSON(BOOKMARKS_PATH, data));
 ipcMain.handle("load-bookmarks", () => readJSON(BOOKMARKS_PATH, []));
 
+// Projects
+const PROJECTS_DATA_PATH = path.join(app.getPath("userData"), "projects.json");
+ipcMain.on("save-projects", (_, data) => writeJSON(PROJECTS_DATA_PATH, data));
+ipcMain.handle("load-projects", () => readJSON(PROJECTS_DATA_PATH, null));
+
 // Get child process tree for smart naming
 ipcMain.handle("get-process-tree", async (_, id) => {
   const p = ptys.get(id);
   if (!p) return null;
   try {
-    const { execSync } = require("child_process");
-    // Get full process tree: PID, PPID, COMMAND
-    const result = execSync(
-      `pgrep -P ${p.pid} 2>/dev/null | xargs -I{} ps -o pid=,comm=,args= -p {} 2>/dev/null`,
-      { encoding: "utf8", timeout: 2000 }
-    ).trim();
+    const pid = String(p.pid);
+    if (process.platform === "win32") {
+      try {
+        const result = execFileSync("powershell", ["-Command",
+          `Get-CimInstance Win32_Process -Filter "ParentProcessId=${pid}" | Select-Object ProcessId,Name,CommandLine | ConvertTo-Json`
+        ], { encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"] }).trim();
+        const procs = JSON.parse(result);
+        const proc = Array.isArray(procs) ? procs[procs.length - 1] : procs;
+        if (proc) return { pid: String(proc.ProcessId), comm: proc.Name, args: proc.CommandLine || "" };
+        return null;
+      } catch { return null; }
+    }
+    const childPids = execFileSync("pgrep", ["-P", pid], {
+      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
+    }).trim().split("\n").filter(Boolean);
+    if (childPids.length === 0) return null;
+    const result = execFileSync("ps", ["-o", "pid=,comm=,args=", "-p", childPids.join(",")], {
+      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
+    }).trim();
     if (!result) return null;
     const lines = result.split("\n").map(l => l.trim()).filter(Boolean);
     if (lines.length === 0) return null;
-    // Return the deepest child (most specific process)
     const last = lines[lines.length - 1];
     const parts = last.trim().split(/\s+/);
-    const pid = parts[0];
-    const comm = parts[1];
-    const args = parts.slice(2).join(" ");
-    return { pid, comm, args };
+    return { pid: parts[0], comm: parts[1], args: parts.slice(2).join(" ") };
   } catch { return null; }
+});
+
+// Settings
+const SETTINGS_PATH = path.join(app.getPath("userData"), "settings.json");
+ipcMain.on("save-settings", (_, data) => writeJSON(SETTINGS_PATH, data));
+ipcMain.handle("load-settings", () => readJSON(SETTINGS_PATH, {
+  theme: 0,
+  fontSize: 13,
+  fontFamily: '"SF Mono", "Menlo", "Monaco", "Courier New", monospace',
+  cursorStyle: "block",
+  cursorBlink: true,
+  copyOnSelect: true,
+  scrollback: 10000,
+  shell: "",
+  defaultCwd: "",
+  confirmClose: true,
+  autoSaveSession: true,
+}));
+ipcMain.handle("get-app-version", () => app.getVersion());
+ipcMain.handle("get-default-shell", () => {
+  if (process.platform === "win32") return process.env.COMSPEC || "powershell.exe";
+  return process.env.SHELL || "/bin/zsh";
 });
 
 ipcMain.on("toggle-fullscreen", () => {

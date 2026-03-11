@@ -1,10 +1,18 @@
 {
   "name": "terminator",
   "version": "1.0.0",
+  "description": "A modern terminal multiplexer built with Electron",
   "main": "main.js",
+  "author": "Suvash Bhusal",
+  "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "rebuild": "electron-rebuild"
+    "rebuild": "electron-rebuild",
+    "build": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@xterm/addon-fit": "^0.10.0",
@@ -14,5 +22,35 @@
     "@xterm/xterm": "^5.4.0",
     "electron": "^35.0.0",
     "node-pty": "^1.0.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^25.0.0",
+    "eslint": "^9.0.0"
+  },
+  "build": {
+    "appId": "com.terminator.app",
+    "productName": "Terminator",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "styles.css",
+      "renderer.js",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": ["dmg", "zip"]
+    },
+    "win": {
+      "target": ["nsis", "zip"]
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Development"
+    }
   }
 }
