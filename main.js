@@ -123,6 +123,38 @@ app.whenReady().then(createWindow);
 // Auto-update check (only when packaged)
 app.whenReady().then(() => {
   if (autoUpdater && app.isPackaged) {
+    autoUpdater.autoDownload = true;
+    autoUpdater.autoInstallOnAppQuit = true;
+
+    autoUpdater.on("update-available", (info) => {
+      log("info", `Update available: v${info.version}`);
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send("update-status", { status: "available", version: info.version });
+      }
+    });
+
+    autoUpdater.on("update-downloaded", (info) => {
+      log("info", `Update downloaded: v${info.version}`);
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send("update-status", { status: "downloaded", version: info.version });
+        const { dialog } = require("electron");
+        dialog.showMessageBox(mainWindow, {
+          type: "info",
+          title: "Update Ready",
+          message: `Terminator v${info.version} has been downloaded.`,
+          detail: "Restart the app to apply the update.",
+          buttons: ["Restart Now", "Later"],
+          defaultId: 0,
+        }).then(({ response }) => {
+          if (response === 0) autoUpdater.quitAndInstall();
+        });
+      }
+    });
+
+    autoUpdater.on("error", (err) => {
+      log("error", "Auto-update error:", err.message);
+    });
+
     autoUpdater.checkForUpdatesAndNotify().catch(() => {});
     // Check for updates every 4 hours
     setInterval(() => {

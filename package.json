@@ -45,6 +45,11 @@
     "appId": "com.terminator.app",
     "productName": "Terminator",
     "icon": "assets/icon.png",
+    "publish": {
+      "provider": "github",
+      "owner": "suvash-glitch",
+      "repo": "Terminator"
+    },
     "directories": {
       "output": "dist"
     },
