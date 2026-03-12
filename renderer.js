@@ -66,13 +66,14 @@
         if (style) btn.style.cssText = style;
         btn.innerHTML = icon;
         btn.addEventListener("click", onClick);
-        // Insert before IDE mode button, or append to last toolbar group
         const anchor = document.getElementById("btn-skip-perms-anchor") || document.getElementById("btn-ide-mode");
         if (anchor && anchor.parentNode) {
           anchor.parentNode.insertBefore(btn, anchor);
+          console.log(`[ext] toolbar button "${id}" inserted before`, anchor.id || "anchor");
         } else {
           const group = document.querySelector(".titlebar-group:last-child");
-          if (group) group.appendChild(btn);
+          if (group) { group.appendChild(btn); console.log(`[ext] toolbar button "${id}" appended to last group`); }
+          else { console.warn(`[ext] toolbar button "${id}" — no insertion point found!`); }
         }
       },
       addSidePanel(id, html) {
@@ -81,6 +82,7 @@
         panel.id = id;
         panel.innerHTML = html;
         document.body.appendChild(panel);
+        console.log(`[ext] side panel "${id}" added to DOM`);
         return panel;
       },
     };
@@ -4764,17 +4766,19 @@
     const _loadedPlugins = new Set(); // track already-loaded plugin names
 
     async function activateSinglePlugin(pluginName, type) {
-      if (_loadedPlugins.has(pluginName)) return;
+      if (_loadedPlugins.has(pluginName)) { console.log(`[plugins] skip ${pluginName} (already loaded)`); return; }
+      console.log(`[plugins] loading ${pluginName} (${type})...`);
       const result = await window.terminator.getPluginCode(pluginName);
-      if (result.error) { console.warn(`Plugin ${pluginName}: ${result.error}`); return; }
+      if (result.error) { console.warn(`[plugins] ${pluginName}: ${result.error}`); return; }
 
       const pluginExports = {};
       const pluginFn = new Function("exports", result.code);
       pluginFn(pluginExports);
+      console.log(`[plugins] ${pluginName} exports:`, Object.keys(pluginExports));
 
       _loadedPlugins.add(pluginName);
       await _applyPlugin(pluginExports, pluginName, type);
-      console.log(`Plugin loaded: ${pluginName} (${type})`);
+      console.log(`[plugins] ${pluginName} activated successfully`);
     }
 
     async function _applyPlugin(pluginExports, pluginName, type) {
@@ -4854,18 +4858,20 @@
     }
 
     async function loadPlugins() {
+      console.log("[plugins] loadPlugins() called");
       try {
         const plugins = await window.terminator.loadPlugins();
-        if (!Array.isArray(plugins) || plugins.length === 0) return;
+        console.log("[plugins] found plugins:", JSON.stringify(plugins?.map(p => p.manifest?.name)));
+        if (!Array.isArray(plugins) || plugins.length === 0) { console.log("[plugins] no plugins to load"); return; }
         for (const plugin of plugins) {
           try {
             await activateSinglePlugin(plugin.manifest.name, plugin.manifest.type);
           } catch (err) {
-            console.warn(`Failed to load plugin ${plugin.manifest.name}:`, err);
+            console.error(`[plugins] Failed to load ${plugin.manifest.name}:`, err);
           }
         }
       } catch (err) {
-        console.warn("Plugin system error:", err);
+        console.error("[plugins] Plugin system error:", err);
       }
     }
 
@@ -4983,7 +4989,9 @@
         }
 
         // Load plugins
+        console.log("[init] about to load plugins...");
         await loadPlugins();
+        console.log("[init] plugins loaded");
 
         // Initialize IDE sidebar if enabled
         if (ideMode) setTimeout(() => updateIdeSidebar(), 200);
