@@ -3145,8 +3145,6 @@
     // ============================================================
     // EXTENSIONS / PLUGINS
     // ============================================================
-    let pluginsNeedRestart = false;
-
     function createPluginCard(manifest, dir, isInstalled) {
       const card = document.createElement("div");
       card.className = "plugin-card";
@@ -3204,20 +3202,8 @@
             btn.disabled = false;
             btn.textContent = isInstalled ? "Uninstall" : "Install";
           } else {
-            if (!isInstalled) {
-              // Hot-load the newly installed plugin immediately
-              try {
-                await activateSinglePlugin(manifest.name, manifest.type);
-                showToast("Extension installed and activated!");
-              } catch (err) {
-                console.warn("Hot-load failed:", err);
-                showToast("Extension installed — restart to apply");
-              }
-            } else {
-              pluginsNeedRestart = true;
-              showToast("Extension removed — restart to apply");
-            }
-            refreshSettingsExtensions();
+            showToast(isInstalled ? "Extension removed — reloading..." : "Extension installed — reloading...");
+            setTimeout(() => location.reload(), 600);
           }
         } catch (err) {
           showToast("Error: " + err.message);
@@ -4558,13 +4544,6 @@
           window.terminator.loadPlugins(),
         ]);
         const installedNames = new Set(installed.map(p => p.manifest.name));
-
-        if (pluginsNeedRestart) {
-          const notice = document.createElement("div");
-          notice.className = "plugin-restart-notice";
-          notice.textContent = "Restart Terminator to apply extension changes";
-          body.appendChild(notice);
-        }
 
         for (const plugin of available) {
           const card = createPluginCard(plugin.manifest, plugin.dir, installedNames.has(plugin.manifest.name));
