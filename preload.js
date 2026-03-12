@@ -81,5 +81,5 @@ contextBridge.exposeInMainWorld("terminator", {
   installPlugin: (dir) => ipcRenderer.invoke("install-plugin", dir),
   uninstallPlugin: (dir) => ipcRenderer.invoke("uninstall-plugin", dir),
   onUpdateStatus: (callback) => ipcRenderer.on("update-status", (_, data) => callback(data)),
-  debugLog: (msg) => ipcRenderer.send("debug-log", msg),
+
 });

@@ -1,7 +1,6 @@
     // ============================================================
     // STATE
     // ============================================================
-    function _dbg(msg) { try { window.terminator.debugLog(new Date().toISOString() + " " + msg); } catch {} console.log(msg); }
     const grid = document.getElementById("grid");
     const paneCountEl = document.getElementById("pane-count");
     const toastEl = document.getElementById("toast");
@@ -70,11 +69,9 @@
         const anchor = document.getElementById("btn-skip-perms-anchor") || document.getElementById("btn-ide-mode");
         if (anchor && anchor.parentNode) {
           anchor.parentNode.insertBefore(btn, anchor);
-          console.log(`[ext] toolbar button "${id}" inserted before`, anchor.id || "anchor");
         } else {
           const group = document.querySelector(".titlebar-group:last-child");
-          if (group) { group.appendChild(btn); console.log(`[ext] toolbar button "${id}" appended to last group`); }
-          else { console.warn(`[ext] toolbar button "${id}" — no insertion point found!`); }
+          if (group) group.appendChild(btn);
         }
       },
       addSidePanel(id, html) {
@@ -83,7 +80,6 @@
         panel.id = id;
         panel.innerHTML = html;
         document.body.appendChild(panel);
-        console.log(`[ext] side panel "${id}" added to DOM`);
         return panel;
       },
     };
@@ -178,8 +174,6 @@
       if (idx < 0 || idx >= themes.length) idx = 0;
       currentThemeIdx = idx;
       const t = themes[idx];
-      _dbg(`[theme] applyTheme idx=${idx} name=${t.name} bg=${t.body} ui=${t.ui} themes.length=${themes.length}`);
-
       // Set CSS custom properties
       const root = document.documentElement;
       root.style.setProperty("--t-bg", t.body);
@@ -214,6 +208,9 @@
       for (const [, pane] of panes) pane.term.options.theme = t.term;
       showToast(`Theme: ${t.name}`);
       window.terminator.saveConfig({ theme: idx, fontSize: currentFontSize, themeName: t.name });
+      // Also persist in settings for cross-session reliability
+      settings.theme = idx;
+      settings.themeName = t.name;
     }
 
     function cycleTheme() { applyTheme((currentThemeIdx + 1) % themes.length); }
@@ -543,7 +540,7 @@
           const input = document.createElement("input");
           input.className = "pane-rename-input";
           input.value = pane.customName || pane.titleEl?.textContent || `Terminal ${id}`;
-          input.style.cssText = "width:120px;height:20px;font-size:12px;background:#333;color:#fff;border:1px solid #007acc;outline:none;padding:0 4px;border-radius:2px;";
+          input.style.cssText = "width:120px;height:20px;font-size:12px;background:var(--t-ui);color:var(--t-fg);border:1px solid var(--t-accent);outline:none;padding:0 4px;border-radius:2px;";
           // Find the text node or span to replace inside the tab
           const nameSpan = targetTab.querySelector(".ide-tab-name");
           const replaceEl = nameSpan || targetTab;
@@ -640,7 +637,7 @@
       header.addEventListener("dragstart", (e) => { el._dragId = id; e.dataTransfer.effectAllowed = "move"; header.style.opacity = "0.5"; });
       header.addEventListener("dragend", () => { header.style.opacity = ""; });
       header.addEventListener("dragover", (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; });
-      header.addEventListener("dragenter", () => { header.style.borderBottom = "2px solid #007aff"; });
+      header.addEventListener("dragenter", () => { header.style.borderBottom = "2px solid var(--t-accent)"; });
       header.addEventListener("dragleave", () => { header.style.borderBottom = ""; });
       header.addEventListener("drop", (e) => {
         e.preventDefault(); header.style.borderBottom = "";
@@ -893,7 +890,7 @@
         selected = Math.min(selected, Math.max(0, filtered.length - 1));
         results.innerHTML = "";
         if (filtered.length === 0) {
-          results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:#888">${snippets.length === 0 ? "No snippets yet. Type new:name:command to add one" : "No matches"}</span></div>`;
+          results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">${snippets.length === 0 ? "No snippets yet. Type new:name:command to add one" : "No matches"}</span></div>`;
           return;
         }
         filtered.forEach((s, i) => {
@@ -945,7 +942,7 @@
         selected = Math.min(selected, Math.max(0, filtered.length - 1));
         results.innerHTML = "";
         if (filtered.length === 0) {
-          results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:#888">${profiles.length === 0 ? 'No profiles. Type save:name to save current layout' : 'No matches'}</span></div>`;
+          results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">${profiles.length === 0 ? 'No profiles. Type save:name to save current layout' : 'No matches'}</span></div>`;
           return;
         }
         filtered.forEach((p, i) => {
@@ -1114,8 +1111,8 @@
         if (!q && cmd.category && cmd.category !== lastCategory) {
           lastCategory = cmd.category;
           const header = document.createElement("div");
-          header.style.cssText = "padding:6px 16px 2px;font-size:10px;color:#666;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;";
-          if (i > 0) header.style.borderTop = "1px solid #333";
+          header.style.cssText = "padding:6px 16px 2px;font-size:10px;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;";
+          if (i > 0) header.style.borderTop = "1px solid var(--t-border)";
           header.textContent = cmd.category;
           paletteResults.appendChild(header);
         }
@@ -1513,7 +1510,7 @@
         selected = Math.min(selected, Math.max(0, filtered.length - 1));
         results.innerHTML = "";
         if (filtered.length === 0) {
-          results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:#888">${recentDirs.length === 0 ? "No recent directories yet" : "No matches"}</span></div>`;
+          results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">${recentDirs.length === 0 ? "No recent directories yet" : "No matches"}</span></div>`;
           return;
         }
         filtered.forEach((dir, i) => {
@@ -1553,18 +1550,18 @@
 
       const searchDirs = launchProjects.map(p => p.path).filter(Boolean);
       if (searchDirs.length === 0) {
-        results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:#888">No projects configured. Add projects via the Projects dropdown first.</span></div>';
+        results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">No projects configured. Add projects via the Projects dropdown first.</span></div>';
         return;
       }
 
       async function doSearch(q) {
-        if (!q || q.length < 2) { results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:#888">Type at least 2 characters to search...</span></div>'; return; }
-        results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:#888">Searching...</span></div>';
+        if (!q || q.length < 2) { results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">Type at least 2 characters to search...</span></div>'; return; }
+        results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">Searching...</span></div>';
         try {
           const files = await window.terminator.findFiles(q, searchDirs);
           selected = 0;
           results.innerHTML = "";
-          if (!files || files.length === 0) { results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:#888">No files found</span></div>'; return; }
+          if (!files || files.length === 0) { results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">No files found</span></div>'; return; }
           files.forEach((f, i) => {
             const el = document.createElement("div"); el.className = "palette-item" + (i === selected ? " selected" : "");
             el.innerHTML = `<span class="palette-item-label">${f.name}<span class="finder-result-path">${f.dir}</span></span>`;
@@ -1577,7 +1574,7 @@
             el.addEventListener("mouseenter", () => { selected = i; results.querySelectorAll(".palette-item").forEach((e, j) => e.classList.toggle("selected", j === i)); });
             results.appendChild(el);
           });
-        } catch { results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:#888">Search failed</span></div>'; }
+        } catch { results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">Search failed</span></div>'; }
       }
 
       const handler = (e) => {
@@ -2087,7 +2084,7 @@
         selected = Math.min(selected, Math.max(0, filtered.length - 1));
         results.innerHTML = "";
         if (filtered.length === 0) {
-          results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:#888">${sshBookmarks.length === 0 ? "No SSH bookmarks. Type new:name:user@host to add" : "No matches"}</span></div>`;
+          results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">${sshBookmarks.length === 0 ? "No SSH bookmarks. Type new:name:user@host to add" : "No matches"}</span></div>`;
           return;
         }
         filtered.forEach((s, i) => {
@@ -2368,7 +2365,7 @@
       input.placeholder = "Enter command to run in new split pane...";
       input.value = ""; input.focus();
 
-      results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:#888">Type a command and press Enter to split & run</span></div>
+      results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">Type a command and press Enter to split & run</span></div>
         <div class="palette-item" data-cmd="npm run dev"><span class="palette-item-label">npm run dev</span></div>
         <div class="palette-item" data-cmd="npm test"><span class="palette-item-label">npm test</span></div>
         <div class="palette-item" data-cmd="npm run build"><span class="palette-item-label">npm run build</span></div>
@@ -2559,7 +2556,7 @@
       // Show existing links
       if (linkedGroups.length > 0) {
         const header = document.createElement("div");
-        header.style.cssText = "padding:6px 16px;font-size:10px;color:#666;font-weight:600;border-top:1px solid #333";
+        header.style.cssText = "padding:6px 16px;font-size:10px;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-weight:600;border-top:1px solid var(--t-border)";
         header.textContent = "ACTIVE LINKS";
         results.appendChild(header);
         linkedGroups.forEach((group, gi) => {
@@ -2604,13 +2601,13 @@
 
     async function openEnvViewer() {
       envPanel.classList.add("visible");
-      envBody.innerHTML = '<div style="padding:24px;text-align:center;color:#666;font-size:12px">Loading...</div>';
+      envBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Loading...</div>';
       envSearch.value = "";
       try {
         const envVars = await window.terminator.getTerminalEnv(activeId);
         renderEnvVars(envVars, "");
       } catch {
-        envBody.innerHTML = '<div style="padding:24px;text-align:center;color:#666;font-size:12px">Failed to load</div>';
+        envBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Failed to load</div>';
       }
     }
 
@@ -2619,7 +2616,7 @@
       const filtered = q ? envVars.filter(e => e.key.toLowerCase().includes(q) || e.value.toLowerCase().includes(q)) : envVars;
       envBody.innerHTML = "";
       if (filtered.length === 0) {
-        envBody.innerHTML = '<div style="padding:24px;text-align:center;color:#666;font-size:12px">No matching variables</div>';
+        envBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">No matching variables</div>';
         return;
       }
       filtered.forEach(e => {
@@ -2640,13 +2637,13 @@
     const _openEnvViewer = openEnvViewer;
     openEnvViewer = async function() {
       envPanel.classList.add("visible");
-      envBody.innerHTML = '<div style="padding:24px;text-align:center;color:#666;font-size:12px">Loading...</div>';
+      envBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Loading...</div>';
       envSearch.value = ""; envSearch.focus();
       try {
         envVarsCache = await window.terminator.getTerminalEnv(activeId);
         renderEnvVars(envVarsCache, "");
       } catch {
-        envBody.innerHTML = '<div style="padding:24px;text-align:center;color:#666;font-size:12px">Failed to load</div>';
+        envBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Failed to load</div>';
       }
     };
 
@@ -2664,12 +2661,12 @@
     }
 
     async function refreshDocker() {
-      dockerBody.innerHTML = '<div style="padding:24px;text-align:center;color:#666;font-size:12px">Loading...</div>';
+      dockerBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Loading...</div>';
       try {
         const containers = await window.terminator.dockerPsAll();
         dockerBody.innerHTML = "";
         if (!containers || containers.length === 0) {
-          dockerBody.innerHTML = '<div style="padding:24px;text-align:center;color:#666;font-size:12px">No containers found (is Docker running?)</div>';
+          dockerBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">No containers found (is Docker running?)</div>';
           return;
         }
         containers.forEach(c => {
@@ -2686,7 +2683,7 @@
           dockerBody.appendChild(row);
         });
       } catch {
-        dockerBody.innerHTML = '<div style="padding:24px;text-align:center;color:#666;font-size:12px">Docker not available</div>';
+        dockerBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Docker not available</div>';
         showToast("Docker is not running or not installed", "error");
       }
     }
@@ -2706,12 +2703,12 @@
     }
 
     async function refreshPorts() {
-      portBody.innerHTML = '<div style="padding:24px;text-align:center;color:#666;font-size:12px">Loading...</div>';
+      portBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Loading...</div>';
       try {
         const ports = await window.terminator.listPorts();
         portBody.innerHTML = "";
         if (!ports || ports.length === 0) {
-          portBody.innerHTML = '<div style="padding:24px;text-align:center;color:#666;font-size:12px">No listening ports found</div>';
+          portBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">No listening ports found</div>';
           return;
         }
         ports.sort((a, b) => parseInt(a.port) - parseInt(b.port));
@@ -2732,7 +2729,7 @@
           portBody.appendChild(row);
         });
       } catch {
-        portBody.innerHTML = '<div style="padding:24px;text-align:center;color:#666;font-size:12px">Failed to list ports</div>';
+        portBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Failed to list ports</div>';
       }
     }
 
@@ -2805,7 +2802,7 @@
       historySelectedIdx = Math.max(0, Math.min(historySelectedIdx, historyFiltered.length - 1));
       historyResults.innerHTML = "";
       if (historyFiltered.length === 0) {
-        historyResults.innerHTML = '<div style="padding:16px;text-align:center;color:#666;font-size:12px">No matching commands</div>';
+        historyResults.innerHTML = '<div style="padding:16px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">No matching commands</div>';
         return;
       }
       historyFiltered.forEach((h, i) => {
@@ -3261,7 +3258,6 @@
     const plCanvas = document.getElementById("pipeline-canvas");
     const plSvg = document.getElementById("pipeline-svg");
     const plWrap = document.getElementById("pipeline-canvas-wrap");
-    _dbg("[pipeline-init] plPanel=" + !!plPanel + " plCanvas=" + !!plCanvas + " plSvg=" + !!plSvg + " plWrap=" + !!plWrap);
     let pipelines = [];
     let plNodes = []; // {id, command, status, output, x, y}
     let plEdges = []; // {from, to}
@@ -3275,16 +3271,9 @@
     let plDragNode = null, plDragOffX = 0, plDragOffY = 0;
 
     function openPipelinePanel() {
-      _dbg("[pipeline] opening panel, plPanel=" + !!plPanel + " plCanvas=" + !!plCanvas + " plWrap=" + !!plWrap);
       plPanel.classList.add("visible");
-      _dbg("[pipeline] panel visible=" + plPanel.classList.contains("visible") + " display=" + getComputedStyle(plPanel).display);
       plRender();
       if (plNodes.length === 0) plCenterView();
-      // Debug: check all toolbar buttons
-      ["pipeline-add-btn","pipeline-run","pipeline-save","pipeline-load","pipeline-clear","pipeline-close"].forEach(id => {
-        const el = document.getElementById(id);
-        _dbg("[pipeline] btn " + id + " exists=" + !!el + " visible=" + (el ? getComputedStyle(el).display !== "none" : "N/A"));
-      });
     }
 
     function plCenterView() { plPanX = (plWrap.clientWidth / 2) - 120; plPanY = 60; plZoom = 1; plApplyTransform(); }
@@ -3308,13 +3297,21 @@
     plWrap.addEventListener("pointermove", (e) => {
       if (plIsPanning) { plPanX = e.clientX - plPanStartX; plPanY = e.clientY - plPanStartY; plApplyTransform(); }
       if (plDragNode) {
-        const x = (e.clientX - plWrap.getBoundingClientRect().left - plPanX) / plZoom - plDragOffX;
-        const y = (e.clientY - plWrap.getBoundingClientRect().top - plPanY) / plZoom - plDragOffY;
-        plDragNode.x = Math.round(x / 12) * 12; plDragNode.y = Math.round(y / 12) * 12;
-        plRender();
+        const rect = plWrap.getBoundingClientRect();
+        const x = (e.clientX - rect.left - plPanX) / plZoom - plDragOffX;
+        const y = (e.clientY - rect.top - plPanY) / plZoom - plDragOffY;
+        plDragNode.x = x; plDragNode.y = y;
+        // Fast path: update only the dragged node position and connected edges
+        const el = document.getElementById("pl-node-" + plDragNode.id);
+        if (el) { el.style.left = x + "px"; el.style.top = y + "px"; }
+        plUpdateEdgesFor(plDragNode.id);
       }
     });
     plWrap.addEventListener("pointerup", () => {
+      if (plDragNode) {
+        const el = document.getElementById("pl-node-" + plDragNode.id);
+        if (el) el.classList.remove("dragging");
+      }
       plIsPanning = false; plDragNode = null; plWrap.classList.remove("grabbing");
     });
 
@@ -3330,31 +3327,65 @@
       plApplyTransform();
     }, { passive: false });
 
+    // --- Edge geometry helper ---
+    function plEdgePath(fromN, toN) {
+      const fromEl = document.getElementById("pl-node-" + fromN.id);
+      const toEl = document.getElementById("pl-node-" + toN.id);
+      const fw = fromEl ? fromEl.offsetWidth : 200, fh = fromEl ? fromEl.offsetHeight : 60;
+      const tw = toEl ? toEl.offsetWidth : 200;
+      const x1 = fromN.x + fw / 2, y1 = fromN.y + fh;
+      const x2 = toN.x + tw / 2, y2 = toN.y;
+      const dy = Math.abs(y2 - y1);
+      const cy1 = y1 + Math.max(dy * 0.4, 30), cy2 = y2 - Math.max(dy * 0.4, 30);
+      return `M${x1},${y1} C${x1},${cy1} ${x2},${cy2} ${x2},${y2}`;
+    }
+
+    // Fast update: only recompute SVG paths touching a given node
+    function plUpdateEdgesFor(nodeId) {
+      for (const edge of plEdges) {
+        if (edge.from !== nodeId && edge.to !== nodeId) continue;
+        const fromN = plNodes.find(n => n.id === edge.from);
+        const toN = plNodes.find(n => n.id === edge.to);
+        if (!fromN || !toN) continue;
+        const pathEl = plSvg.querySelector(`path[data-from="${edge.from}"][data-to="${edge.to}"]`);
+        if (pathEl) pathEl.setAttribute("d", plEdgePath(fromN, toN));
+      }
+    }
+
     // --- Render ---
     function plRender() {
-      // Render edges as SVG
-      let svgHtml = '<defs><marker id="pl-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="pl-edge-arrow"/></marker>';
-      svgHtml += '<marker id="pl-arrow-pass" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="pl-edge-arrow passed"/></marker>';
-      svgHtml += '<marker id="pl-arrow-run" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="pl-edge-arrow running"/></marker>';
-      svgHtml += '<marker id="pl-arrow-fail" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="pl-edge-arrow failed"/></marker>';
-      svgHtml += '</defs>';
+      // Ensure SVG defs exist
+      if (!plSvg.querySelector("defs")) {
+        const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+        defs.innerHTML = '<marker id="pl-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="pl-edge-arrow"/></marker>'
+          + '<marker id="pl-arrow-pass" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="pl-edge-arrow passed"/></marker>'
+          + '<marker id="pl-arrow-run" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="pl-edge-arrow running"/></marker>'
+          + '<marker id="pl-arrow-fail" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="pl-edge-arrow failed"/></marker>';
+        plSvg.appendChild(defs);
+      }
 
+      // Sync edge paths (add/remove/update)
+      const edgeSet = new Set(plEdges.map(e => e.from + "-" + e.to));
+      plSvg.querySelectorAll("path.pl-edge").forEach(p => {
+        const key = p.dataset.from + "-" + p.dataset.to;
+        if (!edgeSet.has(key)) p.remove();
+      });
       for (const edge of plEdges) {
         const fromN = plNodes.find(n => n.id === edge.from);
         const toN = plNodes.find(n => n.id === edge.to);
         if (!fromN || !toN) continue;
-        const fromEl = document.getElementById("pl-node-" + fromN.id);
-        const toEl = document.getElementById("pl-node-" + toN.id);
-        const fw = fromEl ? fromEl.offsetWidth : 200, fh = fromEl ? fromEl.offsetHeight : 60;
-        const tw = toEl ? toEl.offsetWidth : 200;
-        const x1 = fromN.x + fw / 2, y1 = fromN.y + fh;
-        const x2 = toN.x + tw / 2, y2 = toN.y;
-        const cy1 = y1 + Math.abs(y2 - y1) * 0.4, cy2 = y2 - Math.abs(y2 - y1) * 0.4;
+        let pathEl = plSvg.querySelector(`path[data-from="${edge.from}"][data-to="${edge.to}"]`);
+        if (!pathEl) {
+          pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          pathEl.dataset.from = edge.from; pathEl.dataset.to = edge.to;
+          plSvg.appendChild(pathEl);
+        }
+        pathEl.setAttribute("d", plEdgePath(fromN, toN));
         const cls = toN.status === "passed" ? "passed" : toN.status === "running" ? "running" : toN.status === "failed" ? "failed" : "";
         const marker = cls === "passed" ? "pl-arrow-pass" : cls === "running" ? "pl-arrow-run" : cls === "failed" ? "pl-arrow-fail" : "pl-arrow";
-        svgHtml += `<path class="pl-edge ${cls}" d="M${x1},${y1} C${x1},${cy1} ${x2},${cy2} ${x2},${y2}" marker-end="url(#${marker})"/>`;
+        pathEl.setAttribute("class", "pl-edge " + cls);
+        pathEl.setAttribute("marker-end", "url(#" + marker + ")");
       }
-      plSvg.innerHTML = svgHtml;
 
       // Render nodes
       const existingIds = new Set(plNodes.map(n => n.id));
@@ -3372,6 +3403,7 @@
           el.id = "pl-node-" + node.id;
           el.dataset.nid = node.id;
           el.innerHTML = `
+            <div class="pl-node-port-in" title="Drop connection here"></div>
             <div class="pl-node-actions">
               <button class="pl-node-del" title="Delete">&times;</button>
             </div>
@@ -3386,9 +3418,10 @@
           `;
           // Drag node
           el.addEventListener("pointerdown", (e) => {
-            if (e.target.closest(".pl-node-del") || e.target.closest(".pl-node-port") || e.target.closest(".pl-node-body[contenteditable=true]")) return;
+            if (e.target.closest(".pl-node-del") || e.target.closest(".pl-node-port") || e.target.closest(".pl-node-port-in") || e.target.closest(".pl-node-body[contenteditable=true]")) return;
             e.stopPropagation();
             plDragNode = node;
+            el.classList.add("dragging");
             const rect = plWrap.getBoundingClientRect();
             plDragOffX = (e.clientX - rect.left - plPanX) / plZoom - node.x;
             plDragOffY = (e.clientY - rect.top - plPanY) / plZoom - node.y;
@@ -3450,45 +3483,86 @@
     }
 
     // --- Edge drag ---
-    let plEdgeDragFrom = null, plEdgeTempLine = null;
+    let plEdgeDragFrom = null, plEdgeTempPath = null, plDropTarget = null;
+    const PL_DROP_PADDING = 40; // generous hit zone around nodes
+
+    function plFindDropTarget(mx, my, fromId) {
+      let best = null, bestDist = Infinity;
+      for (const n of plNodes) {
+        if (n.id === fromId) continue;
+        const nel = document.getElementById("pl-node-" + n.id);
+        const nw = nel ? nel.offsetWidth : 200, nh = nel ? nel.offsetHeight : 60;
+        // Check within padded bounds
+        if (mx >= n.x - PL_DROP_PADDING && mx <= n.x + nw + PL_DROP_PADDING &&
+            my >= n.y - PL_DROP_PADDING && my <= n.y + nh + PL_DROP_PADDING) {
+          // Distance to center of input port (top center)
+          const cx = n.x + nw / 2, cy = n.y;
+          const dist = Math.hypot(mx - cx, my - cy);
+          if (dist < bestDist) { bestDist = dist; best = n; }
+        }
+      }
+      return best;
+    }
+
     function plStartEdgeDrag(fromId, e) {
       plEdgeDragFrom = fromId;
-      plEdgeTempLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      plEdgeTempLine.setAttribute("stroke", "#00f0ff"); plEdgeTempLine.setAttribute("stroke-width", "2");
-      plEdgeTempLine.setAttribute("stroke-dasharray", "4 4");
-      plSvg.appendChild(plEdgeTempLine);
+      plEdgeTempPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      plEdgeTempPath.setAttribute("class", "pl-edge-temp");
+      plSvg.appendChild(plEdgeTempPath);
       const fromN = plNodes.find(n => n.id === fromId);
       const fromEl = document.getElementById("pl-node-" + fromId);
       const fw = fromEl ? fromEl.offsetWidth : 200, fh = fromEl ? fromEl.offsetHeight : 60;
       const startX = fromN.x + fw / 2, startY = fromN.y + fh;
+
       const onMove = (ev) => {
         const rect = plWrap.getBoundingClientRect();
         const mx = (ev.clientX - rect.left - plPanX) / plZoom;
         const my = (ev.clientY - rect.top - plPanY) / plZoom;
-        plEdgeTempLine.setAttribute("x1", startX); plEdgeTempLine.setAttribute("y1", startY);
-        plEdgeTempLine.setAttribute("x2", mx); plEdgeTempLine.setAttribute("y2", my);
+        // Snap to target input port if hovering near a node
+        let endX = mx, endY = my;
+        const target = plFindDropTarget(mx, my, fromId);
+        // Update drop target highlight
+        if (plDropTarget !== target) {
+          if (plDropTarget) {
+            const oldEl = document.getElementById("pl-node-" + plDropTarget.id);
+            if (oldEl) oldEl.classList.remove("drop-target");
+          }
+          plDropTarget = target;
+          if (target) {
+            const tEl = document.getElementById("pl-node-" + target.id);
+            if (tEl) tEl.classList.add("drop-target");
+            const tw = tEl ? tEl.offsetWidth : 200;
+            endX = target.x + tw / 2; endY = target.y;
+          }
+        } else if (target) {
+          const tEl = document.getElementById("pl-node-" + target.id);
+          const tw = tEl ? tEl.offsetWidth : 200;
+          endX = target.x + tw / 2; endY = target.y;
+        }
+        // Draw curved temp path
+        const dy = Math.abs(endY - startY);
+        const cy1 = startY + Math.max(dy * 0.4, 30), cy2 = endY - Math.max(dy * 0.4, 30);
+        plEdgeTempPath.setAttribute("d", `M${startX},${startY} C${startX},${cy1} ${endX},${cy2} ${endX},${endY}`);
       };
+
       const onUp = (ev) => {
         document.removeEventListener("pointermove", onMove);
         document.removeEventListener("pointerup", onUp);
-        if (plEdgeTempLine) { plEdgeTempLine.remove(); plEdgeTempLine = null; }
-        // Find node under cursor
+        if (plEdgeTempPath) { plEdgeTempPath.remove(); plEdgeTempPath = null; }
+        // Clear drop target highlight
+        if (plDropTarget) {
+          const oldEl = document.getElementById("pl-node-" + plDropTarget.id);
+          if (oldEl) oldEl.classList.remove("drop-target");
+        }
         const rect = plWrap.getBoundingClientRect();
         const mx = (ev.clientX - rect.left - plPanX) / plZoom;
         const my = (ev.clientY - rect.top - plPanY) / plZoom;
-        for (const n of plNodes) {
-          if (n.id === fromId) continue;
-          const nel = document.getElementById("pl-node-" + n.id);
-          const nw = nel ? nel.offsetWidth : 200, nh = nel ? nel.offsetHeight : 60;
-          if (mx >= n.x && mx <= n.x + nw && my >= n.y && my <= n.y + nh) {
-            // Prevent duplicate edges and cycles
-            if (!plEdges.find(e => e.from === fromId && e.to === n.id)) {
-              plEdges.push({ from: fromId, to: n.id });
-              plRender();
-            }
-            break;
-          }
+        const target = plFindDropTarget(mx, my, fromId);
+        if (target && !plEdges.find(e => e.from === fromId && e.to === target.id)) {
+          plEdges.push({ from: fromId, to: target.id });
+          plRender();
         }
+        plDropTarget = null;
         plEdgeDragFrom = null;
       };
       document.addEventListener("pointermove", onMove);
@@ -3525,10 +3599,10 @@
         const modal = document.createElement("div");
         modal.className = "pl-load-modal";
         modal.innerHTML = `<h4>${escapeHtml(label)}</h4>
-          <input type="text" id="pl-prompt-input" value="${escapeHtml(defaultVal || "")}" style="width:100%;padding:8px 10px;border-radius:6px;border:1px solid #444;background:#111;color:#eee;font-size:13px;font-family:'SF Mono',monospace;outline:none;margin-bottom:10px" />
+          <input type="text" id="pl-prompt-input" value="${escapeHtml(defaultVal || "")}" style="width:100%;padding:8px 10px;border-radius:6px;border:1px solid var(--t-border);background:var(--t-bg);color:var(--t-fg);font-size:13px;font-family:'SF Mono',monospace;outline:none;margin-bottom:10px" />
           <div style="display:flex;gap:6px;justify-content:flex-end">
             <button class="pl-tb-btn" id="pl-prompt-cancel">Cancel</button>
-            <button class="pl-tb-btn pl-tb-run" id="pl-prompt-ok" style="background:rgba(0,240,255,0.15);border-color:rgba(0,240,255,0.3);color:#00f0ff">OK</button>
+            <button class="pl-tb-btn pl-tb-run" id="pl-prompt-ok" style="background:color-mix(in srgb, var(--t-accent) 15%, transparent);border-color:color-mix(in srgb, var(--t-accent) 30%, transparent);color:var(--t-accent)">OK</button>
           </div>`;
         plWrap.appendChild(modal);
         const input = document.getElementById("pl-prompt-input");
@@ -3546,9 +3620,7 @@
 
     // --- Add step ---
     document.getElementById("pipeline-add-btn").addEventListener("click", async () => {
-      _dbg("[pipeline] Add Step clicked");
       const cmd = await plPrompt("Command:", "");
-      _dbg("[pipeline] prompt returned: " + JSON.stringify(cmd));
       if (!cmd) return;
       const lastNode = plNodes.length > 0 ? plNodes[plNodes.length - 1] : null;
       const x = lastNode ? lastNode.x : 0;
@@ -3561,7 +3633,6 @@
 
     // --- Run pipeline ---
     document.getElementById("pipeline-run").addEventListener("click", async () => {
-      _dbg("[pipeline] Run clicked, nodes=" + plNodes.length);
       if (plRunning) return;
       plRunning = true;
       document.getElementById("pipeline-run").style.display = "none";
@@ -3716,7 +3787,6 @@
       if (e.target === plCanvas) { plSelectedId = null; plRender(); }
     });
 
-    _dbg("[pipeline-init] all event listeners attached OK");
     async function loadPipelinesData() {
       pipelines = await window.terminator.loadPipelines() || [];
     }
@@ -4019,7 +4089,7 @@
         selected = Math.min(selected, Math.max(0, filtered.length - 1));
         results.innerHTML = "";
         if (filtered.length === 0) {
-          results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:#888">${dirBookmarks.length === 0 ? "No bookmarks. Use 'Bookmark Directory' to add one." : "No matches"}</span></div>`;
+          results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">${dirBookmarks.length === 0 ? "No bookmarks. Use 'Bookmark Directory' to add one." : "No matches"}</span></div>`;
           return;
         }
         filtered.forEach((dir, i) => {
@@ -4071,7 +4141,7 @@
       results.innerHTML = "";
       if (watchTimers.size > 0) {
         const header = document.createElement("div");
-        header.style.cssText = "padding:6px 16px;font-size:10px;color:#666;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;";
+        header.style.cssText = "padding:6px 16px;font-size:10px;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;";
         header.textContent = "ACTIVE WATCHES";
         results.appendChild(header);
         for (const [wid, w] of watchTimers) {
@@ -4093,7 +4163,7 @@
         { label: "30 df -h", desc: "Disk usage every 30s" },
       ];
       const sugHeader = document.createElement("div");
-      sugHeader.style.cssText = "padding:6px 16px;font-size:10px;color:#666;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;border-top:1px solid #333;";
+      sugHeader.style.cssText = "padding:6px 16px;font-size:10px;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;border-top:1px solid var(--t-border);";
       sugHeader.textContent = "SUGGESTIONS";
       results.appendChild(sugHeader);
       suggestions.forEach(s => {
@@ -4193,7 +4263,7 @@
 
       function doSearch(query) {
         if (!query || query.length < 2) {
-          results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:#888">Type at least 2 characters...</span></div>';
+          results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">Type at least 2 characters...</span></div>';
           return;
         }
         results.innerHTML = "";
@@ -4237,7 +4307,7 @@
         });
 
         if (totalMatches === 0) {
-          results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:#888">No matches found across terminals</span></div>';
+          results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">No matches found across terminals</span></div>';
         }
       }
 
@@ -4270,7 +4340,7 @@
       input.placeholder = "Enter file path to preview (absolute or relative to cwd)...";
       input.value = ""; input.focus();
 
-      results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:#888">Type a file path and press Enter</span></div>
+      results.innerHTML = `<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">Type a file path and press Enter</span></div>
         <div class="palette-item" data-hint="package.json"><span class="palette-item-label">package.json</span></div>
         <div class="palette-item" data-hint=".env"><span class="palette-item-label">.env</span></div>
         <div class="palette-item" data-hint="README.md"><span class="palette-item-label">README.md</span></div>
@@ -4318,7 +4388,7 @@
         const result = await window.terminator.readFile(filePath);
         if (result.error) {
           filePreviewMeta.textContent = result.error;
-          filePreviewContent.innerHTML = `<div style="padding:24px;text-align:center;color:#666">${result.error}</div>`;
+          filePreviewContent.innerHTML = `<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent)">${result.error}</div>`;
           return;
         }
 
@@ -4338,7 +4408,7 @@
         filePreviewContent.appendChild(frag);
       } catch (err) {
         filePreviewMeta.textContent = "Error";
-        filePreviewContent.innerHTML = `<div style="padding:24px;text-align:center;color:#666">${err.message}</div>`;
+        filePreviewContent.innerHTML = `<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent)">${err.message}</div>`;
       }
     }
 
@@ -5068,11 +5138,13 @@
     new ResizeObserver(() => fitAllTerminals()).observe(grid);
     window.addEventListener("beforeunload", () => {
       window.terminator.saveConfig({ theme: currentThemeIdx, fontSize: currentFontSize });
-      // Auto-save session on close (fire and forget)
       saveCurrentSession(true);
     });
-    // Auto-save session (configurable interval, set up after settings load)
     setupAutoSave();
+
+    // Throttle background timers when window is hidden to save CPU/battery
+    let _appVisible = true;
+    document.addEventListener("visibilitychange", () => { _appVisible = !document.hidden; });
 
     // ============================================================
     // PLUGIN SYSTEM
@@ -5080,33 +5152,25 @@
     const _loadedPlugins = new Set(); // track already-loaded plugin names
 
     async function activateSinglePlugin(pluginName, type) {
-      if (_loadedPlugins.has(pluginName)) { _dbg(`[plugins] skip ${pluginName} (already loaded)`); return; }
-      _dbg(`[plugins] loading ${pluginName} (${type})...`);
+      if (_loadedPlugins.has(pluginName)) return;
       const result = await window.terminator.getPluginCode(pluginName);
-      if (result.error) { _dbg(`[plugins] ${pluginName} ERROR: ${result.error}`); showToast(`Plugin error: ${pluginName} — ${result.error}`, "error"); return; }
-      _dbg(`[plugins] ${pluginName} code length: ${result.code ? result.code.length : 'null'}`);
+      if (result.error) { showToast(`Plugin error: ${pluginName} — ${result.error}`, "error"); return; }
 
       const pluginExports = {};
       try {
         const pluginFn = new Function("exports", result.code);
         pluginFn(pluginExports);
       } catch (evalErr) {
-        _dbg(`[plugins] ${pluginName} EVAL ERROR: ${evalErr.message}`);
         showToast(`Plugin eval error: ${pluginName} — ${evalErr.message}`, "error");
         return;
       }
-      _dbg(`[plugins] ${pluginName} exports: [${Object.keys(pluginExports).join(", ")}]`);
-
       _loadedPlugins.add(pluginName);
       await _applyPlugin(pluginExports, pluginName, type);
-      _dbg(`[plugins] ${pluginName} activated OK`);
     }
 
     async function _applyPlugin(pluginExports, pluginName, type) {
-      _dbg(`[plugins] _applyPlugin ${pluginName} type=${type} hasTheme=${!!pluginExports.theme} hasActivate=${!!pluginExports.activate}`);
       if (type === "theme" && pluginExports.theme) {
         const t = pluginExports.theme;
-        _dbg(`[plugins] adding theme "${t.name}" bg=${t.background}`);
         themes.push({
           name: t.name || pluginName,
           body: t.background || "#1e1e1e",
@@ -5181,11 +5245,9 @@
     }
 
     async function loadPlugins() {
-      _dbg("[plugins] loadPlugins() called");
       try {
         const plugins = await window.terminator.loadPlugins();
-        _dbg("[plugins] found: " + JSON.stringify(plugins?.map(p => p.manifest?.name + "(" + p.manifest?.type + ")")));
-        if (!Array.isArray(plugins) || plugins.length === 0) { console.log("[plugins] no plugins to load"); return; }
+        if (!Array.isArray(plugins) || plugins.length === 0) return;
         for (const plugin of plugins) {
           try {
             await activateSinglePlugin(plugin.manifest.name, plugin.manifest.type);
@@ -5296,7 +5358,6 @@
           if (first) setActive(first);
         } else {
           const id = await addTerminal();
-          if (id !== undefined) setTimeout(() => window.terminator.sendInput(id, getClaudeCommand() + "\n"), 200);
         }
         applyTheme(currentThemeIdx);
         updateWelcomeScreen();
@@ -5304,7 +5365,7 @@
         // Start Tailscale sync server
         try {
           const syncResult = await window.terminator.syncServerStart();
-          if (syncResult && syncResult.ok) console.log("Sync server:", syncResult.message);
+          // Sync server started
         } catch (e) {
           console.warn("Sync server failed to start:", e);
         }
@@ -5315,9 +5376,7 @@
         }
 
         // Load plugins
-        console.log("[init] about to load plugins...");
         await loadPlugins();
-        console.log("[init] plugins loaded, themes count:", themes.length);
 
         // Refresh welcome theme dropdown with plugin themes
         const welcomeThemeSelect = document.getElementById("welcome-theme-select");
@@ -5335,10 +5394,8 @@
         if (_savedThemeName) {
           const savedIdx = themes.findIndex(t => t.name === _savedThemeName);
           if (savedIdx >= 0 && savedIdx !== currentThemeIdx) {
-            _dbg("[init] restoring theme by name: " + _savedThemeName + " idx:" + savedIdx);
             applyTheme(savedIdx);
           } else {
-            _dbg("[init] theme '" + _savedThemeName + "' not found in " + themes.length + " themes");
           }
         }
 
