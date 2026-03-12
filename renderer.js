@@ -66,9 +66,14 @@
         if (style) btn.style.cssText = style;
         btn.innerHTML = icon;
         btn.addEventListener("click", onClick);
-        // Insert before IDE mode button
-        const ideBtn = document.getElementById("btn-ide-mode");
-        if (ideBtn) ideBtn.parentNode.insertBefore(btn, ideBtn);
+        // Insert before IDE mode button, or append to last toolbar group
+        const anchor = document.getElementById("btn-skip-perms-anchor") || document.getElementById("btn-ide-mode");
+        if (anchor && anchor.parentNode) {
+          anchor.parentNode.insertBefore(btn, anchor);
+        } else {
+          const group = document.querySelector(".titlebar-group:last-child");
+          if (group) group.appendChild(btn);
+        }
       },
       addSidePanel(id, html) {
         const panel = document.createElement("div");
@@ -3199,8 +3204,19 @@
             btn.disabled = false;
             btn.textContent = isInstalled ? "Uninstall" : "Install";
           } else {
-            pluginsNeedRestart = true;
-            showToast(isInstalled ? "Extension removed — restart to apply" : "Extension installed — restart to apply");
+            if (!isInstalled) {
+              // Hot-load the newly installed plugin immediately
+              try {
+                await activateSinglePlugin(manifest.name, manifest.type);
+                showToast("Extension installed and activated!");
+              } catch (err) {
+                console.warn("Hot-load failed:", err);
+                showToast("Extension installed — restart to apply");
+              }
+            } else {
+              pluginsNeedRestart = true;
+              showToast("Extension removed — restart to apply");
+            }
             refreshSettingsExtensions();
           }
         } catch (err) {
@@ -4766,105 +4782,105 @@
     // ============================================================
     // PLUGIN SYSTEM
     // ============================================================
+    const _loadedPlugins = new Set(); // track already-loaded plugin names
+
+    async function activateSinglePlugin(pluginName, type) {
+      if (_loadedPlugins.has(pluginName)) return;
+      const result = await window.terminator.getPluginCode(pluginName);
+      if (result.error) { console.warn(`Plugin ${pluginName}: ${result.error}`); return; }
+
+      const pluginExports = {};
+      const pluginFn = new Function("exports", result.code);
+      pluginFn(pluginExports);
+
+      _loadedPlugins.add(pluginName);
+      await _applyPlugin(pluginExports, pluginName, type);
+      console.log(`Plugin loaded: ${pluginName} (${type})`);
+    }
+
+    async function _applyPlugin(pluginExports, pluginName, type) {
+      if (type === "theme" && pluginExports.theme) {
+        const t = pluginExports.theme;
+        themes.push({
+          name: t.name || pluginName,
+          body: t.background || "#1e1e1e",
+          ui: t.ui || t.background || "#2d2d2d",
+          border: t.border || t.background || "#1a1a1a",
+          term: {
+            background: t.background || "#1e1e1e",
+            foreground: t.foreground || "#cccccc",
+            cursor: t.cursor || t.foreground || "#cccccc",
+            cursorAccent: t.background || "#1e1e1e",
+            selectionBackground: t.selection || "rgba(255,255,255,0.2)",
+            selectionForeground: "#ffffff",
+            black: t.black || "#000000", red: t.red || "#c91b00",
+            green: t.green || "#00c200", yellow: t.yellow || "#c7c400",
+            blue: t.blue || "#0225c7", magenta: t.magenta || "#c930c7",
+            cyan: t.cyan || "#00c5c7", white: t.white || "#c7c7c7",
+            brightBlack: t.brightBlack || "#686868", brightRed: t.brightRed || "#ff6e67",
+            brightGreen: t.brightGreen || "#5ffa68", brightYellow: t.brightYellow || "#fffc67",
+            brightBlue: t.brightBlue || "#6871ff", brightMagenta: t.brightMagenta || "#ff76ff",
+            brightCyan: t.brightCyan || "#60fdff", brightWhite: t.brightWhite || "#ffffff",
+          },
+        });
+        const themeIdx = themes.length - 1;
+        commands.push({
+          label: `Theme: ${t.name || pluginName}`,
+          action: () => applyTheme(themeIdx),
+          category: "Appearance",
+        });
+      }
+
+      if (type === "command" && pluginExports.name && pluginExports.execute) {
+        const cmdCtx = {
+          get activePane() { return activeId ? { id: activeId, ...panes.get(activeId) } : null; },
+          get allPanes() { return [...panes.entries()].map(([id, p]) => ({ id, ...p })); },
+          sendInput: (id, data) => window.terminator.sendInput(id, data),
+          createTerminal: (cwd) => addTerminal(cwd),
+          notify: (msg) => showToast(msg),
+        };
+        commands.push({
+          label: pluginExports.name,
+          shortcut: pluginExports.shortcut || undefined,
+          action: () => pluginExports.execute(cmdCtx),
+          category: "Plugins",
+        });
+      }
+
+      if (type === "statusbar" && pluginExports.name && pluginExports.render) {
+        const sbCtx = {
+          get activePane() { return activeId ? { id: activeId, ...panes.get(activeId) } : null; },
+          get allPanes() { return [...panes.entries()].map(([id, p]) => ({ id, ...p })); },
+        };
+        const widget = document.createElement("span");
+        widget.className = "plugin-statusbar-widget";
+        widget.style.cssText = "margin-left:8px;font-family:'SF Mono',monospace;font-size:11px;opacity:0.8;";
+        widget.title = pluginExports.name;
+        try { widget.innerHTML = pluginExports.render(sbCtx); } catch {}
+        const bottombar = document.querySelector(".bottombar");
+        const paneCountEl2 = document.getElementById("pane-count");
+        if (bottombar && paneCountEl2) bottombar.insertBefore(widget, paneCountEl2);
+        setInterval(() => {
+          try { widget.innerHTML = pluginExports.render(sbCtx); } catch {}
+        }, 5000);
+      }
+
+      if (type === "extension" && pluginExports.activate) {
+        try {
+          pluginExports.activate(window._termExt);
+        } catch (err) {
+          console.error(`Extension ${pluginName} activation error:`, err);
+        }
+      }
+    }
+
     async function loadPlugins() {
       try {
         const plugins = await window.terminator.loadPlugins();
         if (!Array.isArray(plugins) || plugins.length === 0) return;
-
         for (const plugin of plugins) {
           try {
-            const result = await window.terminator.getPluginCode(plugin.manifest.name);
-            if (result.error) { console.warn(`Plugin ${plugin.manifest.name}: ${result.error}`); continue; }
-
-            // Evaluate plugin code in a sandboxed scope
-            const pluginExports = {};
-            const pluginFn = new Function("exports", result.code);
-            pluginFn(pluginExports);
-
-            const type = plugin.manifest.type;
-
-            if (type === "theme" && pluginExports.theme) {
-              const t = pluginExports.theme;
-              themes.push({
-                name: t.name || plugin.manifest.name,
-                body: t.background || "#1e1e1e",
-                ui: t.ui || t.background || "#2d2d2d",
-                border: t.border || t.background || "#1a1a1a",
-                term: {
-                  background: t.background || "#1e1e1e",
-                  foreground: t.foreground || "#cccccc",
-                  cursor: t.cursor || t.foreground || "#cccccc",
-                  cursorAccent: t.background || "#1e1e1e",
-                  selectionBackground: t.selection || "rgba(255,255,255,0.2)",
-                  selectionForeground: "#ffffff",
-                  black: t.black || "#000000", red: t.red || "#c91b00",
-                  green: t.green || "#00c200", yellow: t.yellow || "#c7c400",
-                  blue: t.blue || "#0225c7", magenta: t.magenta || "#c930c7",
-                  cyan: t.cyan || "#00c5c7", white: t.white || "#c7c7c7",
-                  brightBlack: t.brightBlack || "#686868", brightRed: t.brightRed || "#ff6e67",
-                  brightGreen: t.brightGreen || "#5ffa68", brightYellow: t.brightYellow || "#fffc67",
-                  brightBlue: t.brightBlue || "#6871ff", brightMagenta: t.brightMagenta || "#ff76ff",
-                  brightCyan: t.brightCyan || "#60fdff", brightWhite: t.brightWhite || "#ffffff",
-                },
-              });
-              // Add to command palette
-              const themeIdx = themes.length - 1;
-              commands.push({
-                label: `Theme: ${t.name || plugin.manifest.name}`,
-                action: () => applyTheme(themeIdx),
-                category: "Appearance",
-              });
-            }
-
-            if (type === "command" && pluginExports.name && pluginExports.execute) {
-              const ctx = {
-                get activePane() { return activeId ? { id: activeId, ...panes.get(activeId) } : null; },
-                get allPanes() { return [...panes.entries()].map(([id, p]) => ({ id, ...p })); },
-                sendInput: (id, data) => window.terminator.sendInput(id, data),
-                createTerminal: (cwd) => addTerminal(cwd),
-                notify: (msg) => showToast(msg),
-              };
-              commands.push({
-                label: pluginExports.name,
-                shortcut: pluginExports.shortcut || undefined,
-                action: () => pluginExports.execute(ctx),
-                category: "Plugins",
-              });
-            }
-
-            if (type === "statusbar" && pluginExports.name && pluginExports.render) {
-              const ctx = {
-                get activePane() { return activeId ? { id: activeId, ...panes.get(activeId) } : null; },
-                get allPanes() { return [...panes.entries()].map(([id, p]) => ({ id, ...p })); },
-              };
-              const widget = document.createElement("span");
-              widget.className = "plugin-statusbar-widget";
-              widget.style.cssText = "margin-left:8px;font-family:'SF Mono',monospace;font-size:11px;opacity:0.8;";
-              widget.title = pluginExports.name;
-              try { widget.innerHTML = pluginExports.render(ctx); } catch {}
-              const bottombar = document.querySelector(".bottombar");
-              const paneCountEl2 = document.getElementById("pane-count");
-              if (bottombar && paneCountEl2) bottombar.insertBefore(widget, paneCountEl2);
-              // Refresh statusbar plugin every 5 seconds
-              setInterval(() => {
-                try { widget.innerHTML = pluginExports.render(ctx); } catch {}
-              }, 5000);
-            }
-
-            if (type === "extension" && pluginExports.activate) {
-              const extCtx = {
-                ...window._termExt,
-                on: window._termExt.on.bind(window._termExt),
-                off: window._termExt.off.bind(window._termExt),
-              };
-              try {
-                pluginExports.activate(extCtx);
-              } catch (err) {
-                console.warn(`Extension ${plugin.manifest.name} activation error:`, err);
-              }
-            }
-
-            console.log(`Plugin loaded: ${plugin.manifest.name} (${type})`);
+            await activateSinglePlugin(plugin.manifest.name, plugin.manifest.type);
           } catch (err) {
             console.warn(`Failed to load plugin ${plugin.manifest.name}:`, err);
           }
