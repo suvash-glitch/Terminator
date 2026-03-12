@@ -277,6 +277,44 @@ exports.activate = function (ctx) {
     "}",
 
     /* Code formatting in messages */
+    ".ai-code-block {",
+    "  position: relative;",
+    "  margin: 6px 0;",
+    "}",
+    ".ai-code-block pre {",
+    "  background: #111;",
+    "  padding: 28px 10px 8px 10px;",
+    "  border-radius: 6px;",
+    "  overflow-x: auto;",
+    "  font-size: 12px;",
+    "  margin: 0;",
+    "}",
+    ".ai-code-run-btn {",
+    "  position: absolute;",
+    "  top: 4px;",
+    "  right: 4px;",
+    "  background: rgba(0,240,255,0.15);",
+    "  color: #00f0ff;",
+    "  border: 1px solid rgba(0,240,255,0.3);",
+    "  border-radius: 4px;",
+    "  padding: 2px 8px;",
+    "  font-size: 10px;",
+    "  font-weight: 600;",
+    "  cursor: pointer;",
+    "  display: flex;",
+    "  align-items: center;",
+    "  gap: 4px;",
+    "  line-height: 1;",
+    "  transition: background 0.15s;",
+    "}",
+    ".ai-code-run-btn:hover {",
+    "  background: rgba(0,240,255,0.3);",
+    "}",
+    ".ai-code-run-btn.ran {",
+    "  background: rgba(50,205,50,0.15);",
+    "  color: #32cd32;",
+    "  border-color: rgba(50,205,50,0.3);",
+    "}",
     ".ai-chat-msg pre {",
     "  background: #111;",
     "  padding: 8px 10px;",
@@ -513,6 +551,8 @@ exports.activate = function (ctx) {
    * @param {string} text
    * @returns {string}
    */
+  var _codeBlockId = 0;
+
   function formatAIMessage(text) {
     // Escape HTML
     var escaped = text
@@ -520,9 +560,16 @@ exports.activate = function (ctx) {
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
-    // Code blocks: ```...```
+    // Code blocks: ```...``` — wrap with run button
     escaped = escaped.replace(/```(\w*)\n?([\s\S]*?)```/g, function (_, lang, code) {
-      return '<pre><code>' + code.trim() + '</code></pre>';
+      var id = "ai-code-" + (++_codeBlockId);
+      var trimmed = code.trim();
+      return '<div class="ai-code-block">' +
+        '<button class="ai-code-run-btn" data-code-id="' + id + '" title="Run in terminal">' +
+        '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21"/></svg> Run' +
+        '</button>' +
+        '<pre><code id="' + id + '">' + trimmed + '</code></pre>' +
+        '</div>';
     });
 
     // Inline code: `...`
@@ -701,6 +748,32 @@ exports.activate = function (ctx) {
       if (aiChatMessages) aiChatMessages.innerHTML = "";
       showAIChatWelcome();
       if (aiChatInput) aiChatInput.focus();
+    });
+  }
+
+  // Run code button — event delegation on the chat messages container
+  if (aiChatMessages) {
+    aiChatMessages.addEventListener("click", function (e) {
+      var btn = e.target.closest(".ai-code-run-btn");
+      if (!btn) return;
+      var codeId = btn.getAttribute("data-code-id");
+      var codeEl = document.getElementById(codeId);
+      if (!codeEl) return;
+      var code = codeEl.textContent.trim();
+      if (!code) return;
+
+      var paneId = ctx.activeId;
+      if (!paneId) { ctx.showToast("No active terminal pane"); return; }
+
+      // Send each line as input, with Enter after each
+      var lines = code.split("\n");
+      for (var i = 0; i < lines.length; i++) {
+        ctx.sendInput(paneId, lines[i] + "\n");
+      }
+
+      // Visual feedback
+      btn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Sent';
+      btn.classList.add("ran");
     });
   }
 
