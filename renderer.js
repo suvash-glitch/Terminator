@@ -1,6 +1,7 @@
     // ============================================================
     // STATE
     // ============================================================
+    function _dbg(msg) { try { window.terminator.debugLog(new Date().toISOString() + " " + msg); } catch {} console.log(msg); }
     const grid = document.getElementById("grid");
     const paneCountEl = document.getElementById("pane-count");
     const toastEl = document.getElementById("toast");
@@ -170,17 +171,49 @@
     // THEME
     // ============================================================
     function applyTheme(idx) {
+      if (typeof idx === "string") {
+        const found = themes.findIndex(t => t.name === idx);
+        idx = found >= 0 ? found : 0;
+      }
       if (idx < 0 || idx >= themes.length) idx = 0;
       currentThemeIdx = idx;
       const t = themes[idx];
+      _dbg(`[theme] applyTheme idx=${idx} name=${t.name} bg=${t.body} ui=${t.ui} themes.length=${themes.length}`);
+
+      // Set CSS custom properties
+      const root = document.documentElement;
+      root.style.setProperty("--t-bg", t.body);
+      root.style.setProperty("--t-fg", t.term.foreground || "#cccccc");
+      root.style.setProperty("--t-ui", t.ui);
+      root.style.setProperty("--t-border", t.border);
+      root.style.setProperty("--t-accent", t.term.cursor || "#00f0ff");
+
+      // Also apply inline styles for maximum reliability
       document.body.style.background = t.body;
-      document.querySelectorAll(".titlebar, .bottombar, .pane-header").forEach(el => el.style.background = t.ui);
-      document.querySelectorAll(".titlebar, .bottombar").forEach(el => el.style.borderColor = t.border);
+      document.body.style.color = t.term.foreground || "#cccccc";
+      document.querySelectorAll(".titlebar, .bottombar").forEach(el => {
+        el.style.background = t.ui;
+        el.style.borderColor = t.border;
+      });
+      document.querySelectorAll(".pane-header").forEach(el => {
+        el.style.background = t.border;
+        el.style.borderColor = t.border;
+      });
+      document.querySelectorAll(".pane.active .pane-header").forEach(el => {
+        el.style.background = t.ui;
+      });
+      document.querySelectorAll(".pane").forEach(el => { el.style.background = t.body; });
       const tabbar = document.getElementById("tabbar");
       if (tabbar) { tabbar.style.background = t.ui; tabbar.style.borderColor = t.border; }
+      document.querySelectorAll(".tab.active").forEach(el => { el.style.background = t.body; });
+      document.querySelectorAll(".side-panel").forEach(el => {
+        el.style.background = t.ui; el.style.borderColor = t.border;
+      });
+      document.querySelectorAll(".resize-handle-h, .resize-handle-v").forEach(el => { el.style.background = t.border; });
+      // Terminal themes
       for (const [, pane] of panes) pane.term.options.theme = t.term;
       showToast(`Theme: ${t.name}`);
-      window.terminator.saveConfig({ theme: idx, fontSize: currentFontSize });
+      window.terminator.saveConfig({ theme: idx, fontSize: currentFontSize, themeName: t.name });
     }
 
     function cycleTheme() { applyTheme((currentThemeIdx + 1) % themes.length); }
@@ -3228,6 +3261,7 @@
     const plCanvas = document.getElementById("pipeline-canvas");
     const plSvg = document.getElementById("pipeline-svg");
     const plWrap = document.getElementById("pipeline-canvas-wrap");
+    _dbg("[pipeline-init] plPanel=" + !!plPanel + " plCanvas=" + !!plCanvas + " plSvg=" + !!plSvg + " plWrap=" + !!plWrap);
     let pipelines = [];
     let plNodes = []; // {id, command, status, output, x, y}
     let plEdges = []; // {from, to}
@@ -3241,9 +3275,16 @@
     let plDragNode = null, plDragOffX = 0, plDragOffY = 0;
 
     function openPipelinePanel() {
+      _dbg("[pipeline] opening panel, plPanel=" + !!plPanel + " plCanvas=" + !!plCanvas + " plWrap=" + !!plWrap);
       plPanel.classList.add("visible");
+      _dbg("[pipeline] panel visible=" + plPanel.classList.contains("visible") + " display=" + getComputedStyle(plPanel).display);
       plRender();
       if (plNodes.length === 0) plCenterView();
+      // Debug: check all toolbar buttons
+      ["pipeline-add-btn","pipeline-run","pipeline-save","pipeline-load","pipeline-clear","pipeline-close"].forEach(id => {
+        const el = document.getElementById(id);
+        _dbg("[pipeline] btn " + id + " exists=" + !!el + " visible=" + (el ? getComputedStyle(el).display !== "none" : "N/A"));
+      });
     }
 
     function plCenterView() { plPanX = (plWrap.clientWidth / 2) - 120; plPanY = 60; plZoom = 1; plApplyTransform(); }
@@ -3476,22 +3517,51 @@
       return order;
     }
 
+    // --- Inline prompt for pipeline ---
+    function plPrompt(label, defaultVal) {
+      return new Promise((resolve) => {
+        let existing = plWrap.querySelector(".pl-load-modal");
+        if (existing) existing.remove();
+        const modal = document.createElement("div");
+        modal.className = "pl-load-modal";
+        modal.innerHTML = `<h4>${escapeHtml(label)}</h4>
+          <input type="text" id="pl-prompt-input" value="${escapeHtml(defaultVal || "")}" style="width:100%;padding:8px 10px;border-radius:6px;border:1px solid #444;background:#111;color:#eee;font-size:13px;font-family:'SF Mono',monospace;outline:none;margin-bottom:10px" />
+          <div style="display:flex;gap:6px;justify-content:flex-end">
+            <button class="pl-tb-btn" id="pl-prompt-cancel">Cancel</button>
+            <button class="pl-tb-btn pl-tb-run" id="pl-prompt-ok" style="background:rgba(0,240,255,0.15);border-color:rgba(0,240,255,0.3);color:#00f0ff">OK</button>
+          </div>`;
+        plWrap.appendChild(modal);
+        const input = document.getElementById("pl-prompt-input");
+        input.focus();
+        input.select();
+        const cleanup = (val) => { modal.remove(); resolve(val); };
+        document.getElementById("pl-prompt-ok").addEventListener("click", () => cleanup(input.value.trim()));
+        document.getElementById("pl-prompt-cancel").addEventListener("click", () => cleanup(null));
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") cleanup(input.value.trim());
+          if (e.key === "Escape") cleanup(null);
+        });
+      });
+    }
+
     // --- Add step ---
-    document.getElementById("pipeline-add-btn").addEventListener("click", () => {
-      const cmd = prompt("Command:");
-      if (!cmd || !cmd.trim()) return;
+    document.getElementById("pipeline-add-btn").addEventListener("click", async () => {
+      _dbg("[pipeline] Add Step clicked");
+      const cmd = await plPrompt("Command:", "");
+      _dbg("[pipeline] prompt returned: " + JSON.stringify(cmd));
+      if (!cmd) return;
       const lastNode = plNodes.length > 0 ? plNodes[plNodes.length - 1] : null;
       const x = lastNode ? lastNode.x : 0;
       const y = lastNode ? lastNode.y + 100 : 0;
-      const newNode = { id: plNextId++, command: cmd.trim(), status: "pending", output: "", x, y };
+      const newNode = { id: plNextId++, command: cmd, status: "pending", output: "", x, y };
       plNodes.push(newNode);
-      // Auto-connect to last node
       if (lastNode) plEdges.push({ from: lastNode.id, to: newNode.id });
       plRender();
     });
 
     // --- Run pipeline ---
     document.getElementById("pipeline-run").addEventListener("click", async () => {
+      _dbg("[pipeline] Run clicked, nodes=" + plNodes.length);
       if (plRunning) return;
       plRunning = true;
       document.getElementById("pipeline-run").style.display = "none";
@@ -3531,7 +3601,7 @@
 
     // --- Save ---
     document.getElementById("pipeline-save").addEventListener("click", async () => {
-      const name = prompt("Pipeline name:", plName || "Untitled");
+      const name = await plPrompt("Pipeline name:", plName || "Untitled");
       if (!name) return;
       plName = name;
       const toSave = {
@@ -3613,9 +3683,9 @@
 
     // --- Clear ---
     document.getElementById("pipeline-clear").addEventListener("click", () => {
-      if (plNodes.length > 0 && !confirm("Clear all steps?")) return;
       plNodes = []; plEdges = []; plSelectedId = null; plNextId = 1; plName = "Untitled";
       plRender();
+      showToast("Pipeline cleared");
     });
 
     // --- Close ---
@@ -3625,8 +3695,8 @@
     });
 
     // --- Title rename ---
-    document.getElementById("pipeline-title").addEventListener("click", () => {
-      const name = prompt("Pipeline name:", plName);
+    document.getElementById("pipeline-title").addEventListener("click", async () => {
+      const name = await plPrompt("Pipeline name:", plName);
       if (name) { plName = name; plRender(); }
     });
 
@@ -3646,6 +3716,7 @@
       if (e.target === plCanvas) { plSelectedId = null; plRender(); }
     });
 
+    _dbg("[pipeline-init] all event listeners attached OK");
     async function loadPipelinesData() {
       pipelines = await window.terminator.loadPipelines() || [];
     }
@@ -4684,12 +4755,10 @@
       // Load extensions list into settings
       refreshSettingsExtensions();
 
-      // Switch to requested tab
-      if (tabName) switchSettingsTab(tabName);
-
-      // Clear search
+      // Clear search and switch to requested tab (default to appearance)
       document.getElementById("settings-search").value = "";
       clearSettingsSearch();
+      switchSettingsTab(tabName || "appearance");
     }
 
     function closeSettings() {
@@ -4711,7 +4780,7 @@
         row.classList.remove("search-hidden");
       });
       document.querySelectorAll(".settings-tab").forEach(tab => {
-        tab.classList.remove("search-active");
+        tab.classList.remove("search-active", "active");
       });
     }
 
@@ -5011,24 +5080,33 @@
     const _loadedPlugins = new Set(); // track already-loaded plugin names
 
     async function activateSinglePlugin(pluginName, type) {
-      if (_loadedPlugins.has(pluginName)) { console.log(`[plugins] skip ${pluginName} (already loaded)`); return; }
-      console.log(`[plugins] loading ${pluginName} (${type})...`);
+      if (_loadedPlugins.has(pluginName)) { _dbg(`[plugins] skip ${pluginName} (already loaded)`); return; }
+      _dbg(`[plugins] loading ${pluginName} (${type})...`);
       const result = await window.terminator.getPluginCode(pluginName);
-      if (result.error) { console.warn(`[plugins] ${pluginName}: ${result.error}`); return; }
+      if (result.error) { _dbg(`[plugins] ${pluginName} ERROR: ${result.error}`); showToast(`Plugin error: ${pluginName} — ${result.error}`, "error"); return; }
+      _dbg(`[plugins] ${pluginName} code length: ${result.code ? result.code.length : 'null'}`);
 
       const pluginExports = {};
-      const pluginFn = new Function("exports", result.code);
-      pluginFn(pluginExports);
-      console.log(`[plugins] ${pluginName} exports:`, Object.keys(pluginExports));
+      try {
+        const pluginFn = new Function("exports", result.code);
+        pluginFn(pluginExports);
+      } catch (evalErr) {
+        _dbg(`[plugins] ${pluginName} EVAL ERROR: ${evalErr.message}`);
+        showToast(`Plugin eval error: ${pluginName} — ${evalErr.message}`, "error");
+        return;
+      }
+      _dbg(`[plugins] ${pluginName} exports: [${Object.keys(pluginExports).join(", ")}]`);
 
       _loadedPlugins.add(pluginName);
       await _applyPlugin(pluginExports, pluginName, type);
-      console.log(`[plugins] ${pluginName} activated successfully`);
+      _dbg(`[plugins] ${pluginName} activated OK`);
     }
 
     async function _applyPlugin(pluginExports, pluginName, type) {
+      _dbg(`[plugins] _applyPlugin ${pluginName} type=${type} hasTheme=${!!pluginExports.theme} hasActivate=${!!pluginExports.activate}`);
       if (type === "theme" && pluginExports.theme) {
         const t = pluginExports.theme;
+        _dbg(`[plugins] adding theme "${t.name}" bg=${t.background}`);
         themes.push({
           name: t.name || pluginName,
           body: t.background || "#1e1e1e",
@@ -5103,10 +5181,10 @@
     }
 
     async function loadPlugins() {
-      console.log("[plugins] loadPlugins() called");
+      _dbg("[plugins] loadPlugins() called");
       try {
         const plugins = await window.terminator.loadPlugins();
-        console.log("[plugins] found plugins:", JSON.stringify(plugins?.map(p => p.manifest?.name)));
+        _dbg("[plugins] found: " + JSON.stringify(plugins?.map(p => p.manifest?.name + "(" + p.manifest?.type + ")")));
         if (!Array.isArray(plugins) || plugins.length === 0) { console.log("[plugins] no plugins to load"); return; }
         for (const plugin of plugins) {
           try {
@@ -5124,6 +5202,7 @@
     // INIT
     // ============================================================
     (async () => {
+      let _savedThemeName = null; // preserve across applyTheme overwrites
       try {
         const [config, savedSnippets, savedProfiles, savedSession, savedSettings] = await Promise.all([
           window.terminator.loadConfig(),
@@ -5153,6 +5232,8 @@
         if (config) {
           if (config.theme >= 0 && config.theme < themes.length) currentThemeIdx = config.theme;
           if (config.fontSize) currentFontSize = config.fontSize;
+          // Remember the saved theme name BEFORE applyTheme can overwrite it
+          if (config.themeName) _savedThemeName = config.themeName;
         }
         // Settings override config
         if (settings.theme >= 0 && settings.theme < themes.length) currentThemeIdx = settings.theme;
@@ -5236,7 +5317,30 @@
         // Load plugins
         console.log("[init] about to load plugins...");
         await loadPlugins();
-        console.log("[init] plugins loaded");
+        console.log("[init] plugins loaded, themes count:", themes.length);
+
+        // Refresh welcome theme dropdown with plugin themes
+        const welcomeThemeSelect = document.getElementById("welcome-theme-select");
+        if (welcomeThemeSelect) {
+          welcomeThemeSelect.innerHTML = "";
+          themes.forEach((t, i) => {
+            const opt = document.createElement("option");
+            opt.value = i; opt.textContent = t.name;
+            if (i === currentThemeIdx) opt.selected = true;
+            welcomeThemeSelect.appendChild(opt);
+          });
+        }
+
+        // Re-apply saved theme by name (plugins may have added it after init)
+        if (_savedThemeName) {
+          const savedIdx = themes.findIndex(t => t.name === _savedThemeName);
+          if (savedIdx >= 0 && savedIdx !== currentThemeIdx) {
+            _dbg("[init] restoring theme by name: " + _savedThemeName + " idx:" + savedIdx);
+            applyTheme(savedIdx);
+          } else {
+            _dbg("[init] theme '" + _savedThemeName + "' not found in " + themes.length + " themes");
+          }
+        }
 
         // Initialize IDE sidebar if enabled
         if (ideMode) setTimeout(() => updateIdeSidebar(), 200);

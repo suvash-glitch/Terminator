@@ -99,17 +99,26 @@ function createWindow() {
   }
   mainWindow = new BrowserWindow(windowOpts);
 
-  mainWindow.loadFile("index.html");
-
+  // Set CSP BEFORE loading any content
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        'Content-Security-Policy': ["default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'"]
+        'Content-Security-Policy': ["default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src *"]
       }
     });
   });
+
+  mainWindow.loadFile("index.html");
   mainWindow.setFullScreen(true);
+
+  // Pipe renderer console to debug log file
+  const _debugLogPath = path.join(os.homedir(), ".terminator", "debug.log");
+  try { fs.writeFileSync(_debugLogPath, "=== APP START ===\n"); } catch {}
+  mainWindow.webContents.on("console-message", (_, level, message) => {
+    const prefix = ["LOG", "WARN", "ERR"][level] || "LOG";
+    try { fs.appendFileSync(_debugLogPath, `[${prefix}] ${message}\n`); } catch {}
+  });
 
   mainWindow.on("closed", () => {
     for (const [, p] of ptys) p.kill();
@@ -667,6 +676,11 @@ ipcMain.on("save-session", (_, data) => {
   } catch (e) { log('error', "Session serialize error:", e); }
 });
 ipcMain.handle("load-session", () => readJSON(SESSION_PATH, null));
+
+// Debug log from renderer
+ipcMain.on("debug-log", (_, msg) => {
+  fs.appendFileSync(path.join(os.homedir(), ".terminator", "debug.log"), msg + "\n");
+});
 
 // Config
 ipcMain.on("save-config", (_, config) => writeJSON(CONFIG_PATH, config));
