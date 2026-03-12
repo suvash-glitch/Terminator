@@ -765,10 +765,24 @@ exports.activate = function (ctx) {
       var paneId = ctx.activeId;
       if (!paneId) { ctx.showToast("No active terminal pane"); return; }
 
-      // Send each line as input, with Enter after each
-      var lines = code.split("\n");
-      for (var i = 0; i < lines.length; i++) {
-        ctx.sendInput(paneId, lines[i] + "\n");
+      // Filter out comment-only and blank lines, keep actual commands
+      var lines = code.split("\n").filter(function (l) {
+        var t = l.trim();
+        return t && !t.match(/^#\s/);
+      });
+
+      if (lines.length === 0) { ctx.showToast("No runnable commands"); return; }
+
+      if (lines.length === 1) {
+        // Single command — send immediately
+        ctx.sendInput(paneId, lines[0] + "\n");
+      } else {
+        // Multiple commands — send with delay so shell processes each
+        (function sendNext(idx) {
+          if (idx >= lines.length) return;
+          ctx.sendInput(paneId, lines[idx] + "\n");
+          setTimeout(function () { sendNext(idx + 1); }, 300);
+        })(0);
       }
 
       // Visual feedback
