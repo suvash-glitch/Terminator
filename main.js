@@ -1201,7 +1201,7 @@ ipcMain.handle("get-pane-stats", async (_, id) => {
 // Pipeline Runner
 const PIPELINES_PATH = path.join(app.getPath("userData"), "pipelines.json");
 const CMD_BOOKMARKS_PATH = path.join(app.getPath("userData"), "cmd-bookmarks.json");
-ipcMain.on("save-pipelines", (_, data) => writeJSON(PIPELINES_PATH, data));
+ipcMain.handle("save-pipelines", (_, data) => { writeJSON(PIPELINES_PATH, data); return { ok: true }; });
 ipcMain.handle("load-pipelines", () => readJSON(PIPELINES_PATH, []));
 ipcMain.handle("exec-pipeline-step", async (_, { command, cwd }) => {
   if (typeof command !== "string" || command.trim().length === 0) {

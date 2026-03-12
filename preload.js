@@ -67,7 +67,7 @@ contextBridge.exposeInMainWorld("terminator", {
   syncPush: (params) => ipcRenderer.invoke("sync-push", params),
   syncServerStart: () => ipcRenderer.invoke("sync-server-start"),
   onSyncReceived: (callback) => ipcRenderer.on("sync-received", (_, hostname) => callback(hostname)),
-  savePipelines: (data) => ipcRenderer.send("save-pipelines", data),
+  savePipelines: (data) => ipcRenderer.invoke("save-pipelines", data),
   loadPipelines: () => ipcRenderer.invoke("load-pipelines"),
   execPipelineStep: (params) => ipcRenderer.invoke("exec-pipeline-step", params),
   saveCmdBookmarks: (data) => ipcRenderer.send("save-cmd-bookmarks", data),

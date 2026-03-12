@@ -3222,183 +3222,428 @@
 
 
     // ============================================================
-    // PIPELINE RUNNER (agent-ad954acf)
+    // PIPELINE VISUAL EDITOR (Mindmap)
     // ============================================================
-    const pipelinePanel = document.getElementById("pipeline-panel");
-    const pipelineStepsEl = document.getElementById("pipeline-steps");
+    const plPanel = document.getElementById("pipeline-panel");
+    const plCanvas = document.getElementById("pipeline-canvas");
+    const plSvg = document.getElementById("pipeline-svg");
+    const plWrap = document.getElementById("pipeline-canvas-wrap");
     let pipelines = [];
-    let activePipeline = { name: "Untitled", steps: [] };
-    let pipelineRunning = false;
+    let plNodes = []; // {id, command, status, output, x, y}
+    let plEdges = []; // {from, to}
+    let plName = "Untitled";
+    let plRunning = false;
+    let plSelectedId = null;
+    let plNextId = 1;
+    // Pan & zoom state
+    let plPanX = 0, plPanY = 0, plZoom = 1;
+    let plIsPanning = false, plPanStartX = 0, plPanStartY = 0;
+    let plDragNode = null, plDragOffX = 0, plDragOffY = 0;
 
     function openPipelinePanel() {
-      pipelinePanel.classList.add("visible");
-      renderPipelineSteps();
+      plPanel.classList.add("visible");
+      plRender();
+      if (plNodes.length === 0) plCenterView();
     }
 
-    document.getElementById("pipeline-close").addEventListener("click", () => {
-      pipelinePanel.classList.remove("visible");
-      if (activeId && panes.has(activeId)) panes.get(activeId).term.focus();
+    function plCenterView() { plPanX = (plWrap.clientWidth / 2) - 120; plPanY = 60; plZoom = 1; plApplyTransform(); }
+
+    function plApplyTransform() {
+      plCanvas.style.transform = `translate(${plPanX}px, ${plPanY}px) scale(${plZoom})`;
+      plCanvas.style.transformOrigin = "0 0";
+      plSvg.style.transform = `translate(${plPanX}px, ${plPanY}px) scale(${plZoom})`;
+      plSvg.style.transformOrigin = "0 0";
+      const label = document.getElementById("pipeline-zoom-label");
+      if (label) label.textContent = Math.round(plZoom * 100) + "%";
+    }
+
+    // --- Pan ---
+    plWrap.addEventListener("pointerdown", (e) => {
+      if (e.target === plWrap || e.target === plCanvas) {
+        plIsPanning = true; plPanStartX = e.clientX - plPanX; plPanStartY = e.clientY - plPanY;
+        plWrap.classList.add("grabbing"); plWrap.setPointerCapture(e.pointerId);
+      }
+    });
+    plWrap.addEventListener("pointermove", (e) => {
+      if (plIsPanning) { plPanX = e.clientX - plPanStartX; plPanY = e.clientY - plPanStartY; plApplyTransform(); }
+      if (plDragNode) {
+        const x = (e.clientX - plWrap.getBoundingClientRect().left - plPanX) / plZoom - plDragOffX;
+        const y = (e.clientY - plWrap.getBoundingClientRect().top - plPanY) / plZoom - plDragOffY;
+        plDragNode.x = Math.round(x / 12) * 12; plDragNode.y = Math.round(y / 12) * 12;
+        plRender();
+      }
+    });
+    plWrap.addEventListener("pointerup", () => {
+      plIsPanning = false; plDragNode = null; plWrap.classList.remove("grabbing");
     });
 
-    function renderPipelineSteps() {
-      pipelineStepsEl.innerHTML = "";
-      if (activePipeline.steps.length === 0) {
-        pipelineStepsEl.innerHTML = '<div style="padding:24px;text-align:center;color:#666;font-size:12px">No steps yet. Add a command below.</div>';
-        return;
+    // --- Zoom ---
+    plWrap.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const rect = plWrap.getBoundingClientRect();
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      const oldZoom = plZoom;
+      plZoom = Math.min(3, Math.max(0.2, plZoom * (e.deltaY < 0 ? 1.08 : 0.92)));
+      plPanX = mx - (mx - plPanX) * (plZoom / oldZoom);
+      plPanY = my - (my - plPanY) * (plZoom / oldZoom);
+      plApplyTransform();
+    }, { passive: false });
+
+    // --- Render ---
+    function plRender() {
+      // Render edges as SVG
+      let svgHtml = '<defs><marker id="pl-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="pl-edge-arrow"/></marker>';
+      svgHtml += '<marker id="pl-arrow-pass" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="pl-edge-arrow passed"/></marker>';
+      svgHtml += '<marker id="pl-arrow-run" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="pl-edge-arrow running"/></marker>';
+      svgHtml += '<marker id="pl-arrow-fail" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" class="pl-edge-arrow failed"/></marker>';
+      svgHtml += '</defs>';
+
+      for (const edge of plEdges) {
+        const fromN = plNodes.find(n => n.id === edge.from);
+        const toN = plNodes.find(n => n.id === edge.to);
+        if (!fromN || !toN) continue;
+        const fromEl = document.getElementById("pl-node-" + fromN.id);
+        const toEl = document.getElementById("pl-node-" + toN.id);
+        const fw = fromEl ? fromEl.offsetWidth : 200, fh = fromEl ? fromEl.offsetHeight : 60;
+        const tw = toEl ? toEl.offsetWidth : 200;
+        const x1 = fromN.x + fw / 2, y1 = fromN.y + fh;
+        const x2 = toN.x + tw / 2, y2 = toN.y;
+        const cy1 = y1 + Math.abs(y2 - y1) * 0.4, cy2 = y2 - Math.abs(y2 - y1) * 0.4;
+        const cls = toN.status === "passed" ? "passed" : toN.status === "running" ? "running" : toN.status === "failed" ? "failed" : "";
+        const marker = cls === "passed" ? "pl-arrow-pass" : cls === "running" ? "pl-arrow-run" : cls === "failed" ? "pl-arrow-fail" : "pl-arrow";
+        svgHtml += `<path class="pl-edge ${cls}" d="M${x1},${y1} C${x1},${cy1} ${x2},${cy2} ${x2},${y2}" marker-end="url(#${marker})"/>`;
       }
-      activePipeline.steps.forEach((step, i) => {
-        const stepEl = document.createElement("div");
-        stepEl.className = "pipeline-step";
-        stepEl.draggable = true;
-        stepEl.dataset.index = i;
+      plSvg.innerHTML = svgHtml;
 
-        const isLast = i === activePipeline.steps.length - 1;
-        const lineClass = step.status === "passed" ? " passed" : "";
-
-        stepEl.innerHTML = `
-          <div class="pipeline-step-connector">
-            <div class="pipeline-step-dot ${step.status}"></div>
-            ${!isLast ? `<div class="pipeline-step-line${lineClass}"></div>` : ""}
-          </div>
-          <div class="pipeline-step-content">
-            <div class="pipeline-step-cmd">${escapeHtml(step.command)}</div>
-            <div class="pipeline-step-status">${step.status === "running" ? "Running..." : step.status === "passed" ? "Passed" : step.status === "failed" ? "Failed" : step.status === "skipped" ? "Skipped" : "Pending"}</div>
-            <div class="pipeline-step-output ${step.output ? "visible" : ""}" id="pipeline-output-${i}">${escapeHtml(step.output || "")}</div>
-          </div>
-          <div class="pipeline-step-actions">
-            <button title="Toggle output" data-toggle="${i}">...</button>
-            <button title="Remove" data-remove="${i}">x</button>
-          </div>
-        `;
-
-        stepEl.addEventListener("dragstart", (e) => {
-          e.dataTransfer.setData("text/plain", i.toString());
-          stepEl.classList.add("dragging");
-        });
-        stepEl.addEventListener("dragend", () => stepEl.classList.remove("dragging"));
-        stepEl.addEventListener("dragover", (e) => { e.preventDefault(); stepEl.classList.add("drag-over-step"); });
-        stepEl.addEventListener("dragleave", () => stepEl.classList.remove("drag-over-step"));
-        stepEl.addEventListener("drop", (e) => {
-          e.preventDefault();
-          stepEl.classList.remove("drag-over-step");
-          const fromIdx = parseInt(e.dataTransfer.getData("text/plain"));
-          const toIdx = i;
-          if (fromIdx !== toIdx) {
-            const [moved] = activePipeline.steps.splice(fromIdx, 1);
-            activePipeline.steps.splice(toIdx, 0, moved);
-            renderPipelineSteps();
-          }
-        });
-
-        stepEl.querySelector("[data-remove]").addEventListener("click", (e) => {
-          e.stopPropagation();
-          activePipeline.steps.splice(i, 1);
-          renderPipelineSteps();
-        });
-
-        stepEl.querySelector("[data-toggle]").addEventListener("click", (e) => {
-          e.stopPropagation();
-          const outputEl = document.getElementById(`pipeline-output-${i}`);
-          if (outputEl) outputEl.classList.toggle("visible");
-        });
-
-        stepEl.querySelector(".pipeline-step-content").addEventListener("click", () => {
-          const outputEl = document.getElementById(`pipeline-output-${i}`);
-          if (outputEl) outputEl.classList.toggle("visible");
-        });
-
-        pipelineStepsEl.appendChild(stepEl);
+      // Render nodes
+      const existingIds = new Set(plNodes.map(n => n.id));
+      // Remove stale nodes
+      plCanvas.querySelectorAll(".pl-node").forEach(el => {
+        const id = parseInt(el.dataset.nid);
+        if (!existingIds.has(id)) el.remove();
       });
+
+      for (const node of plNodes) {
+        let el = document.getElementById("pl-node-" + node.id);
+        if (!el) {
+          el = document.createElement("div");
+          el.className = "pl-node";
+          el.id = "pl-node-" + node.id;
+          el.dataset.nid = node.id;
+          el.innerHTML = `
+            <div class="pl-node-actions">
+              <button class="pl-node-del" title="Delete">&times;</button>
+            </div>
+            <div class="pl-node-header">
+              <div class="pl-node-dot"></div>
+              <span class="pl-node-idx"></span>
+              <span class="pl-node-status"></span>
+            </div>
+            <div class="pl-node-body"></div>
+            <div class="pl-node-output"></div>
+            <div class="pl-node-port" title="Drag to connect"></div>
+          `;
+          // Drag node
+          el.addEventListener("pointerdown", (e) => {
+            if (e.target.closest(".pl-node-del") || e.target.closest(".pl-node-port") || e.target.closest(".pl-node-body[contenteditable=true]")) return;
+            e.stopPropagation();
+            plDragNode = node;
+            const rect = plWrap.getBoundingClientRect();
+            plDragOffX = (e.clientX - rect.left - plPanX) / plZoom - node.x;
+            plDragOffY = (e.clientY - rect.top - plPanY) / plZoom - node.y;
+            plSelectNode(node.id);
+          });
+          // Delete
+          el.querySelector(".pl-node-del").addEventListener("click", (e) => {
+            e.stopPropagation();
+            plNodes = plNodes.filter(n => n.id !== node.id);
+            plEdges = plEdges.filter(edge => edge.from !== node.id && edge.to !== node.id);
+            if (plSelectedId === node.id) plSelectedId = null;
+            plRender();
+          });
+          // Double-click to edit command
+          el.querySelector(".pl-node-body").addEventListener("dblclick", (e) => {
+            if (plRunning) return;
+            const body = e.currentTarget;
+            body.contentEditable = "true";
+            body.focus();
+            // Select all text
+            const range = document.createRange(); range.selectNodeContents(body);
+            const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+          });
+          el.querySelector(".pl-node-body").addEventListener("blur", (e) => {
+            e.currentTarget.contentEditable = "false";
+            node.command = e.currentTarget.textContent.trim();
+          });
+          el.querySelector(".pl-node-body").addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); e.currentTarget.blur(); }
+            if (e.key === "Escape") { e.currentTarget.textContent = node.command; e.currentTarget.blur(); }
+          });
+          // Click output to toggle
+          el.querySelector(".pl-node-header").addEventListener("click", () => {
+            const out = el.querySelector(".pl-node-output");
+            if (node.output) out.classList.toggle("visible");
+          });
+          // Port drag for connections
+          const port = el.querySelector(".pl-node-port");
+          port.addEventListener("pointerdown", (e) => {
+            e.stopPropagation();
+            plStartEdgeDrag(node.id, e);
+          });
+          plCanvas.appendChild(el);
+        }
+        // Update position & content
+        el.style.left = node.x + "px"; el.style.top = node.y + "px";
+        el.className = "pl-node" + (node.status !== "pending" ? " " + node.status : "") + (plSelectedId === node.id ? " selected" : "");
+        const idx = plGetExecutionOrder().indexOf(node.id);
+        el.querySelector(".pl-node-idx").textContent = idx >= 0 ? "#" + (idx + 1) : "";
+        el.querySelector(".pl-node-status").textContent = node.status === "pending" ? "" : node.status;
+        const body = el.querySelector(".pl-node-body");
+        if (body.contentEditable !== "true") body.textContent = node.command;
+        const output = el.querySelector(".pl-node-output");
+        output.textContent = node.output || "";
+        if (node.output && (node.status === "failed" || node.status === "passed")) output.classList.add("visible");
+      }
+      // Update title
+      document.getElementById("pipeline-title").textContent = plName || "Untitled Pipeline";
     }
 
-    document.getElementById("pipeline-add-btn").addEventListener("click", () => {
-      const input = document.getElementById("pipeline-new-step");
-      const cmd = input.value.trim();
-      if (!cmd) return;
-      activePipeline.steps.push({ command: cmd, status: "pending", output: "" });
-      input.value = "";
-      renderPipelineSteps();
-    });
-
-    document.getElementById("pipeline-new-step").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") document.getElementById("pipeline-add-btn").click();
-    });
-
-    document.getElementById("pipeline-run").addEventListener("click", async () => {
-      if (pipelineRunning) return;
-      pipelineRunning = true;
-      const runBtn = document.getElementById("pipeline-run");
-      runBtn.disabled = true;
-      runBtn.textContent = "Running...";
-
-      activePipeline.steps.forEach(s => { s.status = "pending"; s.output = ""; });
-      renderPipelineSteps();
-
-      let failed = false;
-      for (let i = 0; i < activePipeline.steps.length; i++) {
-        const step = activePipeline.steps[i];
-        if (failed) {
-          step.status = "skipped";
-          renderPipelineSteps();
-          continue;
-        }
-        step.status = "running";
-        renderPipelineSteps();
-
-        try {
-          const result = await window.terminator.execPipelineStep({ command: step.command });
-          step.output = (result.stdout || "") + (result.stderr ? "\n--- stderr ---\n" + result.stderr : "");
-          if (result.code === 0) {
-            step.status = "passed";
-          } else {
-            step.status = "failed";
-            failed = true;
+    // --- Edge drag ---
+    let plEdgeDragFrom = null, plEdgeTempLine = null;
+    function plStartEdgeDrag(fromId, e) {
+      plEdgeDragFrom = fromId;
+      plEdgeTempLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      plEdgeTempLine.setAttribute("stroke", "#00f0ff"); plEdgeTempLine.setAttribute("stroke-width", "2");
+      plEdgeTempLine.setAttribute("stroke-dasharray", "4 4");
+      plSvg.appendChild(plEdgeTempLine);
+      const fromN = plNodes.find(n => n.id === fromId);
+      const fromEl = document.getElementById("pl-node-" + fromId);
+      const fw = fromEl ? fromEl.offsetWidth : 200, fh = fromEl ? fromEl.offsetHeight : 60;
+      const startX = fromN.x + fw / 2, startY = fromN.y + fh;
+      const onMove = (ev) => {
+        const rect = plWrap.getBoundingClientRect();
+        const mx = (ev.clientX - rect.left - plPanX) / plZoom;
+        const my = (ev.clientY - rect.top - plPanY) / plZoom;
+        plEdgeTempLine.setAttribute("x1", startX); plEdgeTempLine.setAttribute("y1", startY);
+        plEdgeTempLine.setAttribute("x2", mx); plEdgeTempLine.setAttribute("y2", my);
+      };
+      const onUp = (ev) => {
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+        if (plEdgeTempLine) { plEdgeTempLine.remove(); plEdgeTempLine = null; }
+        // Find node under cursor
+        const rect = plWrap.getBoundingClientRect();
+        const mx = (ev.clientX - rect.left - plPanX) / plZoom;
+        const my = (ev.clientY - rect.top - plPanY) / plZoom;
+        for (const n of plNodes) {
+          if (n.id === fromId) continue;
+          const nel = document.getElementById("pl-node-" + n.id);
+          const nw = nel ? nel.offsetWidth : 200, nh = nel ? nel.offsetHeight : 60;
+          if (mx >= n.x && mx <= n.x + nw && my >= n.y && my <= n.y + nh) {
+            // Prevent duplicate edges and cycles
+            if (!plEdges.find(e => e.from === fromId && e.to === n.id)) {
+              plEdges.push({ from: fromId, to: n.id });
+              plRender();
+            }
+            break;
           }
-        } catch (err) {
-          step.output = err.message || "Unknown error";
-          step.status = "failed";
-          failed = true;
         }
-        renderPipelineSteps();
+        plEdgeDragFrom = null;
+      };
+      document.addEventListener("pointermove", onMove);
+      document.addEventListener("pointerup", onUp);
+    }
+
+    function plSelectNode(id) { plSelectedId = id; plRender(); }
+
+    // --- Get execution order (topological sort) ---
+    function plGetExecutionOrder() {
+      const inDeg = {}; const adj = {};
+      for (const n of plNodes) { inDeg[n.id] = 0; adj[n.id] = []; }
+      for (const e of plEdges) {
+        if (adj[e.from]) adj[e.from].push(e.to);
+        if (inDeg[e.to] !== undefined) inDeg[e.to]++;
+      }
+      const queue = plNodes.filter(n => inDeg[n.id] === 0).map(n => n.id);
+      const order = [];
+      while (queue.length) {
+        const curr = queue.shift(); order.push(curr);
+        for (const next of (adj[curr] || [])) {
+          inDeg[next]--;
+          if (inDeg[next] === 0) queue.push(next);
+        }
+      }
+      return order;
+    }
+
+    // --- Add step ---
+    document.getElementById("pipeline-add-btn").addEventListener("click", () => {
+      const cmd = prompt("Command:");
+      if (!cmd || !cmd.trim()) return;
+      const lastNode = plNodes.length > 0 ? plNodes[plNodes.length - 1] : null;
+      const x = lastNode ? lastNode.x : 0;
+      const y = lastNode ? lastNode.y + 100 : 0;
+      const newNode = { id: plNextId++, command: cmd.trim(), status: "pending", output: "", x, y };
+      plNodes.push(newNode);
+      // Auto-connect to last node
+      if (lastNode) plEdges.push({ from: lastNode.id, to: newNode.id });
+      plRender();
+    });
+
+    // --- Run pipeline ---
+    document.getElementById("pipeline-run").addEventListener("click", async () => {
+      if (plRunning) return;
+      plRunning = true;
+      document.getElementById("pipeline-run").style.display = "none";
+      document.getElementById("pipeline-stop").style.display = "";
+
+      // Reset statuses
+      plNodes.forEach(n => { n.status = "pending"; n.output = ""; });
+      plRender();
+
+      const order = plGetExecutionOrder();
+      let failed = false;
+      for (const nid of order) {
+        const node = plNodes.find(n => n.id === nid);
+        if (!node) continue;
+        if (failed) { node.status = "skipped"; plRender(); continue; }
+        node.status = "running"; plRender();
+        try {
+          const result = await window.terminator.execPipelineStep({ command: node.command });
+          node.output = (result.stdout || "") + (result.stderr ? "\n--- stderr ---\n" + result.stderr : "");
+          node.status = result.code === 0 ? "passed" : "failed";
+          if (result.code !== 0) failed = true;
+        } catch (err) {
+          node.output = err.message || "Unknown error";
+          node.status = "failed"; failed = true;
+        }
+        plRender();
+        if (!plRunning) break; // stopped
       }
 
-      pipelineRunning = false;
-      runBtn.disabled = false;
-      runBtn.textContent = "Run Pipeline";
+      plRunning = false;
+      document.getElementById("pipeline-run").style.display = "";
+      document.getElementById("pipeline-stop").style.display = "none";
       showToast(failed ? "Pipeline failed" : "Pipeline completed successfully");
     });
 
+    document.getElementById("pipeline-stop").addEventListener("click", () => { plRunning = false; });
+
+    // --- Save ---
     document.getElementById("pipeline-save").addEventListener("click", async () => {
-      const name = prompt("Pipeline name:", activePipeline.name || "Untitled");
+      const name = prompt("Pipeline name:", plName || "Untitled");
       if (!name) return;
-      activePipeline.name = name;
+      plName = name;
+      const toSave = {
+        name,
+        nodes: plNodes.map(n => ({ id: n.id, command: n.command, x: n.x, y: n.y })),
+        edges: plEdges.slice(),
+        // Keep legacy steps format for compatibility
+        steps: plNodes.map(n => ({ command: n.command, status: "pending", output: "" })),
+      };
       const existing = pipelines.findIndex(p => p.name === name);
-      const toSave = { name, steps: activePipeline.steps.map(s => ({ command: s.command, status: "pending", output: "" })) };
-      if (existing >= 0) {
-        pipelines[existing] = toSave;
-      } else {
-        pipelines.push(toSave);
-      }
+      if (existing >= 0) pipelines[existing] = toSave;
+      else pipelines.push(toSave);
       await window.terminator.savePipelines(pipelines);
+      plRender();
       showToast(`Pipeline "${name}" saved`);
     });
 
+    // --- Load ---
     document.getElementById("pipeline-load").addEventListener("click", async () => {
       pipelines = await window.terminator.loadPipelines() || [];
-      if (pipelines.length === 0) {
-        showToast("No saved pipelines");
-        return;
+      if (pipelines.length === 0) { showToast("No saved pipelines"); return; }
+      // Show load modal
+      let existing = plWrap.querySelector(".pl-load-modal");
+      if (existing) existing.remove();
+      const modal = document.createElement("div");
+      modal.className = "pl-load-modal";
+      let html = '<h4>Load Pipeline</h4>';
+      pipelines.forEach((p, i) => {
+        const stepCount = p.nodes ? p.nodes.length : (p.steps ? p.steps.length : 0);
+        html += `<div class="pl-load-item" data-idx="${i}">
+          <div><div class="pl-load-item-name">${escapeHtml(p.name)}</div>
+          <div class="pl-load-item-steps">${stepCount} step${stepCount !== 1 ? "s" : ""}</div></div>
+          <button class="pl-load-item-del" data-delidx="${i}" title="Delete">&times;</button>
+        </div>`;
+      });
+      html += '<div style="text-align:right;margin-top:8px"><button class="pl-tb-btn" id="pl-load-cancel">Cancel</button></div>';
+      modal.innerHTML = html;
+      plWrap.appendChild(modal);
+
+      modal.addEventListener("click", async (e) => {
+        // Delete pipeline
+        const delBtn = e.target.closest("[data-delidx]");
+        if (delBtn) {
+          e.stopPropagation();
+          const di = parseInt(delBtn.dataset.delidx);
+          pipelines.splice(di, 1);
+          await window.terminator.savePipelines(pipelines);
+          modal.remove();
+          document.getElementById("pipeline-load").click(); // re-open
+          return;
+        }
+        // Load pipeline
+        const item = e.target.closest(".pl-load-item");
+        if (item) {
+          const idx = parseInt(item.dataset.idx);
+          const p = pipelines[idx];
+          plName = p.name;
+          if (p.nodes) {
+            // New format with positions
+            plNodes = p.nodes.map(n => ({ id: n.id, command: n.command, x: n.x, y: n.y, status: "pending", output: "" }));
+            plEdges = (p.edges || []).slice();
+            plNextId = Math.max(...plNodes.map(n => n.id), 0) + 1;
+          } else if (p.steps) {
+            // Legacy format — lay out vertically
+            plNodes = p.steps.map((s, i) => ({ id: i + 1, command: s.command, x: 0, y: i * 100, status: "pending", output: "" }));
+            plEdges = plNodes.slice(1).map((n, i) => ({ from: plNodes[i].id, to: n.id }));
+            plNextId = plNodes.length + 1;
+          }
+          modal.remove();
+          plCenterView();
+          plRender();
+          showToast(`Loaded "${plName}"`);
+          return;
+        }
+        // Cancel
+        if (e.target.id === "pl-load-cancel") modal.remove();
+      });
+    });
+
+    // --- Clear ---
+    document.getElementById("pipeline-clear").addEventListener("click", () => {
+      if (plNodes.length > 0 && !confirm("Clear all steps?")) return;
+      plNodes = []; plEdges = []; plSelectedId = null; plNextId = 1; plName = "Untitled";
+      plRender();
+    });
+
+    // --- Close ---
+    document.getElementById("pipeline-close").addEventListener("click", () => {
+      plPanel.classList.remove("visible");
+      if (activeId && panes.has(activeId)) panes.get(activeId).term.focus();
+    });
+
+    // --- Title rename ---
+    document.getElementById("pipeline-title").addEventListener("click", () => {
+      const name = prompt("Pipeline name:", plName);
+      if (name) { plName = name; plRender(); }
+    });
+
+    // --- Keyboard shortcuts inside pipeline editor ---
+    plPanel.addEventListener("keydown", (e) => {
+      if (e.target.contentEditable === "true" || e.target.tagName === "INPUT") return;
+      if ((e.key === "Delete" || e.key === "Backspace") && plSelectedId) {
+        plNodes = plNodes.filter(n => n.id !== plSelectedId);
+        plEdges = plEdges.filter(edge => edge.from !== plSelectedId && edge.to !== plSelectedId);
+        plSelectedId = null; plRender();
       }
-      const names = pipelines.map(p => p.name);
-      const choice = prompt("Load pipeline:\n" + names.map((n, i) => `${i + 1}. ${n}`).join("\n") + "\n\nEnter number:");
-      if (!choice) return;
-      const idx = parseInt(choice) - 1;
-      if (idx >= 0 && idx < pipelines.length) {
-        activePipeline = JSON.parse(JSON.stringify(pipelines[idx]));
-        activePipeline.steps.forEach(s => { s.status = "pending"; s.output = ""; });
-        renderPipelineSteps();
-        showToast(`Loaded "${activePipeline.name}"`);
-      }
+      if (e.key === "Escape") plPanel.classList.remove("visible");
+    });
+
+    // Deselect when clicking canvas background
+    plCanvas.addEventListener("click", (e) => {
+      if (e.target === plCanvas) { plSelectedId = null; plRender(); }
     });
 
     async function loadPipelinesData() {

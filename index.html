@@ -533,23 +533,51 @@
     </div>
   </div>
 
-  <!-- Pipeline Runner panel -->
-  <div class="side-panel" id="pipeline-panel">
-    <div class="side-panel-header">
-      <h3>Pipeline</h3>
-      <button class="side-panel-close" id="pipeline-close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <!-- Pipeline Visual Editor (fullscreen overlay) -->
+  <div class="pipeline-overlay" id="pipeline-panel">
+    <div class="pipeline-toolbar">
+      <div class="pipeline-toolbar-left">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2"><circle cx="12" cy="4" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="20" r="2"/><line x1="12" y1="6" x2="12" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/></svg>
+        <span class="pipeline-title" id="pipeline-title">Untitled Pipeline</span>
+      </div>
+      <div class="pipeline-toolbar-center">
+        <button class="pl-tb-btn" id="pipeline-add-btn" title="Add Step">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Step
+        </button>
+        <div class="pl-tb-divider"></div>
+        <button class="pl-tb-btn pl-tb-run" id="pipeline-run" title="Run Pipeline">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5,3 19,12 5,21"/></svg>
+          Run
+        </button>
+        <button class="pl-tb-btn pl-tb-stop" id="pipeline-stop" title="Stop" style="display:none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+          Stop
+        </button>
+        <div class="pl-tb-divider"></div>
+        <button class="pl-tb-btn" id="pipeline-save" title="Save">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save
+        </button>
+        <button class="pl-tb-btn" id="pipeline-load" title="Load">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+          Load
+        </button>
+        <button class="pl-tb-btn" id="pipeline-clear" title="Clear All">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+          Clear
+        </button>
+      </div>
+      <div class="pipeline-toolbar-right">
+        <span class="pipeline-zoom-label" id="pipeline-zoom-label">100%</span>
+        <button class="pl-tb-btn pl-tb-close" id="pipeline-close" title="Close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
     </div>
-    <div class="side-panel-body" id="pipeline-body">
-      <div class="pipeline-steps" id="pipeline-steps"></div>
-      <div class="pipeline-add-row">
-        <input type="text" id="pipeline-new-step" placeholder="Add command..." />
-        <button id="pipeline-add-btn">+</button>
-      </div>
-      <div class="pipeline-controls">
-        <button id="pipeline-run" class="pipeline-run-btn">Run Pipeline</button>
-        <button id="pipeline-save" class="pipeline-save-btn">Save</button>
-        <button id="pipeline-load" class="pipeline-load-btn">Load</button>
-      </div>
+    <div class="pipeline-canvas-wrap" id="pipeline-canvas-wrap">
+      <svg class="pipeline-canvas-svg" id="pipeline-svg"></svg>
+      <div class="pipeline-canvas" id="pipeline-canvas"></div>
     </div>
   </div>
 
