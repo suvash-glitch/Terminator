@@ -6,28 +6,33 @@
 <title>Terminator — AI-Powered Terminal Multiplexer</title>
 <meta name="description" content="Split, organize, and supercharge your terminal workflow with Claude intelligence built in. AI autocomplete, multiplexing, IDE mode, and more.">
 <meta name="theme-color" content="#1a1a2e">
+<meta property="og:title" content="Terminator — AI-Powered Terminal Multiplexer">
+<meta property="og:description" content="The terminal multiplexer with AI built in. Split panes, Claude autocomplete, SSH manager, Docker integration, and 50+ keyboard shortcuts.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="../assets/screenshot.png">
 <link rel="icon" type="image/svg+xml" href="../assets/icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg-deep:#0a0a14;
-  --bg-primary:#1a1a2e;
-  --bg-card:#141428;
-  --bg-card-hover:#1a1a35;
+  --bg-deep:#06060e;
+  --bg-primary:#0e0e1a;
+  --bg-card:#111122;
+  --bg-card-hover:#161632;
   --accent:#00f0ff;
-  --accent-glow:rgba(0,240,255,0.3);
-  --blue:#0d1b2a;
-  --blue-light:#1b2d45;
-  --text:#e8e8f0;
-  --text-muted:#8892b0;
-  --text-dim:#5a6380;
-  --gradient-primary:linear-gradient(135deg,#00f0ff 0%,#1a1a2e 100%);
-  --gradient-hero:linear-gradient(160deg,#0a0a14 0%,#1a1a2e 40%,#0d1b2a 100%);
-  --glass:rgba(20,20,40,0.6);
-  --glass-border:rgba(0,240,255,0.12);
+  --accent-dim:#00a8b3;
+  --accent-glow:rgba(0,240,255,0.25);
+  --accent-subtle:rgba(0,240,255,0.08);
+  --green:#00e676;
+  --purple:#a78bfa;
+  --orange:#ff9f43;
+  --text:#e8eaf0;
+  --text-muted:#7b8db0;
+  --text-dim:#4a5578;
+  --glass:rgba(14,14,30,0.7);
+  --glass-border:rgba(0,240,255,0.1);
   --radius:16px;
   --radius-sm:10px;
   --font-sans:'Inter',system-ui,-apple-system,sans-serif;
@@ -49,110 +54,201 @@ a:hover{color:#66f7ff}
 .fade-in{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
 .fade-in.visible{opacity:1;transform:translateY(0)}
 .section-label{
-  font-size:.8rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+  font-size:.75rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
   color:var(--accent);margin-bottom:12px;
+  display:inline-flex;align-items:center;gap:8px;
 }
+.section-label::before{content:'';width:24px;height:1px;background:var(--accent)}
 .section-title{
   font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;
-  line-height:1.2;margin-bottom:16px;
+  line-height:1.15;margin-bottom:16px;letter-spacing:-.02em;
 }
 .section-desc{
-  font-size:1.05rem;color:var(--text-muted);max-width:640px;margin:0 auto 48px;
+  font-size:1.05rem;color:var(--text-muted);max-width:640px;margin:0 auto 56px;
+  line-height:1.7;
 }
-section{padding:100px 0;text-align:center;position:relative}
+section{padding:110px 0;text-align:center;position:relative}
 
-/* ---- Background blobs ---- */
-.blob{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
-.blob-1{width:600px;height:600px;background:rgba(0,240,255,0.08);top:-200px;left:-200px}
-.blob-2{width:500px;height:500px;background:rgba(0,240,255,0.15);bottom:-150px;right:-150px}
+/* ---- Animated grid background ---- */
+.grid-bg{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background-image:
+    linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;z-index:0;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 40%,black 20%,transparent 70%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 40%,black 20%,transparent 70%);
+}
 
 /* ---- Nav ---- */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
-  background:rgba(10,10,26,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(255,255,255,0.05);
-  transition:background .3s;
+  background:rgba(6,6,14,0.7);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  transition:all .3s;
 }
+nav.scrolled{background:rgba(6,6,14,0.95);border-bottom-color:rgba(0,240,255,0.08)}
 nav .inner{
   display:flex;align-items:center;justify-content:space-between;
   max-width:1200px;margin:0 auto;padding:14px 24px;
 }
-nav .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;color:#fff}
-nav .logo svg{width:32px;height:32px}
-nav .links{display:flex;align-items:center;gap:28px}
-nav .links a{color:var(--text-muted);font-size:.9rem;font-weight:500;transition:color .2s}
+nav .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem;color:#fff}
+nav .logo svg{width:30px;height:30px}
+nav .links{display:flex;align-items:center;gap:24px}
+nav .links a{color:var(--text-muted);font-size:.88rem;font-weight:500;transition:color .2s}
 nav .links a:hover{color:#fff}
 nav .links .btn-nav{
-  background:var(--accent);color:#fff;padding:8px 20px;border-radius:8px;font-weight:600;font-size:.85rem;
+  background:var(--accent);color:#0a0a14;padding:8px 20px;border-radius:8px;font-weight:600;font-size:.85rem;
   transition:transform .2s,box-shadow .2s;
 }
-nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(--accent-glow)}
-@media(max-width:640px){nav .links a:not(.btn-nav){display:none}}
+nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(--accent-glow);color:#0a0a14}
+.hamburger{display:none;background:none;border:none;color:#fff;cursor:pointer;padding:4px}
+@media(max-width:640px){
+  .hamburger{display:block}
+  nav .links{
+    display:none;position:absolute;top:100%;left:0;right:0;
+    flex-direction:column;padding:16px 24px;gap:12px;
+    background:rgba(6,6,14,0.98);border-bottom:1px solid rgba(0,240,255,0.08);
+  }
+  nav .links.open{display:flex}
+  nav .links a{font-size:1rem}
+}
 
 /* ---- Hero ---- */
 #hero{
   min-height:100vh;display:flex;align-items:center;justify-content:center;
-  background:var(--gradient-hero);
   padding:140px 24px 100px;
   position:relative;overflow:hidden;
 }
 #hero::before{
-  content:'';position:absolute;top:50%;left:50%;width:800px;height:800px;
-  background:radial-gradient(circle,rgba(0,240,255,0.07) 0%,transparent 70%);
+  content:'';position:absolute;top:35%;left:50%;width:900px;height:900px;
+  background:radial-gradient(circle,rgba(0,240,255,0.06) 0%,transparent 65%);
   transform:translate(-50%,-50%);pointer-events:none;
 }
-.hero-grid{
-  display:grid;grid-template-columns:1fr;gap:40px;
-  max-width:900px;text-align:center;position:relative;z-index:1;
+.hero-content{
+  max-width:800px;text-align:center;position:relative;z-index:1;
 }
-.hero-icon{
-  width:100px;height:100px;margin:0 auto 8px;
-  filter:drop-shadow(0 0 40px rgba(0,240,255,0.25));
-  animation:float 6s ease-in-out infinite;
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,240,255,0.08);border:1px solid rgba(0,240,255,0.15);
+  border-radius:100px;padding:6px 16px 6px 10px;
+  font-size:.82rem;font-weight:500;color:var(--accent);
+  margin-bottom:28px;
+  animation:fadeInDown .8s ease .2s both;
 }
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
 .hero-title{
-  font-size:clamp(3rem,8vw,5.5rem);font-weight:800;
-  line-height:1.05;letter-spacing:-.03em;
-  background:linear-gradient(135deg,#ffffff 0%,#00f0ff 50%,#0d1b2a 100%);
+  font-size:clamp(3.2rem,8vw,5.8rem);font-weight:900;
+  line-height:1.02;letter-spacing:-.04em;
+  margin-bottom:24px;
+  animation:fadeInUp .8s ease .3s both;
+}
+.hero-title .gradient{
+  background:linear-gradient(135deg,#ffffff 0%,#00f0ff 60%,#00b8d4 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
   background-clip:text;
 }
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .hero-tagline{
-  font-size:clamp(1.1rem,2.5vw,1.5rem);
-  color:var(--text-muted);max-width:600px;margin:0 auto;
-  line-height:1.5;
+  font-size:clamp(1.05rem,2.2vw,1.35rem);
+  color:var(--text-muted);max-width:560px;margin:0 auto 36px;
+  line-height:1.6;
+  animation:fadeInUp .8s ease .45s both;
 }
 .hero-tagline strong{color:#fff;font-weight:600}
 .hero-buttons{
-  display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:8px;
+  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+  animation:fadeInUp .8s ease .55s both;
 }
 .btn{
   display:inline-flex;align-items:center;gap:8px;
   padding:14px 32px;border-radius:12px;font-weight:600;font-size:1rem;
-  transition:transform .2s,box-shadow .3s;cursor:pointer;border:none;
+  transition:all .25s;cursor:pointer;border:none;
 }
 .btn-primary{
-  background:var(--accent);color:#fff;
+  background:var(--accent);color:#0a0a14;
   box-shadow:0 4px 30px var(--accent-glow);
 }
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 40px var(--accent-glow);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(0,240,255,0.35);color:#0a0a14}
 .btn-secondary{
-  background:rgba(255,255,255,0.06);color:#fff;
+  background:rgba(255,255,255,0.05);color:#fff;
   border:1px solid rgba(255,255,255,0.1);
-  backdrop-filter:blur(10px);
 }
 .btn-secondary:hover{background:rgba(255,255,255,0.1);transform:translateY(-2px);color:#fff}
 .hero-meta{
-  display:flex;gap:32px;justify-content:center;flex-wrap:wrap;
-  font-size:.85rem;color:var(--text-dim);margin-top:8px;
+  display:flex;gap:28px;justify-content:center;flex-wrap:wrap;
+  font-size:.82rem;color:var(--text-dim);margin-top:24px;
+  animation:fadeInUp .8s ease .65s both;
 }
 .hero-meta span{display:flex;align-items:center;gap:6px}
+
+/* ---- Terminal Demo ---- */
+.terminal-demo{
+  max-width:780px;margin:56px auto 0;
+  border-radius:var(--radius);overflow:hidden;
+  background:#0c0c18;
+  border:1px solid rgba(0,240,255,0.1);
+  box-shadow:
+    0 24px 80px rgba(0,0,0,0.6),
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 0 120px rgba(0,240,255,0.06);
+  animation:fadeInUp .8s ease .75s both;
+}
+.terminal-titlebar{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;background:rgba(255,255,255,0.03);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.terminal-dot{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,0.1)}
+.terminal-dot:nth-child(1){background:#ff5f57}
+.terminal-dot:nth-child(2){background:#febc2e}
+.terminal-dot:nth-child(3){background:#28c840}
+.terminal-titlebar-text{
+  flex:1;text-align:center;font-size:.72rem;color:var(--text-dim);
+  font-family:var(--font-mono);letter-spacing:.02em;
+}
+.terminal-body{
+  padding:20px;font-family:var(--font-mono);font-size:.82rem;
+  line-height:1.8;min-height:200px;
+}
+.terminal-body .prompt{color:var(--accent)}
+.terminal-body .cmd{color:#fff}
+.terminal-body .output{color:var(--text-muted)}
+.terminal-body .ai-suggest{color:var(--text-dim);font-style:italic}
+.terminal-body .cursor{
+  display:inline-block;width:8px;height:16px;background:var(--accent);
+  vertical-align:text-bottom;
+  animation:blink 1s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.typing-line{overflow:hidden;white-space:nowrap;width:0;display:inline-block;vertical-align:bottom}
+.typing-line.active{animation:type var(--dur,1.5s) steps(var(--steps,20)) forwards}
+@keyframes type{from{width:0}to{width:var(--width,100%)}}
+
+/* ---- Stats strip ---- */
+#stats{
+  padding:48px 0;background:var(--bg-primary);position:relative;
+  border-top:1px solid rgba(255,255,255,0.04);
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.stats-grid{
+  display:flex;justify-content:center;gap:64px;flex-wrap:wrap;
+}
+.stat{text-align:center}
+.stat-number{
+  font-size:clamp(2rem,4vw,2.8rem);font-weight:800;
+  color:var(--accent);line-height:1;margin-bottom:6px;
+  font-variant-numeric:tabular-nums;
+}
+.stat-label{font-size:.85rem;color:var(--text-muted);font-weight:500}
 
 /* ---- Features ---- */
 #features{background:var(--bg-deep)}
 .feature-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
   text-align:left;
 }
 @media(max-width:900px){.feature-grid{grid-template-columns:repeat(2,1fr)}}
@@ -163,7 +259,7 @@ nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(-
   border-radius:var(--radius);
   padding:28px;
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  transition:transform .3s,border-color .3s,box-shadow .3s;
+  transition:all .3s ease;
   position:relative;overflow:hidden;
 }
 .feature-card::before{
@@ -173,97 +269,147 @@ nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(-
 }
 .feature-card:hover{
   transform:translateY(-4px);
-  border-color:rgba(0,240,255,0.3);
-  box-shadow:0 12px 40px rgba(0,0,0,0.3);
+  border-color:rgba(0,240,255,0.25);
+  box-shadow:0 16px 48px rgba(0,0,0,0.3),0 0 0 1px rgba(0,240,255,0.1);
+  background:var(--bg-card-hover);
 }
 .feature-card:hover::before{opacity:1}
 .feature-icon{
   width:44px;height:44px;
   display:flex;align-items:center;justify-content:center;
   border-radius:12px;
-  background:linear-gradient(135deg,rgba(0,240,255,0.15),rgba(0,240,255,0.3));
+  background:var(--accent-subtle);
   margin-bottom:16px;font-size:1.3rem;
 }
-.feature-card h3{font-size:1.05rem;font-weight:700;margin-bottom:8px;color:#fff}
-.feature-card p{font-size:.88rem;color:var(--text-muted);line-height:1.55}
+.feature-card h3{font-size:1rem;font-weight:700;margin-bottom:8px;color:#fff}
+.feature-card p{font-size:.86rem;color:var(--text-muted);line-height:1.55}
+
+/* ---- Why Terminator ---- */
+#comparison{background:var(--bg-primary)}
+.compare-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:32px;
+  text-align:left;max-width:900px;margin:0 auto;
+}
+@media(max-width:700px){.compare-grid{grid-template-columns:1fr}}
+.compare-card{
+  background:var(--glass);border:1px solid var(--glass-border);
+  border-radius:var(--radius);padding:32px;
+  backdrop-filter:blur(12px);
+}
+.compare-card.highlight{
+  border-color:rgba(0,240,255,0.25);
+  box-shadow:0 0 60px rgba(0,240,255,0.06);
+}
+.compare-card h3{
+  font-size:1.1rem;font-weight:700;margin-bottom:20px;
+  display:flex;align-items:center;gap:10px;
+}
+.compare-card h3 .tag{
+  font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--accent);color:#0a0a14;padding:3px 8px;border-radius:4px;
+}
+.compare-list{list-style:none}
+.compare-list li{
+  padding:8px 0;font-size:.9rem;color:var(--text-muted);
+  display:flex;align-items:flex-start;gap:10px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.compare-list li:last-child{border-bottom:none}
+.compare-list .check{color:var(--green);font-weight:700;flex-shrink:0;font-size:1rem}
+.compare-list .cross{color:#ff5f57;font-weight:700;flex-shrink:0;font-size:1rem}
 
 /* ---- Screenshot ---- */
-#screenshot{background:var(--bg-primary);position:relative;overflow:hidden}
+#screenshot{background:var(--bg-deep);position:relative;overflow:hidden}
 .screenshot-wrap{
   position:relative;max-width:960px;margin:0 auto;
   border-radius:var(--radius);overflow:hidden;
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.06),
-    0 24px 80px rgba(0,0,0,0.5),
-    0 0 120px rgba(0,240,255,0.08);
+    0 32px 100px rgba(0,0,0,0.5),
+    0 0 140px rgba(0,240,255,0.06);
 }
 .screenshot-wrap img{width:100%;display:block;border-radius:var(--radius)}
 .screenshot-glow{
   position:absolute;top:50%;left:50%;width:120%;height:120%;
-  background:radial-gradient(ellipse,rgba(0,240,255,0.06) 0%,transparent 60%);
+  background:radial-gradient(ellipse,rgba(0,240,255,0.05) 0%,transparent 60%);
   transform:translate(-50%,-50%);pointer-events:none;
 }
 
 /* ---- Shortcuts ---- */
-#shortcuts{background:var(--bg-deep)}
-.shortcuts-table{
-  max-width:720px;margin:0 auto;text-align:left;
-  border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius);
-  overflow:hidden;
-  background:var(--glass);backdrop-filter:blur(12px);
+#shortcuts{background:var(--bg-primary)}
+.shortcuts-columns{
+  display:grid;grid-template-columns:1fr 1fr;gap:2px;
+  max-width:800px;margin:0 auto;text-align:left;
+  border-radius:var(--radius);overflow:hidden;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
 }
-.shortcuts-table table{width:100%;border-collapse:collapse}
-.shortcuts-table th{
-  background:rgba(0,240,255,0.1);
-  font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--accent);padding:14px 20px;
-  border-bottom:1px solid rgba(255,255,255,0.06);
+@media(max-width:600px){.shortcuts-columns{grid-template-columns:1fr}}
+.shortcut-item{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px 20px;background:var(--glass);
+  transition:background .2s;
 }
-.shortcuts-table td{
-  padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.04);
-  font-size:.9rem;
-}
-.shortcuts-table tr:last-child td{border-bottom:none}
-.shortcuts-table tr:hover{background:rgba(255,255,255,0.02)}
-.shortcuts-table kbd{
+.shortcut-item:hover{background:var(--bg-card-hover)}
+.shortcut-action{font-size:.88rem;color:var(--text-muted)}
+.shortcut-keys{display:flex;gap:4px;flex-shrink:0}
+.shortcut-keys kbd{
   display:inline-block;
   background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:6px;padding:2px 8px;
-  font-family:var(--font-mono);font-size:.8rem;color:#fff;
-  box-shadow:0 2px 0 rgba(0,0,0,0.3);
+  border:1px solid rgba(255,255,255,0.12);
+  border-bottom:2px solid rgba(255,255,255,0.15);
+  border-radius:6px;padding:3px 8px;
+  font-family:var(--font-mono);font-size:.75rem;color:#fff;
+  white-space:nowrap;
 }
-.shortcuts-table .action{color:var(--text-muted)}
 
 /* ---- Install ---- */
-#install{background:var(--bg-primary)}
+#install{background:var(--bg-deep)}
 .install-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
   text-align:left;
 }
 @media(max-width:800px){.install-grid{grid-template-columns:1fr}}
 .install-card{
   background:var(--glass);border:1px solid var(--glass-border);
-  border-radius:var(--radius);padding:32px;
+  border-radius:var(--radius);padding:28px;
   backdrop-filter:blur(12px);
-  transition:transform .3s,box-shadow .3s;
+  transition:all .3s;
 }
 .install-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.3)}
-.install-card h3{font-size:1.1rem;font-weight:700;margin-bottom:4px;color:#fff}
+.install-card h3{font-size:1.05rem;font-weight:700;margin-bottom:4px;color:#fff;display:flex;align-items:center;gap:8px}
+.install-card .platform-icon{width:20px;height:20px;opacity:.7}
 .install-card .subtitle{font-size:.82rem;color:var(--text-dim);margin-bottom:16px}
 .install-card pre{
   background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.06);
   border-radius:var(--radius-sm);padding:16px;overflow-x:auto;
-  font-family:var(--font-mono);font-size:.82rem;line-height:1.7;
+  font-family:var(--font-mono);font-size:.8rem;line-height:1.7;
   color:var(--text);
 }
 .install-card pre .comment{color:var(--text-dim)}
 .install-card pre .cmd{color:var(--accent)}
 
+/* ---- CTA ---- */
+#cta{
+  background:linear-gradient(180deg,var(--bg-deep) 0%,var(--bg-primary) 100%);
+  padding:120px 0;position:relative;
+}
+#cta::before{
+  content:'';position:absolute;top:0;left:50%;width:800px;height:400px;
+  background:radial-gradient(ellipse,rgba(0,240,255,0.06),transparent 70%);
+  transform:translate(-50%,-30%);pointer-events:none;
+}
+.cta-content{position:relative;z-index:1}
+.cta-title{
+  font-size:clamp(2rem,5vw,3.2rem);font-weight:800;
+  line-height:1.15;letter-spacing:-.02em;margin-bottom:16px;
+}
+.cta-desc{font-size:1.1rem;color:var(--text-muted);max-width:500px;margin:0 auto 32px}
+
 /* ---- Footer ---- */
 footer{
   background:var(--bg-deep);
-  border-top:1px solid rgba(255,255,255,0.05);
+  border-top:1px solid rgba(255,255,255,0.04);
   padding:48px 24px;text-align:center;
 }
 .footer-stack{
@@ -280,18 +426,18 @@ footer{
 ::-webkit-scrollbar-track{background:var(--bg-deep)}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.2)}
-
-/* selection */
 ::selection{background:rgba(0,240,255,0.3)}
 </style>
 </head>
 <body>
 
+<div class="grid-bg"></div>
+
 <!-- ======== NAV ======== -->
 <nav>
   <div class="inner">
     <a href="#hero" class="logo">
-      <svg viewBox="0 0 512 512" width="32" height="32">
+      <svg viewBox="0 0 512 512" width="30" height="30">
         <defs>
           <linearGradient id="nav-bg" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stop-color="#1a1a2e"/>
@@ -305,8 +451,12 @@ footer{
       </svg>
       Terminator
     </a>
+    <button class="hamburger" onclick="document.querySelector('.links').classList.toggle('open')" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
     <div class="links">
       <a href="#features">Features</a>
+      <a href="#comparison">Why Terminator</a>
       <a href="#shortcuts">Shortcuts</a>
       <a href="#install">Install</a>
       <a href="https://github.com/suvash-glitch/Terminator" class="btn-nav">GitHub</a>
@@ -316,25 +466,25 @@ footer{
 
 <!-- ======== HERO ======== -->
 <section id="hero">
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-  <div class="hero-grid fade-in">
-    <div>
-      <img src="../assets/icon.svg" alt="Terminator Logo" class="hero-icon" width="100" height="100">
-      <h1 class="hero-title">Terminator</h1>
-      <p class="hero-tagline">
-        The <strong>AI-powered</strong> terminal multiplexer.<br>
-        Split, organize, and supercharge your workflow with <strong>Claude intelligence</strong> built in.
-      </p>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      v1.2 — Now with AI autocomplete &amp; plugin system
     </div>
+    <h1 class="hero-title">
+      Your terminal,<br><span class="gradient">supercharged.</span>
+    </h1>
+    <p class="hero-tagline">
+      Split panes, <strong>Claude AI</strong> autocomplete, SSH manager, Docker dashboard, and 50+ keyboard shortcuts — all in one app.
+    </p>
     <div class="hero-buttons">
       <a href="https://github.com/suvash-glitch/Terminator/releases" class="btn btn-primary">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Download
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download for Free
       </a>
       <a href="https://github.com/suvash-glitch/Terminator" class="btn btn-secondary">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-        View on GitHub
+        Star on GitHub
       </a>
     </div>
     <div class="hero-meta">
@@ -343,13 +493,57 @@ footer{
         macOS, Windows, Linux
       </span>
       <span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        Electron v35
-      </span>
-      <span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         MIT License
       </span>
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Auto-updates
+      </span>
+    </div>
+
+    <!-- Terminal Demo -->
+    <div class="terminal-demo">
+      <div class="terminal-titlebar">
+        <span class="terminal-dot"></span>
+        <span class="terminal-dot"></span>
+        <span class="terminal-dot"></span>
+        <span class="terminal-titlebar-text">terminator &mdash; ~/projects/webapp</span>
+      </div>
+      <div class="terminal-body" id="terminal-anim">
+        <div class="line"><span class="prompt">~/webapp $</span> <span class="cmd" data-text="docker compose up -d && npm run dev"></span></div>
+        <div class="line hidden"><span class="output">[+] Running 3/3 containers started</span></div>
+        <div class="line hidden"><span class="output">  <span style="color:var(--green)">ready</span> - started server on 0.0.0.0:3000</span></div>
+        <div class="line hidden"><br></div>
+        <div class="line hidden"><span class="prompt">~/webapp $</span> <span class="cmd" data-text="git checkout -b feat/auth"></span></div>
+        <div class="line hidden"><span class="output">Switched to a new branch 'feat/auth'</span></div>
+        <div class="line hidden"><br></div>
+        <div class="line hidden"><span class="prompt">~/webapp $</span> <span class="ai-suggest">npx prisma migrate dev  ← AI suggestion (Tab to accept)</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== STATS ======== -->
+<section id="stats">
+  <div class="container">
+    <div class="stats-grid fade-in">
+      <div class="stat">
+        <div class="stat-number" data-count="50">50+</div>
+        <div class="stat-label">Keyboard shortcuts</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" data-count="6">6</div>
+        <div class="stat-label">Built-in themes</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" data-count="3">3</div>
+        <div class="stat-label">Platforms</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number" data-count="133">133</div>
+        <div class="stat-label">Tests passing</div>
+      </div>
     </div>
   </div>
 </section>
@@ -369,15 +563,15 @@ footer{
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M12 2a7 7 0 0 1 7 7c0 3-2 5-3.5 6.5L12 19l-3.5-3.5C7 14 5 12 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2"/><path d="M8 21h8"/></svg>
         </div>
         <h3>AI Autocomplete &amp; Chat</h3>
-        <p>Claude-powered ghost text suggestions as you type. Launch Claude Code sessions for inline AI assistance directly from any pane.</p>
+        <p>Claude-powered ghost text as you type. Full AI chat sidebar for debugging, explaining code, and generating commands.</p>
       </div>
 
       <div class="feature-card fade-in">
         <div class="feature-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="12" y1="12" x2="21" y2="12"/></svg>
         </div>
-        <h3>Terminal Multiplexing</h3>
-        <p>Horizontal and vertical splits, tabs, and flexible grid layout with drag-to-resize. Zoom any pane to fullscreen and back.</p>
+        <h3>Split Panes &amp; Tabs</h3>
+        <p>Horizontal, vertical splits, and tabs with drag-to-resize. Zoom any pane to fullscreen and back with one shortcut.</p>
       </div>
 
       <div class="feature-card fade-in">
@@ -385,7 +579,7 @@ footer{
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="3" x2="8" y2="21"/><line x1="2" y1="9" x2="8" y2="9"/></svg>
         </div>
         <h3>IDE Mode</h3>
-        <p>Toggle a sidebar with project grouping, editor-style tabs, and single-pane focus. Think VS Code's terminal, but it is the whole app.</p>
+        <p>Toggle a sidebar with project grouping and editor-style tabs. Like VS Code's integrated terminal, but the terminal is the app.</p>
       </div>
 
       <div class="feature-card fade-in">
@@ -393,7 +587,7 @@ footer{
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </div>
         <h3>Command Palette</h3>
-        <p>Cmd+P opens a searchable palette for every action: switch panes, change themes, open SSH bookmarks, run snippets, and more.</p>
+        <p>Cmd+P to search every action: switch panes, change themes, open SSH bookmarks, run snippets, fuzzy file finder, and more.</p>
       </div>
 
       <div class="feature-card fade-in">
@@ -401,7 +595,7 @@ footer{
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
         </div>
         <h3>Pipeline Runner</h3>
-        <p>Define and run multi-step command pipelines. View and manage cron jobs visually. Automate complex workflows with ease.</p>
+        <p>Define multi-step command pipelines and manage cron jobs visually. Automate complex workflows from a simple UI.</p>
       </div>
 
       <div class="feature-card fade-in">
@@ -409,7 +603,7 @@ footer{
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg>
         </div>
         <h3>Session Save &amp; Restore</h3>
-        <p>Save your entire workspace -- layout, directories, scroll history -- and auto-restore on next launch. Never lose your setup again.</p>
+        <p>Save your entire workspace — layout, directories, scroll history — and auto-restore on next launch.</p>
       </div>
 
       <div class="feature-card fade-in">
@@ -417,39 +611,15 @@ footer{
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><circle cx="6" cy="6" r="1" fill="var(--accent)"/><circle cx="6" cy="18" r="1" fill="var(--accent)"/></svg>
         </div>
         <h3>SSH &amp; Remote Discovery</h3>
-        <p>Save SSH connections, manage bookmarks from the UI, and discover running tmux and screen sessions on remote hosts.</p>
+        <p>Save SSH connections, manage bookmarks, and discover running tmux/screen sessions on remote hosts automatically.</p>
       </div>
 
       <div class="feature-card fade-in">
         <div class="feature-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         </div>
-        <h3>Port Manager</h3>
-        <p>View listening ports, identify processes, and kill them from a built-in UI. See Docker containers with status, image, and uptime.</p>
-      </div>
-
-      <div class="feature-card fade-in">
-        <div class="feature-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-        </div>
-        <h3>6 Built-in Themes</h3>
-        <p>Dark, Solarized Dark, Dracula, Monokai, Nord, and Light. Cycle through themes with a single keyboard shortcut.</p>
-      </div>
-
-      <div class="feature-card fade-in">
-        <div class="feature-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>
-        </div>
-        <h3>Docker Integration</h3>
-        <p>List running containers with status, image, and uptime at a glance. Manage your containerized environments without leaving the terminal.</p>
-      </div>
-
-      <div class="feature-card fade-in">
-        <div class="feature-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-        </div>
-        <h3>CLI with Zsh Completion</h3>
-        <p>Control Terminator from any shell: create, list, attach, send commands, and kill sessions. Full Zsh tab completion included.</p>
+        <h3>Port &amp; Docker Manager</h3>
+        <p>View listening ports, identify processes, kill them from the UI. See Docker containers with status, image, and uptime.</p>
       </div>
 
       <div class="feature-card fade-in">
@@ -457,9 +627,70 @@ footer{
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
         </div>
         <h3>Broadcast Mode</h3>
-        <p>Send keystrokes to every pane simultaneously. Ideal for configuring multiple servers at once or running identical commands.</p>
+        <p>Send keystrokes to every pane simultaneously. Perfect for configuring multiple servers or running identical commands.</p>
       </div>
 
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </div>
+        <h3>6 Themes + Plugins</h3>
+        <p>Dark, Solarized, Dracula, Monokai, Nord, Light. Extend with community plugins for custom themes, commands, and status bars.</p>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        </div>
+        <h3>CLI + Zsh Completion</h3>
+        <p>Control Terminator from any shell: create, list, attach, send commands, and kill sessions. Full tab completion included.</p>
+      </div>
+
+      <div class="feature-card fade-in">
+        <div class="feature-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Secure by Default</h3>
+        <p>Context isolation, sandboxed renderer, input validation, path traversal protection. 133 tests covering security edge cases.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ======== COMPARISON ======== -->
+<section id="comparison">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">Why Terminator</p>
+      <h2 class="section-title">More than a terminal emulator</h2>
+      <p class="section-desc">Traditional terminals make you choose between power and simplicity. Terminator gives you both.</p>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-card fade-in">
+        <h3>Traditional Terminals</h3>
+        <ul class="compare-list">
+          <li><span class="cross">&times;</span> Separate tmux/screen config to learn</li>
+          <li><span class="cross">&times;</span> No AI assistance</li>
+          <li><span class="cross">&times;</span> Manual SSH connection management</li>
+          <li><span class="cross">&times;</span> No built-in port/Docker visibility</li>
+          <li><span class="cross">&times;</span> Session restore requires plugins</li>
+          <li><span class="cross">&times;</span> Theme changes need config editing</li>
+          <li><span class="cross">&times;</span> No command palette</li>
+        </ul>
+      </div>
+      <div class="compare-card highlight fade-in">
+        <h3>Terminator <span class="tag">All-in-one</span></h3>
+        <ul class="compare-list">
+          <li><span class="check">&check;</span> Built-in splits, tabs, and grid layout</li>
+          <li><span class="check">&check;</span> Claude AI autocomplete + chat sidebar</li>
+          <li><span class="check">&check;</span> SSH bookmarks + remote session discovery</li>
+          <li><span class="check">&check;</span> Port manager + Docker dashboard built in</li>
+          <li><span class="check">&check;</span> One-click session save &amp; auto-restore</li>
+          <li><span class="check">&check;</span> Cycle themes with a keyboard shortcut</li>
+          <li><span class="check">&check;</span> Cmd+P for everything, instantly</li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
@@ -470,7 +701,7 @@ footer{
     <div class="fade-in">
       <p class="section-label">See it in action</p>
       <h2 class="section-title">A terminal built for the modern developer</h2>
-      <p class="section-desc">Split panes, AI suggestions, and a command palette -- all in a sleek, GPU-accelerated interface.</p>
+      <p class="section-desc">Split panes, AI suggestions, and a command palette — all in a sleek, GPU-accelerated interface.</p>
     </div>
     <div class="screenshot-wrap fade-in">
       <div class="screenshot-glow"></div>
@@ -485,28 +716,21 @@ footer{
     <div class="fade-in">
       <p class="section-label">Keyboard-first</p>
       <h2 class="section-title">Shortcuts that keep you in flow</h2>
-      <p class="section-desc">Every action is one shortcut away. On Windows and Linux, substitute Ctrl for Cmd.</p>
+      <p class="section-desc">Every action is one shortcut away. On Windows/Linux, substitute Ctrl for Cmd.</p>
     </div>
-    <div class="shortcuts-table fade-in">
-      <table>
-        <thead>
-          <tr><th>Shortcut</th><th>Action</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><kbd>Cmd</kbd> + <kbd>D</kbd></td><td class="action">Split pane right</td></tr>
-          <tr><td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd></td><td class="action">Split pane down</td></tr>
-          <tr><td><kbd>Cmd</kbd> + <kbd>T</kbd></td><td class="action">New tab</td></tr>
-          <tr><td><kbd>Cmd</kbd> + <kbd>W</kbd></td><td class="action">Close pane</td></tr>
-          <tr><td><kbd>Cmd</kbd> + <kbd>P</kbd></td><td class="action">Command palette</td></tr>
-          <tr><td><kbd>Cmd</kbd> + <kbd>F</kbd></td><td class="action">Find in terminal</td></tr>
-          <tr><td><kbd>Cmd</kbd> + <kbd>K</kbd></td><td class="action">Clear terminal</td></tr>
-          <tr><td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd></td><td class="action">Zoom / unzoom pane</td></tr>
-          <tr><td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd></td><td class="action">Toggle broadcast mode</td></tr>
-          <tr><td><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></td><td class="action">Save session</td></tr>
-          <tr><td><kbd>Cmd</kbd> + <kbd>Arrow</kbd></td><td class="action">Navigate between panes</td></tr>
-          <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd></td><td class="action">Cycle theme</td></tr>
-        </tbody>
-      </table>
+    <div class="shortcuts-columns fade-in">
+      <div class="shortcut-item"><span class="shortcut-action">Split right</span><span class="shortcut-keys"><kbd>Cmd</kbd><kbd>D</kbd></span></div>
+      <div class="shortcut-item"><span class="shortcut-action">Split down</span><span class="shortcut-keys"><kbd>Cmd</kbd><kbd>Shift</kbd><kbd>D</kbd></span></div>
+      <div class="shortcut-item"><span class="shortcut-action">New tab</span><span class="shortcut-keys"><kbd>Cmd</kbd><kbd>T</kbd></span></div>
+      <div class="shortcut-item"><span class="shortcut-action">Close pane</span><span class="shortcut-keys"><kbd>Cmd</kbd><kbd>W</kbd></span></div>
+      <div class="shortcut-item"><span class="shortcut-action">Command palette</span><span class="shortcut-keys"><kbd>Cmd</kbd><kbd>P</kbd></span></div>
+      <div class="shortcut-item"><span class="shortcut-action">Find in terminal</span><span class="shortcut-keys"><kbd>Cmd</kbd><kbd>F</kbd></span></div>
+      <div class="shortcut-item"><span class="shortcut-action">Clear terminal</span><span class="shortcut-keys"><kbd>Cmd</kbd><kbd>K</kbd></span></div>
+      <div class="shortcut-item"><span class="shortcut-action">Zoom pane</span><span class="shortcut-keys"><kbd>Cmd</kbd><kbd>Shift</kbd><kbd>Enter</kbd></span></div>
+      <div class="shortcut-item"><span class="shortcut-action">Broadcast mode</span><span class="shortcut-keys"><kbd>Cmd</kbd><kbd>Shift</kbd><kbd>B</kbd></span></div>
+      <div class="shortcut-item"><span class="shortcut-action">Save session</span><span class="shortcut-keys"><kbd>Cmd</kbd><kbd>Shift</kbd><kbd>S</kbd></span></div>
+      <div class="shortcut-item"><span class="shortcut-action">Navigate panes</span><span class="shortcut-keys"><kbd>Cmd</kbd><kbd>Arrow</kbd></span></div>
+      <div class="shortcut-item"><span class="shortcut-action">Cycle theme</span><span class="shortcut-keys"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>T</kbd></span></div>
     </div>
   </div>
 </section>
@@ -522,28 +746,55 @@ footer{
     <div class="install-grid">
 
       <div class="install-card fade-in">
-        <h3>Homebrew</h3>
+        <h3>
+          <svg class="platform-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          Homebrew
+        </h3>
         <p class="subtitle">Recommended for macOS</p>
         <pre><span class="cmd">brew install</span> --cask terminator-terminal</pre>
       </div>
 
       <div class="install-card fade-in">
-        <h3>Download Binary</h3>
-        <p class="subtitle">macOS (.dmg) / Windows (.exe) / Linux (.AppImage)</p>
-        <pre><span class="comment"># Grab the latest release from GitHub</span>
+        <h3>
+          <svg class="platform-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download Binary
+        </h3>
+        <p class="subtitle">macOS (.dmg) &middot; Windows (.exe) &middot; Linux (.AppImage)</p>
+        <pre><span class="comment"># Grab the latest release</span>
 <a href="https://github.com/suvash-glitch/Terminator/releases" style="color:var(--accent)">github.com/suvash-glitch/Terminator/releases</a></pre>
       </div>
 
       <div class="install-card fade-in">
-        <h3>Build from Source</h3>
+        <h3>
+          <svg class="platform-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Build from Source
+        </h3>
         <p class="subtitle">For contributors and tinkerers</p>
         <pre><span class="cmd">git clone</span> https://github.com/suvash-glitch/Terminator.git
-<span class="cmd">cd</span> Terminator
-<span class="cmd">npm install</span>
+<span class="cmd">cd</span> Terminator && <span class="cmd">npm install</span>
 <span class="cmd">npm run</span> rebuild  <span class="comment"># rebuild node-pty</span>
 <span class="cmd">npm start</span></pre>
       </div>
 
+    </div>
+  </div>
+</section>
+
+<!-- ======== CTA ======== -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-content fade-in">
+      <h2 class="cta-title">Ready to upgrade your terminal?</h2>
+      <p class="cta-desc">Join developers who've switched to a smarter, faster terminal workflow.</p>
+      <div class="hero-buttons">
+        <a href="https://github.com/suvash-glitch/Terminator/releases" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download Terminator
+        </a>
+        <a href="https://github.com/suvash-glitch/Terminator" class="btn btn-secondary">
+          View Source Code
+        </a>
+      </div>
     </div>
   </div>
 </section>
@@ -556,41 +807,70 @@ footer{
         <a href="https://github.com/suvash-glitch/Terminator">GitHub</a>
         <a href="https://github.com/suvash-glitch/Terminator/releases">Releases</a>
         <a href="https://github.com/suvash-glitch/Terminator/issues">Issues</a>
+        <a href="https://github.com/suvash-glitch/Terminator/blob/main/CONTRIBUTING.md">Contributing</a>
         <a href="https://github.com/suvash-glitch/Terminator/blob/main/LICENSE">MIT License</a>
       </div>
       <p class="footer-tech">Built with Electron, xterm.js, node-pty, and Claude AI</p>
-      <p>&copy; 2026 Suvash Bhusal. All rights reserved.</p>
+      <p>&copy; 2026 Suvash Bhusal</p>
     </div>
   </div>
 </footer>
 
-<!-- ======== SCROLL ANIMATIONS ======== -->
+<!-- ======== SCRIPTS ======== -->
 <script>
 (function(){
+  // Scroll-triggered fade-in
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
+      if (entry.isIntersecting) entry.target.classList.add('visible');
     });
-  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-
+  }, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-  // Stagger feature card animations
+  // Stagger feature cards
   document.querySelectorAll('.feature-card').forEach((card, i) => {
-    card.style.transitionDelay = `${i * 60}ms`;
+    card.style.transitionDelay = `${i * 50}ms`;
   });
 
-  // Smooth nav background on scroll
+  // Nav scroll effect
   const nav = document.querySelector('nav');
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 60) {
-      nav.style.background = 'rgba(10,10,26,0.95)';
-    } else {
-      nav.style.background = 'rgba(10,10,26,0.8)';
-    }
+    nav.classList.toggle('scrolled', window.scrollY > 40);
   }, { passive: true });
+
+  // Terminal typing animation
+  const lines = document.querySelectorAll('#terminal-anim .line');
+  let lineIndex = 0;
+  function showNextLine() {
+    if (lineIndex >= lines.length) return;
+    const line = lines[lineIndex];
+    line.classList.remove('hidden');
+    const cmdEl = line.querySelector('.cmd[data-text]');
+    if (cmdEl) {
+      const text = cmdEl.dataset.text;
+      let i = 0;
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      cmdEl.after(cursor);
+      const typeChar = () => {
+        if (i < text.length) {
+          cmdEl.textContent += text[i++];
+          setTimeout(typeChar, 30 + Math.random() * 40);
+        } else {
+          cursor.remove();
+          lineIndex++;
+          setTimeout(showNextLine, 400);
+        }
+      };
+      setTimeout(typeChar, 300);
+    } else {
+      lineIndex++;
+      setTimeout(showNextLine, lineIndex < lines.length - 1 ? 150 : 600);
+    }
+  }
+  // Start typing after page load
+  lines.forEach((l, i) => { if (i > 0) l.classList.add('hidden'); });
+  setTimeout(showNextLine, 800);
 })();
 </script>
 
