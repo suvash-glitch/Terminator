@@ -9,7 +9,7 @@
 </head>
 <body>
   <div class="titlebar">
-    <span class="titlebar-title"><svg class="titlebar-logo" viewBox="0 0 16 16" width="16" height="16"><rect x="3" y="3.5" width="10" height="0.8" rx="0.4" fill="var(--t-accent)"/><rect x="7.6" y="3.5" width="0.8" height="9.5" rx="0.4" fill="var(--t-accent)"/><rect x="6.6" y="12" width="2.8" height="0.8" rx="0.3" fill="var(--t-accent)" opacity="0.9"/></svg>Terminator</span>
+    <span class="titlebar-title"><svg class="titlebar-logo" viewBox="0 0 16 16" width="16" height="16"><path d="M3.5,4.5 L8,8 L3.5,11.5" fill="none" stroke="var(--t-accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="9" y="10" width="4.5" height="2" rx="0.8" fill="var(--t-accent)"/></svg>Terminator</span>
 
     <div class="titlebar-group">
       <button class="btn-icon btn-blue" id="btn-add" title="New Terminal  Cmd+T">
@@ -49,9 +49,6 @@
       <button class="btn-icon" id="btn-ports" title="Port Manager  Cmd+Shift+P">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
       </button>
-      <button class="btn-icon" id="btn-tailscale" title="Tailscale Devices">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="12" cy="19" r="2"/><line x1="12" y1="7" x2="12" y2="17"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
-      </button>
       <button class="btn-icon" id="btn-pipeline" title="Pipeline Runner">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="20" r="2"/><line x1="12" y1="6" x2="12" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/></svg>
       </button>
@@ -66,6 +63,19 @@
       </button>
       <button class="btn-icon" id="btn-settings" title="Settings  Cmd+,">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </button>
+    </div>
+
+    <!-- Window controls for Windows/Linux (hidden on macOS) -->
+    <div class="win-controls" id="win-controls">
+      <button class="win-ctrl-btn" id="win-minimize" title="Minimize">
+        <svg width="12" height="12" viewBox="0 0 12 12"><line x1="2" y1="6" x2="10" y2="6" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <button class="win-ctrl-btn" id="win-maximize" title="Maximize">
+        <svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+      </button>
+      <button class="win-ctrl-btn win-close" id="win-close" title="Close">
+        <svg width="12" height="12" viewBox="0 0 12 12"><line x1="2" y1="2" x2="10" y2="10" stroke="currentColor" stroke-width="1.2"/><line x1="10" y1="2" x2="2" y2="10" stroke="currentColor" stroke-width="1.2"/></svg>
       </button>
     </div>
   </div>
@@ -508,31 +518,6 @@
     <div class="history-results" id="history-results"></div>
   </div>
 
-  <!-- Tailscale panel -->
-  <div class="side-panel" id="tailscale-panel">
-    <div class="side-panel-header">
-      <h3>Tailscale Devices</h3>
-      <div style="display:flex;gap:6px;align-items:center">
-        <button class="side-panel-close" id="tailscale-refresh" title="Refresh" style="color:var(--t-accent)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></button>
-        <button class="side-panel-close" id="tailscale-close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-      </div>
-    </div>
-    <div class="side-panel-body" id="tailscale-body">
-      <div class="tailscale-loading">Scanning network...</div>
-    </div>
-    <div class="side-panel-footer" id="tailscale-footer">
-      <div class="tailscale-sync-section">
-        <div class="tailscale-sync-header">
-          <span style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Sync</span>
-          <span class="tailscale-sync-status" id="tailscale-sync-status">Ready</span>
-        </div>
-        <div style="display:flex;gap:6px;margin-top:8px">
-          <button class="tailscale-sync-btn" id="tailscale-export-btn">Export Data</button>
-          <button class="tailscale-sync-btn" id="tailscale-import-btn">Import Data</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Pipeline Visual Editor (fullscreen overlay) -->
   <div class="pipeline-overlay" id="pipeline-panel">
@@ -647,9 +632,8 @@
         <div class="welcome-brand">
           <svg viewBox="0 0 48 48" width="36" height="36">
             <rect x="4" y="4" width="40" height="40" rx="10" fill="var(--t-ui)" stroke="color-mix(in srgb, var(--t-accent) 20%, transparent)" stroke-width="1.5"/>
-            <rect x="13" y="14" width="22" height="1.5" rx="0.75" fill="var(--t-accent)"/>
-            <rect x="23.25" y="14" width="1.5" height="20" rx="0.75" fill="var(--t-accent)"/>
-            <rect x="20.5" y="32" width="7" height="1.5" rx="0.6" fill="var(--t-accent)" opacity="0.9"/>
+            <path d="M14,16 L24,24 L14,32" fill="none" stroke="var(--t-accent)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="26" y="28.5" width="9" height="3.5" rx="1.5" fill="var(--t-accent)"/>
           </svg>
           <span class="welcome-brand-name">Terminator</span>
         </div>

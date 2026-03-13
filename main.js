@@ -1225,85 +1225,6 @@ ipcMain.handle("exec-pipeline-step", async (_, { command, cwd }) => {
 ipcMain.on("save-cmd-bookmarks", (_, data) => writeJSON(CMD_BOOKMARKS_PATH, data));
 ipcMain.handle("load-cmd-bookmarks", () => readJSON(CMD_BOOKMARKS_PATH, []));
 
-// Tailscale Device Dashboard
-ipcMain.handle("tailscale-status", async () => {
-  try {
-    const raw = execSync("tailscale status --json 2>/dev/null", { encoding: "utf8", timeout: 10000 });
-    const status = JSON.parse(raw);
-    const devices = [];
-    if (status.Self) {
-      const s = status.Self;
-      devices.push({ name: s.HostName || s.DNSName || "self", ip: s.TailscaleIPs?.[0] || "", online: s.Online !== false, os: s.OS || "", hostname: s.DNSName || s.HostName || "", isSelf: true });
-    }
-    for (const [, peer] of Object.entries(status.Peer || {})) {
-      devices.push({ name: peer.HostName || peer.DNSName || "unknown", ip: peer.TailscaleIPs?.[0] || "", online: peer.Online === true, os: peer.OS || "", hostname: peer.DNSName || peer.HostName || "", isSelf: false });
-    }
-    return { ok: true, devices };
-  } catch (e) {
-    const msg = e.message || "";
-    if (msg.includes("ENOENT") || msg.includes("not found")) return { ok: false, error: "Tailscale not installed" };
-    if (msg.includes("NeedsLogin")) return { ok: false, error: "Tailscale not logged in. Run: tailscale login" };
-    return { ok: false, error: "Tailscale error: " + msg };
-  }
-});
-ipcMain.handle("tailscale-ssh", async (_, { ip, user }) => ({ ip, user }));
-
-// Cross-Device Sync
-const SYNC_PORT = 7685;
-let syncServer = null;
-ipcMain.handle("sync-export", async () => {
-  try {
-    return { ok: true, data: { settings: readJSON(CONFIG_PATH, {}), snippets: readJSON(SNIPPETS_PATH, []), profiles: readJSON(PROFILES_PATH, []), bookmarks: readJSON(path.join(app.getPath("userData"), "bookmarks.json"), []), projects: readJSON(path.join(app.getPath("userData"), "projects.json"), []), recents: readJSON(RECENTS_PATH, []), sshBookmarks: readJSON(path.join(app.getPath("userData"), "ssh-bookmarks.json"), []), exportedAt: new Date().toISOString(), hostname: os.hostname() } };
-  } catch (e) { return { ok: false, error: e.message }; }
-});
-ipcMain.handle("sync-import", async (_, data) => {
-  try {
-    if (!data || typeof data !== "object") return { ok: false, error: "Invalid sync data" };
-    if (data.settings) { const current = readJSON(CONFIG_PATH, {}); for (const [k, v] of Object.entries(data.settings)) { if (!(k in current)) current[k] = v; } writeJSON(CONFIG_PATH, current); }
-    function mergeArr(fp, incoming, fb) { if (!Array.isArray(incoming) || !incoming.length) return; const cur = readJSON(fp, fb); const names = new Set(cur.map(i => i.name || i.label || i.host || JSON.stringify(i))); for (const item of incoming) { const key = item.name || item.label || item.host || JSON.stringify(item); if (!names.has(key)) { cur.push(item); names.add(key); } } writeJSON(fp, cur); }
-    mergeArr(SNIPPETS_PATH, data.snippets, []); mergeArr(PROFILES_PATH, data.profiles, []); mergeArr(path.join(app.getPath("userData"), "bookmarks.json"), data.bookmarks, []); mergeArr(path.join(app.getPath("userData"), "ssh-bookmarks.json"), data.sshBookmarks, []);
-    if (Array.isArray(data.recents)) { const cur = readJSON(RECENTS_PATH, []); const paths = new Set(cur.map(r => r.path || r)); for (const r of data.recents) { const p = r.path || r; if (!paths.has(p)) { cur.push(r); paths.add(p); } } writeJSON(RECENTS_PATH, cur); }
-    return { ok: true, message: "Imported successfully" };
-  } catch (e) { return { ok: false, error: e.message }; }
-});
-ipcMain.handle("sync-push", async (_, { targetIp }) => {
-  try {
-    const exportData = { settings: readJSON(CONFIG_PATH, {}), snippets: readJSON(SNIPPETS_PATH, []), profiles: readJSON(PROFILES_PATH, []), bookmarks: readJSON(path.join(app.getPath("userData"), "bookmarks.json"), []), recents: readJSON(RECENTS_PATH, []), sshBookmarks: readJSON(path.join(app.getPath("userData"), "ssh-bookmarks.json"), []), hostname: os.hostname() };
-    return new Promise((resolve) => {
-      const client = new net.Socket(); let responded = false;
-      client.setTimeout(10000);
-      client.connect(SYNC_PORT, targetIp, () => { client.write(JSON.stringify(exportData)); client.end(); });
-      client.on("data", d => { if (!responded) { responded = true; try { resolve(JSON.parse(d.toString())); } catch { resolve({ ok: true }); } } });
-      client.on("end", () => { if (!responded) { responded = true; resolve({ ok: true }); } });
-      client.on("error", err => { if (!responded) { responded = true; resolve({ ok: false, error: err.message }); } });
-      client.on("timeout", () => { client.destroy(); if (!responded) { responded = true; resolve({ ok: false, error: "Timeout" }); } });
-    });
-  } catch (e) { return { ok: false, error: e.message }; }
-});
-ipcMain.handle("sync-server-start", async () => {
-  if (syncServer) return { ok: true };
-  try {
-    syncServer = net.createServer((socket) => {
-      let chunks = [];
-      socket.on("data", c => chunks.push(c));
-      socket.on("end", () => {
-        try {
-          const data = JSON.parse(Buffer.concat(chunks).toString());
-          // Auto-import
-          if (data.settings) { const cur = readJSON(CONFIG_PATH, {}); for (const [k, v] of Object.entries(data.settings)) { if (!(k in cur)) cur[k] = v; } writeJSON(CONFIG_PATH, cur); }
-          function mergeArr(fp, incoming) { if (!Array.isArray(incoming) || !incoming.length) return; const cur = readJSON(fp, []); const names = new Set(cur.map(i => i.name || i.label || i.host || JSON.stringify(i))); for (const item of incoming) { const key = item.name || item.label || item.host || JSON.stringify(item); if (!names.has(key)) { cur.push(item); names.add(key); } } writeJSON(fp, cur); }
-          mergeArr(SNIPPETS_PATH, data.snippets); mergeArr(PROFILES_PATH, data.profiles); mergeArr(path.join(app.getPath("userData"), "bookmarks.json"), data.bookmarks);
-          socket.write(JSON.stringify({ ok: true }));
-          if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send("sync-received", data.hostname || "unknown");
-        } catch { try { socket.write(JSON.stringify({ ok: false })); } catch {} }
-      });
-      socket.on("error", () => {});
-    });
-    syncServer.on("error", () => { syncServer = null; });
-    syncServer.listen(SYNC_PORT, "0.0.0.0");
-    return { ok: true };
-  } catch (e) { return { ok: false, error: e.message }; }
-});
 
 // Settings
 const SETTINGS_PATH = path.join(app.getPath("userData"), "settings.json");
@@ -1427,6 +1348,11 @@ ipcMain.on("quit-app", () => {
   for (const [, p] of ptys) p.kill();
   app.quit();
 });
+
+// Window controls (for Windows/Linux frameless windows)
+ipcMain.on("win-minimize", () => { if (mainWindow) mainWindow.minimize(); });
+ipcMain.on("win-maximize", () => { if (mainWindow) { mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize(); } });
+ipcMain.on("win-close", () => { if (mainWindow) mainWindow.close(); });
 
 // ============================================================
 // PLUGIN SYSTEM

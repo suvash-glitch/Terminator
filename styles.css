@@ -86,6 +86,31 @@
     .btn-divider { width: 1px; height: 14px; background: rgba(255,255,255,0.06); flex-shrink: 0; margin: 0 3px; }
     .spacer { flex: 1; -webkit-app-region: drag; }
 
+    /* Window controls (Windows/Linux) */
+    .win-controls {
+      display: none;
+      align-items: stretch;
+      -webkit-app-region: no-drag;
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      z-index: 100;
+    }
+    body.show-win-controls .win-controls { display: flex; }
+    body.show-win-controls .titlebar { padding-left: 12px; padding-right: 138px; }
+    .win-ctrl-btn {
+      width: 46px;
+      display: flex; align-items: center; justify-content: center;
+      background: none; border: none; color: var(--t-fg);
+      cursor: pointer; transition: background 0.15s;
+      -webkit-app-region: no-drag;
+      opacity: 0.8;
+    }
+    .win-ctrl-btn:hover { background: rgba(255,255,255,0.1); opacity: 1; }
+    .win-ctrl-btn:active { background: rgba(255,255,255,0.15); }
+    .win-ctrl-btn.win-close:hover { background: #e81123; color: #fff; opacity: 1; }
+
     /* Quick launch tooltip */
     .btn-launch { position: relative; }
     .btn-launch .btn-path {
@@ -1674,82 +1699,6 @@
     }
     .tab-sparkline:hover .sparkline-tooltip { display: block; }
 
-    /* ============================================================
-       Tailscale Dashboard (agent-a6a6b6a2)
-       ============================================================ */
-    .tailscale-loading {
-      padding: 24px; text-align: center; color: var(--t-fg); opacity: 0.4; font-size: 12px;
-    }
-    .tailscale-error {
-      padding: 16px; text-align: center; color: #ff6961; font-size: 12px;
-      background: rgba(255,69,58,0.06); margin: 8px; border-radius: 8px;
-      border: 1px solid rgba(255,69,58,0.15);
-    }
-    .tailscale-device-card {
-      padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.05);
-      cursor: pointer; transition: background 0.1s;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .tailscale-device-card:hover { background: rgba(255,255,255,0.04); }
-    .tailscale-device-card.is-self { background: color-mix(in srgb, var(--t-accent) 6%, transparent); }
-    .tailscale-status-dot {
-      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-    }
-    .tailscale-status-dot.online { background: #30d158; box-shadow: 0 0 6px rgba(48,209,88,0.4); }
-    .tailscale-status-dot.offline { background: var(--t-fg); opacity: 0.35; }
-    .tailscale-device-info { flex: 1; min-width: 0; }
-    .tailscale-device-name {
-      font-size: 12px; font-weight: 600; color: var(--t-fg); white-space: nowrap;
-      overflow: hidden; text-overflow: ellipsis;
-    }
-    .tailscale-device-meta {
-      font-size: 10px; color: var(--t-fg); opacity: 0.5; margin-top: 2px; display: flex; gap: 8px; align-items: center;
-    }
-    .tailscale-device-os {
-      font-size: 9px; color: var(--t-fg); opacity: 0.55; background: rgba(255,255,255,0.06);
-      padding: 1px 6px; border-radius: 3px; text-transform: capitalize;
-    }
-    .tailscale-device-actions {
-      display: flex; gap: 4px; flex-shrink: 0;
-    }
-    .tailscale-btn {
-      background: color-mix(in srgb, var(--t-accent) 15%, transparent); border: 1px solid color-mix(in srgb, var(--t-accent) 30%, transparent);
-      color: var(--t-accent); font-size: 10px; padding: 3px 8px; border-radius: 4px;
-      cursor: pointer; transition: all 0.1s; font-family: inherit;
-    }
-    .tailscale-btn:hover { background: color-mix(in srgb, var(--t-accent) 25%, transparent); color: #7dd3fc; }
-    .tailscale-btn.sync-btn {
-      background: rgba(48,209,88,0.12); border-color: rgba(48,209,88,0.3); color: #30d158;
-    }
-    .tailscale-btn.sync-btn:hover { background: rgba(48,209,88,0.22); color: #5ee77a; }
-    .tailscale-btn:disabled {
-      opacity: 0.4; cursor: not-allowed;
-    }
-    .tailscale-section-label {
-      font-size: 10px; color: var(--t-fg); opacity: 0.4; text-transform: uppercase; letter-spacing: 0.5px;
-      padding: 10px 16px 4px; font-weight: 600;
-    }
-    .tailscale-device-count {
-      font-size: 10px; color: var(--t-fg); opacity: 0.4; padding: 4px 16px 8px;
-    }
-    .tailscale-sync-section {
-      padding: 4px 0 0;
-    }
-    .tailscale-sync-header {
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .tailscale-sync-status {
-      font-size: 10px; color: #30d158; background: rgba(48,209,88,0.1);
-      padding: 2px 8px; border-radius: 10px;
-    }
-    .tailscale-sync-status.syncing { color: #ff9f0a; background: rgba(255,159,10,0.1); }
-    .tailscale-sync-status.error { color: #ff6961; background: rgba(255,69,58,0.1); }
-    .tailscale-sync-btn {
-      flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-      color: var(--t-fg); opacity: 0.7; font-size: 11px; padding: 6px 10px; border-radius: 6px;
-      cursor: pointer; font-family: inherit; transition: all 0.1s;
-    }
-    .tailscale-sync-btn:hover { background: rgba(255,255,255,0.1); color: var(--t-fg); }
 
     /* ============================================================
        Pipeline Runner + Command Bookmarks + Transitions (agent-ad954acf)
@@ -2114,7 +2063,7 @@
     @media (max-width: 600px) {
       /* Toolbar: show only essential buttons */
       .titlebar { padding: 0 6px 0 68px; height: 36px; }
-      #btn-broadcast, #btn-search, #btn-ports, #btn-tailscale,
+      #btn-broadcast, #btn-search, #btn-ports,
       #btn-pipeline, #btn-cmd-bookmarks, #btn-theme,
       #btn-ide-mode, #btn-skip-perms, #btn-launch-menu { display: none; }
       .titlebar-group .btn-divider { display: none; }

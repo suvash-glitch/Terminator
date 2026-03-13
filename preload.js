@@ -60,13 +60,6 @@ contextBridge.exposeInMainWorld("terminator", {
   getPaneStats: (id) => ipcRenderer.invoke("get-pane-stats", id),
   listPorts: () => ipcRenderer.invoke("list-ports"),
   killPort: (pid) => ipcRenderer.invoke("kill-port", pid),
-  tailscaleStatus: () => ipcRenderer.invoke("tailscale-status"),
-  tailscaleSsh: (params) => ipcRenderer.invoke("tailscale-ssh", params),
-  syncExport: () => ipcRenderer.invoke("sync-export"),
-  syncImport: (data) => ipcRenderer.invoke("sync-import", data),
-  syncPush: (params) => ipcRenderer.invoke("sync-push", params),
-  syncServerStart: () => ipcRenderer.invoke("sync-server-start"),
-  onSyncReceived: (callback) => ipcRenderer.on("sync-received", (_, hostname) => callback(hostname)),
   savePipelines: (data) => ipcRenderer.invoke("save-pipelines", data),
   loadPipelines: () => ipcRenderer.invoke("load-pipelines"),
   execPipelineStep: (params) => ipcRenderer.invoke("exec-pipeline-step", params),
@@ -81,5 +74,10 @@ contextBridge.exposeInMainWorld("terminator", {
   installPlugin: (dir) => ipcRenderer.invoke("install-plugin", dir),
   uninstallPlugin: (dir) => ipcRenderer.invoke("uninstall-plugin", dir),
   onUpdateStatus: (callback) => ipcRenderer.on("update-status", (_, data) => callback(data)),
+  // Window controls (Windows/Linux)
+  winMinimize: () => ipcRenderer.send("win-minimize"),
+  winMaximize: () => ipcRenderer.send("win-maximize"),
+  winClose: () => ipcRenderer.send("win-close"),
+  platform: process.platform,
 
 });

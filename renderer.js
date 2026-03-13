@@ -1047,8 +1047,6 @@
       { label: "Docker Containers", action: () => openDockerPanel(), category: "Tools" },
       { label: "Port Manager", shortcut: "Cmd+Shift+P", action: () => openPortPanel(), category: "Tools" },
       { label: "Command History Search", shortcut: "Ctrl+R", action: () => openHistorySearch(), category: "Search" },
-      { label: "Tailscale Devices", action: () => openTailscalePanel(), category: "Tools" },
-      { label: "Tailscale Sync - Push to All", action: () => tailscaleSyncPushAll(), category: "Tools" },
       { label: "Pipeline Runner", action: () => openPipelinePanel(), category: "Tools" },
       { label: "Command Bookmarks", action: () => openCmdBookmarksPanel(), category: "Tools" },
       { label: "Bookmark Current Command", action: () => bookmarkLastCommand(), category: "Tools" },
@@ -1794,7 +1792,6 @@
     document.getElementById("btn-palette").addEventListener("click", openPalette);
     document.getElementById("btn-theme").addEventListener("click", cycleTheme);
     document.getElementById("btn-ports").addEventListener("click", () => openPortPanel());
-    document.getElementById("btn-tailscale").addEventListener("click", () => openTailscalePanel());
     document.getElementById("btn-pipeline").addEventListener("click", openPipelinePanel);
     document.getElementById("btn-cmd-bookmarks").addEventListener("click", openCmdBookmarksPanel);
     document.getElementById("btn-settings").addEventListener("click", openSettings);
@@ -2929,250 +2926,6 @@
 
     setInterval(refreshPaneStats, 3000);
 
-    // ============================================================
-    // TAILSCALE DEVICE DASHBOARD (agent-a6a6b6a2)
-    // ============================================================
-    const tailscalePanel = document.getElementById("tailscale-panel");
-    const tailscaleBody = document.getElementById("tailscale-body");
-    const tailscaleSyncStatus = document.getElementById("tailscale-sync-status");
-    let tailscaleRefreshInterval = null;
-    let tailscaleDevices = [];
-
-    function getOsIcon(osName) {
-      const o = (osName || "").toLowerCase();
-      if (o.includes("macos") || o.includes("darwin") || o.includes("ios")) return "macOS";
-      if (o.includes("linux")) return "Linux";
-      if (o.includes("windows")) return "Windows";
-      if (o.includes("android")) return "Android";
-      if (o.includes("freebsd")) return "FreeBSD";
-      return osName || "Unknown";
-    }
-
-    async function openTailscalePanel() {
-      tailscalePanel.classList.add("visible");
-      await refreshTailscale();
-      if (tailscaleRefreshInterval) clearInterval(tailscaleRefreshInterval);
-      tailscaleRefreshInterval = setInterval(() => {
-        if (tailscalePanel.classList.contains("visible")) {
-          refreshTailscale();
-        } else {
-          clearInterval(tailscaleRefreshInterval);
-          tailscaleRefreshInterval = null;
-        }
-      }, 30000);
-    }
-
-    async function refreshTailscale() {
-      tailscaleBody.innerHTML = '<div class="tailscale-loading">Scanning network...</div>';
-      try {
-        const result = await window.terminator.tailscaleStatus();
-        if (!result.ok) {
-          tailscaleBody.innerHTML = `<div class="tailscale-error">${result.error}</div>`;
-          return;
-        }
-        tailscaleDevices = result.devices || [];
-        renderTailscaleDevices();
-      } catch (e) {
-        tailscaleBody.innerHTML = '<div class="tailscale-error">Failed to get Tailscale status</div>';
-      }
-    }
-
-    function renderTailscaleDevices() {
-      tailscaleBody.innerHTML = "";
-      if (tailscaleDevices.length === 0) {
-        tailscaleBody.innerHTML = '<div class="tailscale-loading">No devices found</div>';
-        return;
-      }
-
-      const onlineDevices = tailscaleDevices.filter(d => d.online);
-      const offlineDevices = tailscaleDevices.filter(d => !d.online);
-
-      const countDiv = document.createElement("div");
-      countDiv.className = "tailscale-device-count";
-      countDiv.textContent = `${onlineDevices.length} online, ${offlineDevices.length} offline`;
-      tailscaleBody.appendChild(countDiv);
-
-      if (onlineDevices.length > 0) {
-        const label = document.createElement("div");
-        label.className = "tailscale-section-label";
-        label.textContent = "Online";
-        tailscaleBody.appendChild(label);
-        onlineDevices.forEach(d => tailscaleBody.appendChild(createDeviceCard(d)));
-      }
-
-      if (offlineDevices.length > 0) {
-        const label = document.createElement("div");
-        label.className = "tailscale-section-label";
-        label.textContent = "Offline";
-        tailscaleBody.appendChild(label);
-        offlineDevices.forEach(d => tailscaleBody.appendChild(createDeviceCard(d)));
-      }
-    }
-
-    function createDeviceCard(device) {
-      const card = document.createElement("div");
-      card.className = "tailscale-device-card" + (device.isSelf ? " is-self" : "");
-
-      const dot = document.createElement("div");
-      dot.className = "tailscale-status-dot " + (device.online ? "online" : "offline");
-
-      const info = document.createElement("div");
-      info.className = "tailscale-device-info";
-      info.innerHTML = `
-        <div class="tailscale-device-name">${device.name}${device.isSelf ? " (this device)" : ""}</div>
-        <div class="tailscale-device-meta">
-          <span>${device.ip}</span>
-          <span class="tailscale-device-os">${getOsIcon(device.os)}</span>
-        </div>
-      `;
-
-      const actions = document.createElement("div");
-      actions.className = "tailscale-device-actions";
-
-      if (!device.isSelf && device.online) {
-        const connectBtn = document.createElement("button");
-        connectBtn.className = "tailscale-btn";
-        connectBtn.textContent = "SSH";
-        connectBtn.title = "Open SSH terminal to this device";
-        connectBtn.addEventListener("click", async (e) => {
-          e.stopPropagation();
-          const user = prompt("SSH username:", "root") || "";
-          if (!user) return;
-          tailscalePanel.classList.remove("visible");
-          const id = await addTerminal();
-          setTimeout(() => {
-            window.terminator.sendInput(id, `ssh ${user}@${device.ip}\n`);
-          }, 300);
-          showToast(`Connecting to ${device.name}...`);
-        });
-        actions.appendChild(connectBtn);
-
-        const syncBtn = document.createElement("button");
-        syncBtn.className = "tailscale-btn sync-btn";
-        syncBtn.textContent = "Push";
-        syncBtn.title = "Push settings/snippets to this device";
-        syncBtn.addEventListener("click", async (e) => {
-          e.stopPropagation();
-          await tailscaleSyncPush(device.ip, device.name);
-        });
-        actions.appendChild(syncBtn);
-      }
-
-      card.appendChild(dot);
-      card.appendChild(info);
-      card.appendChild(actions);
-
-      if (!device.isSelf && device.online) {
-        card.addEventListener("click", async () => {
-          const user = prompt("SSH username:", "root") || "";
-          if (!user) return;
-          tailscalePanel.classList.remove("visible");
-          const id = await addTerminal();
-          setTimeout(() => {
-            window.terminator.sendInput(id, `ssh ${user}@${device.ip}\n`);
-          }, 300);
-          showToast(`Connecting to ${device.name}...`);
-        });
-      }
-
-      return card;
-    }
-
-    async function tailscaleSyncPush(ip, name) {
-      tailscaleSyncStatus.textContent = "Syncing...";
-      tailscaleSyncStatus.className = "tailscale-sync-status syncing";
-      try {
-        const result = await window.terminator.syncPush({ targetIp: ip });
-        if (result.ok) {
-          tailscaleSyncStatus.textContent = "Pushed";
-          tailscaleSyncStatus.className = "tailscale-sync-status";
-          showToast(`Sync pushed to ${name || ip}`);
-        } else {
-          tailscaleSyncStatus.textContent = "Failed";
-          tailscaleSyncStatus.className = "tailscale-sync-status error";
-          showToast(`Sync failed: ${result.error}`);
-        }
-      } catch (e) {
-        tailscaleSyncStatus.textContent = "Error";
-        tailscaleSyncStatus.className = "tailscale-sync-status error";
-        showToast("Sync error: " + e.message);
-      }
-      setTimeout(() => {
-        tailscaleSyncStatus.textContent = "Ready";
-        tailscaleSyncStatus.className = "tailscale-sync-status";
-      }, 3000);
-    }
-
-    async function tailscaleSyncPushAll() {
-      const online = tailscaleDevices.filter(d => d.online && !d.isSelf);
-      if (online.length === 0) {
-        showToast("No online Tailscale devices to sync with");
-        return;
-      }
-      tailscaleSyncStatus.textContent = "Syncing...";
-      tailscaleSyncStatus.className = "tailscale-sync-status syncing";
-      let ok = 0, fail = 0;
-      for (const d of online) {
-        try {
-          const result = await window.terminator.syncPush({ targetIp: d.ip });
-          if (result.ok) ok++; else fail++;
-        } catch { fail++; }
-      }
-      tailscaleSyncStatus.textContent = "Done";
-      tailscaleSyncStatus.className = "tailscale-sync-status";
-      showToast(`Sync complete: ${ok} pushed, ${fail} failed`);
-      setTimeout(() => {
-        tailscaleSyncStatus.textContent = "Ready";
-        tailscaleSyncStatus.className = "tailscale-sync-status";
-      }, 3000);
-    }
-
-    document.getElementById("tailscale-export-btn").addEventListener("click", async () => {
-      try {
-        const result = await window.terminator.syncExport();
-        if (result.ok) {
-          await navigator.clipboard.writeText(JSON.stringify(result.data, null, 2));
-          showToast("Sync data copied to clipboard");
-        } else {
-          showToast("Export failed: " + result.error);
-        }
-      } catch (e) {
-        showToast("Export error: " + e.message);
-      }
-    });
-
-    document.getElementById("tailscale-import-btn").addEventListener("click", async () => {
-      try {
-        const text = await navigator.clipboard.readText();
-        const data = JSON.parse(text);
-        const result = await window.terminator.syncImport(data);
-        if (result.ok) {
-          showToast("Sync data imported successfully");
-        } else {
-          showToast("Import failed: " + result.error);
-        }
-      } catch (e) {
-        if (e instanceof SyntaxError) {
-          showToast("Clipboard does not contain valid sync data");
-        } else {
-          showToast("Import error: " + e.message);
-        }
-      }
-    });
-
-    document.getElementById("tailscale-close").addEventListener("click", () => {
-      tailscalePanel.classList.remove("visible");
-      if (tailscaleRefreshInterval) { clearInterval(tailscaleRefreshInterval); tailscaleRefreshInterval = null; }
-      if (activeId && panes.has(activeId)) panes.get(activeId).term.focus();
-    });
-    document.getElementById("tailscale-refresh").addEventListener("click", refreshTailscale);
-
-    if (window.terminator.onSyncReceived) {
-      window.terminator.onSyncReceived((hostname) => {
-        showToast(`Sync received from ${hostname}`);
-        window.terminator.notify("Terminator Sync", `Settings synced from ${hostname}`);
-      });
-    }
 
     // ============================================================
     // EXTENSIONS / PLUGINS
@@ -5263,6 +5016,15 @@
     // ============================================================
     // INIT
     // ============================================================
+
+    // Window controls for Windows/Linux (frameless window)
+    if (window.terminator.platform !== "darwin") {
+      document.body.classList.add("show-win-controls");
+      document.getElementById("win-minimize").addEventListener("click", () => window.terminator.winMinimize());
+      document.getElementById("win-maximize").addEventListener("click", () => window.terminator.winMaximize());
+      document.getElementById("win-close").addEventListener("click", () => window.terminator.winClose());
+    }
+
     (async () => {
       let _savedThemeName = null; // preserve across applyTheme overwrites
       try {
@@ -5362,13 +5124,6 @@
         applyTheme(currentThemeIdx);
         updateWelcomeScreen();
 
-        // Start Tailscale sync server
-        try {
-          const syncResult = await window.terminator.syncServerStart();
-          // Sync server started
-        } catch (e) {
-          console.warn("Sync server failed to start:", e);
-        }
 
         // Check for first-run onboarding
         if (await checkOnboarding()) {
