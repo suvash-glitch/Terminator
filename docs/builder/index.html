@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terminator Extension Builder</title>
+<link rel="icon" type="image/svg+xml" href="../docs/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08080f;--bg2:#0e0e1a;--bg3:#141428;--bg4:#1a1a36;
+  --accent:#00f0ff;--accent-glow:rgba(0,240,255,0.2);--accent-dim:rgba(0,240,255,0.08);
+  --green:#00e676;--red:#ff5252;--yellow:#ffd740;--purple:#a78bfa;--orange:#ff9f43;
+  --text:#e8eaf0;--text2:#8b95b0;--text3:#4a5578;
+  --border:rgba(255,255,255,0.06);--border-accent:rgba(0,240,255,0.15);
+  --font:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono','SF Mono',monospace;
+  --radius:12px;
+}
+html{-webkit-font-smoothing:antialiased}
+body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+::selection{background:rgba(0,240,255,0.3)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.2)}
+
+/* ---- Header ---- */
+.header{
+  display:flex;align-items:center;gap:16px;padding:12px 20px;
+  background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.header .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--accent)}
+.header .logo svg{width:24px;height:24px}
+.header .sep{width:1px;height:24px;background:var(--border);margin:0 4px}
+.header .title{font-size:14px;font-weight:600;color:var(--text)}
+.header .spacer{flex:1}
+.header-btn{
+  display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:8px;
+  font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;border:none;
+  font-family:var(--font);
+}
+.header-btn.secondary{background:rgba(255,255,255,0.06);color:var(--text2)}
+.header-btn.secondary:hover{background:rgba(255,255,255,0.1);color:var(--text)}
+.header-btn.primary{background:var(--accent);color:#0a0a14}
+.header-btn.primary:hover{box-shadow:0 4px 20px var(--accent-glow)}
+.header-btn.danger{background:rgba(255,82,82,0.12);color:var(--red)}
+.header-btn.danger:hover{background:rgba(255,82,82,0.2)}
+
+/* ---- Main layout ---- */
+.main{display:flex;flex:1;overflow:hidden}
+
+/* ---- Sidebar ---- */
+.sidebar{
+  width:280px;flex-shrink:0;display:flex;flex-direction:column;
+  background:var(--bg2);border-right:1px solid var(--border);overflow:hidden;
+}
+.sidebar-section{padding:16px;border-bottom:1px solid var(--border)}
+.sidebar-section:last-child{border-bottom:none;flex:1;overflow-y:auto}
+.sidebar-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.sidebar-row{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.sidebar-row label{font-size:11px;font-weight:600;color:var(--text2)}
+.sidebar-row input,.sidebar-row select,.sidebar-row textarea{
+  width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;
+  background:var(--bg);color:var(--text);font-size:12px;font-family:var(--font);
+  outline:none;transition:border-color .15s;
+}
+.sidebar-row input:focus,.sidebar-row select:focus,.sidebar-row textarea:focus{border-color:var(--accent)}
+.sidebar-row textarea{font-family:var(--mono);resize:vertical;min-height:60px}
+
+/* Type selector cards */
+.type-cards{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.type-card{
+  padding:10px;border:1px solid var(--border);border-radius:8px;
+  text-align:center;cursor:pointer;transition:all .15s;background:var(--bg);
+}
+.type-card:hover{border-color:rgba(255,255,255,0.15)}
+.type-card.active{border-color:var(--accent);background:var(--accent-dim)}
+.type-card-icon{font-size:20px;margin-bottom:4px}
+.type-card-label{font-size:10px;font-weight:600;color:var(--text2)}
+.type-card.active .type-card-label{color:var(--accent)}
+
+/* ---- Content area ---- */
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* Tabs */
+.tabs{
+  display:flex;gap:0;background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:0 16px;flex-shrink:0;
+}
+.tab{
+  padding:10px 18px;font-size:12px;font-weight:600;color:var(--text3);
+  cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;
+  display:flex;align-items:center;gap:6px;
+}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab svg{width:14px;height:14px}
+
+/* Tab content */
+.tab-pane{display:none;flex:1;overflow:hidden}
+.tab-pane.active{display:flex;flex-direction:column}
+
+/* ---- Code Editor ---- */
+.editor-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.editor-toolbar{
+  display:flex;align-items:center;gap:8px;padding:8px 16px;
+  background:var(--bg3);border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.editor-toolbar .file-name{font-size:12px;font-weight:600;color:var(--text2);font-family:var(--mono)}
+.editor-toolbar .spacer{flex:1}
+.editor-toolbar .hint{font-size:10px;color:var(--text3)}
+.editor{
+  flex:1;overflow:auto;padding:0;position:relative;
+}
+#code-editor{
+  width:100%;height:100%;padding:16px;border:none;outline:none;resize:none;
+  background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;
+  line-height:1.7;tab-size:2;white-space:pre;
+}
+
+/* ---- Visual Theme Builder ---- */
+.theme-builder{flex:1;display:flex;overflow:hidden}
+.theme-colors{
+  width:320px;flex-shrink:0;overflow-y:auto;padding:16px;
+  border-right:1px solid var(--border);background:var(--bg2);
+}
+.color-group{margin-bottom:16px}
+.color-group-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.color-row{
+  display:flex;align-items:center;gap:8px;margin-bottom:6px;
+}
+.color-row label{font-size:11px;color:var(--text2);width:90px;flex-shrink:0}
+.color-swatch{
+  width:28px;height:28px;border-radius:6px;border:2px solid var(--border);
+  cursor:pointer;flex-shrink:0;position:relative;overflow:hidden;
+}
+.color-swatch input[type=color]{
+  position:absolute;top:-4px;left:-4px;width:36px;height:36px;
+  border:none;padding:0;cursor:pointer;opacity:0;
+}
+.color-hex{
+  width:80px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;
+  background:var(--bg);color:var(--text);font-family:var(--mono);font-size:11px;
+  outline:none;
+}
+.color-hex:focus{border-color:var(--accent)}
+.theme-preview{flex:1;overflow:auto;padding:20px}
+.preview-terminal{
+  border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);
+  max-width:600px;margin:0 auto;box-shadow:0 12px 40px rgba(0,0,0,0.4);
+}
+.preview-titlebar{
+  display:flex;align-items:center;gap:8px;padding:10px 14px;
+}
+.preview-dot{width:10px;height:10px;border-radius:50%}
+.preview-body{padding:16px;font-family:var(--mono);font-size:13px;line-height:1.8;min-height:250px}
+
+/* ---- Visual Command Builder ---- */
+.cmd-builder{padding:24px;overflow-y:auto;flex:1}
+.cmd-builder h3{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px}
+.cmd-field{margin-bottom:16px}
+.cmd-field label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.cmd-field input,.cmd-field textarea{
+  width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
+  background:var(--bg);color:var(--text);font-size:13px;font-family:var(--font);
+  outline:none;transition:border-color .15s;
+}
+.cmd-field input:focus,.cmd-field textarea:focus{border-color:var(--accent)}
+.cmd-field textarea{font-family:var(--mono);min-height:100px;resize:vertical}
+.cmd-field .hint{font-size:10px;color:var(--text3);margin-top:4px}
+
+/* ---- Extension Builder ---- */
+.ext-builder{padding:24px;overflow-y:auto;flex:1}
+.ext-features{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.ext-feature{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s;
+}
+.ext-feature:hover{border-color:rgba(255,255,255,0.15)}
+.ext-feature.active{border-color:var(--accent);background:var(--accent-dim)}
+.ext-feature input[type=checkbox]{accent-color:var(--accent)}
+.ext-feature-label{font-size:12px;font-weight:600;color:var(--text)}
+.ext-feature-desc{font-size:10px;color:var(--text3)}
+
+/* ---- Preview Panel ---- */
+.preview-panel{flex:1;overflow:auto;padding:20px;background:var(--bg)}
+.preview-frame{
+  border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);
+  background:var(--bg3);max-width:700px;margin:0 auto;
+}
+.preview-frame-header{
+  display:flex;align-items:center;gap:8px;padding:8px 12px;
+  background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);
+  font-size:11px;color:var(--text3);
+}
+.preview-frame-body{padding:16px;font-family:var(--mono);font-size:12px;line-height:1.6;min-height:200px}
+
+/* ---- Output / Export ---- */
+.output-panel{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.output-files{display:flex;gap:0;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg2)}
+.output-file-tab{
+  padding:8px 16px;font-size:11px;font-weight:600;color:var(--text3);cursor:pointer;
+  border-bottom:2px solid transparent;font-family:var(--mono);
+}
+.output-file-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.output-code{flex:1;overflow:auto;padding:16px;background:var(--bg)}
+.output-code pre{
+  font-family:var(--mono);font-size:12px;line-height:1.7;color:var(--text);
+  white-space:pre-wrap;word-break:break-word;
+}
+
+/* ---- Toasts ---- */
+.toast{
+  position:fixed;bottom:20px;right:20px;padding:10px 20px;border-radius:8px;
+  background:var(--bg4);border:1px solid var(--border-accent);color:var(--accent);
+  font-size:12px;font-weight:600;z-index:1000;opacity:0;transform:translateY(10px);
+  transition:all .3s;pointer-events:none;
+}
+/* ---- Code split layout ---- */
+.code-split{display:flex;flex:1;overflow:hidden}
+.code-split .editor-wrap{flex:1;min-width:0;border-right:1px solid var(--border)}
+.code-preview-wrap{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.code-preview{
+  flex:1;overflow:auto;padding:16px;background:var(--bg);position:relative;
+}
+.code-preview-placeholder{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;gap:12px;color:var(--text3);font-size:13px;text-align:center;
+}
+.code-preview-placeholder p{margin:0}
+.code-preview-placeholder strong{color:var(--text2)}
+/* Preview: simulated terminal */
+.sim-terminal{
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+  max-width:100%;margin-bottom:16px;
+}
+.sim-titlebar{
+  display:flex;align-items:center;gap:8px;padding:8px 12px;
+  background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);
+}
+.sim-dot{width:9px;height:9px;border-radius:50%}
+.sim-titlebar-text{flex:1;text-align:center;font-size:10px;color:var(--text3);font-family:var(--mono)}
+.sim-body{padding:14px;font-family:var(--mono);font-size:12px;line-height:1.7;min-height:120px}
+/* Preview: simulated UI elements */
+.sim-toolbar{
+  display:flex;align-items:center;gap:6px;padding:8px 12px;
+  background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:12px;
+}
+.sim-toolbar-btn{
+  display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:6px;
+  background:rgba(255,255,255,0.06);font-size:11px;color:var(--text2);
+  border:1px solid var(--border);
+}
+.sim-toolbar-btn.highlight{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.sim-panel{
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+  max-width:320px;margin-bottom:12px;
+}
+.sim-panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border);
+  font-size:13px;font-weight:600;color:var(--text);
+}
+.sim-panel-body{padding:14px;font-size:12px;color:var(--text2);line-height:1.6}
+.sim-palette{
+  border:1px solid var(--border);border-radius:10px;overflow:hidden;
+  max-width:400px;margin-bottom:12px;background:var(--bg2);
+}
+.sim-palette-input{
+  padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text3);
+  font-family:var(--font);
+}
+.sim-palette-item{
+  padding:8px 14px;font-size:12px;color:var(--text);
+  border-bottom:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;gap:8px;
+}
+.sim-palette-item:last-child{border-bottom:none}
+.sim-palette-item.active{background:var(--accent-dim);color:var(--accent)}
+.sim-statusbar{
+  display:flex;align-items:center;gap:12px;padding:6px 14px;
+  background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+  font-family:var(--mono);font-size:11px;color:var(--text2);margin-bottom:12px;
+}
+.sim-section-label{
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:8px;
+}
+.sim-error{
+  padding:12px;border-radius:8px;background:rgba(255,82,82,0.08);
+  border:1px solid rgba(255,82,82,0.2);color:var(--red);font-size:12px;
+  font-family:var(--mono);white-space:pre-wrap;
+}
+
+.toast.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <a href="../docs/index.html" class="logo">
+    <svg viewBox="0 0 512 512"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a1a2e"/><stop offset="100%" stop-color="#0f0f1e"/></linearGradient></defs><rect x="16" y="16" width="480" height="480" rx="96" fill="url(#g)" stroke="rgba(0,240,255,0.15)" stroke-width="4"/><rect x="128" y="148" width="256" height="6" rx="3" fill="#00f0ff"/><rect x="253" y="148" width="6" height="220" rx="3" fill="#00f0ff"/><rect x="240" y="340" width="32" height="6" rx="2" fill="#00f0ff" opacity="0.9"/></svg>
+    Terminator
+  </a>
+  <div class="sep"></div>
+  <span class="title">Extension Builder</span>
+  <div class="spacer"></div>
+  <button class="header-btn danger" id="btn-reset">Reset</button>
+  <button class="header-btn secondary" id="btn-preview">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21"/></svg>
+    Preview
+  </button>
+  <button class="header-btn primary" id="btn-export">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Export .termext
+  </button>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Extension Type</div>
+      <div class="type-cards" id="type-cards">
+        <div class="type-card active" data-type="theme"><div class="type-card-icon">&#127912;</div><div class="type-card-label">Theme</div></div>
+        <div class="type-card" data-type="command"><div class="type-card-icon">&#9889;</div><div class="type-card-label">Command</div></div>
+        <div class="type-card" data-type="statusbar"><div class="type-card-icon">&#128202;</div><div class="type-card-label">Status Bar</div></div>
+        <div class="type-card" data-type="extension"><div class="type-card-icon">&#129513;</div><div class="type-card-label">Extension</div></div>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Metadata</div>
+      <div class="sidebar-row"><label>Plugin ID</label><input type="text" id="meta-id" placeholder="my-extension"></div>
+      <div class="sidebar-row"><label>Display Name</label><input type="text" id="meta-name" placeholder="My Extension"></div>
+      <div class="sidebar-row"><label>Description</label><input type="text" id="meta-desc" placeholder="What it does..."></div>
+      <div class="sidebar-row"><label>Version</label><input type="text" id="meta-version" value="1.0.0"></div>
+      <div class="sidebar-row"><label>Author</label><input type="text" id="meta-author" placeholder="Your name"></div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <!-- Tabs -->
+    <div class="tabs" id="main-tabs">
+      <div class="tab active" data-tab="visual">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Visual Builder
+      </div>
+      <div class="tab" data-tab="code">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Code Editor
+      </div>
+      <div class="tab" data-tab="output">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Output
+      </div>
+    </div>
+
+    <!-- Visual Builder Pane (switches based on type) -->
+    <div class="tab-pane active" id="pane-visual">
+      <!-- Theme Builder -->
+      <div class="theme-builder" id="builder-theme">
+        <div class="theme-colors" id="theme-colors"></div>
+        <div class="theme-preview">
+          <div class="preview-terminal" id="theme-preview-term">
+            <div class="preview-titlebar" id="tp-titlebar">
+              <div class="preview-dot" style="background:#ff5f57"></div>
+              <div class="preview-dot" style="background:#febc2e"></div>
+              <div class="preview-dot" style="background:#28c840"></div>
+            </div>
+            <div class="preview-body" id="tp-body"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Command Builder -->
+      <div class="cmd-builder" id="builder-command" style="display:none">
+        <h3>Command Configuration</h3>
+        <div class="cmd-field">
+          <label>Command Label</label>
+          <input type="text" id="cmd-label" placeholder="My Command">
+          <div class="hint">Shown in the command palette</div>
+        </div>
+        <div class="cmd-field">
+          <label>Shortcut (optional)</label>
+          <input type="text" id="cmd-shortcut" placeholder="e.g. Cmd+Shift+M">
+        </div>
+        <div class="cmd-field">
+          <label>Terminal Command</label>
+          <textarea id="cmd-terminal" placeholder="echo 'Hello World'"></textarea>
+          <div class="hint">Command to send to the active terminal. Use \n for newline.</div>
+        </div>
+        <div class="cmd-field">
+          <label>Notification Message (optional)</label>
+          <input type="text" id="cmd-notify" placeholder="Command executed!">
+        </div>
+      </div>
+
+      <!-- Statusbar Builder -->
+      <div class="cmd-builder" id="builder-statusbar" style="display:none">
+        <h3>Status Bar Widget</h3>
+        <div class="cmd-field">
+          <label>Widget Name</label>
+          <input type="text" id="sb-name" placeholder="My Widget">
+        </div>
+        <div class="cmd-field">
+          <label>Display Template</label>
+          <textarea id="sb-template" placeholder="<span style='color:#00f0ff'>Hello</span>"></textarea>
+          <div class="hint">HTML to render. Available JS vars: <code>new Date()</code>, <code>ctx.allPanes.length</code>. Updates every 5s.</div>
+        </div>
+        <div class="cmd-field">
+          <label>Dynamic Expression (optional)</label>
+          <textarea id="sb-expr" placeholder="var now = new Date(); return now.toLocaleTimeString();"></textarea>
+          <div class="hint">JavaScript that returns a string. Will replace <code>{{dynamic}}</code> in template.</div>
+        </div>
+      </div>
+
+      <!-- Extension Builder -->
+      <div class="ext-builder" id="builder-extension" style="display:none">
+        <h3>Extension Features</h3>
+        <p style="font-size:12px;color:var(--text2);margin-bottom:16px">Select what your extension includes. Code will be scaffolded automatically.</p>
+        <div class="ext-features" id="ext-features">
+          <label class="ext-feature" data-feature="toolbar"><input type="checkbox" checked><div><div class="ext-feature-label">Toolbar Button</div><div class="ext-feature-desc">Add a button to the titlebar</div></div></label>
+          <label class="ext-feature" data-feature="sidepanel"><input type="checkbox" checked><div><div class="ext-feature-label">Side Panel</div><div class="ext-feature-desc">Slide-out panel with custom HTML</div></div></label>
+          <label class="ext-feature" data-feature="command"><input type="checkbox"><div><div class="ext-feature-label">Command Palette Entry</div><div class="ext-feature-desc">Register a command in Cmd+P palette</div></div></label>
+          <label class="ext-feature" data-feature="settings"><input type="checkbox"><div><div class="ext-feature-label">Settings Section</div><div class="ext-feature-desc">Add config options in Settings</div></div></label>
+          <label class="ext-feature" data-feature="hooks"><input type="checkbox"><div><div class="ext-feature-label">Terminal Hooks</div><div class="ext-feature-desc">Listen to terminal input/output events</div></div></label>
+          <label class="ext-feature" data-feature="contextmenu"><input type="checkbox"><div><div class="ext-feature-label">Context Menu</div><div class="ext-feature-desc">Add items to right-click menu</div></div></label>
+        </div>
+        <div class="cmd-field">
+          <label>Panel Title</label>
+          <input type="text" id="ext-panel-title" placeholder="My Panel">
+        </div>
+        <div class="cmd-field">
+          <label>Panel HTML Content</label>
+          <textarea id="ext-panel-html" placeholder="<p>Hello from my extension!</p>" style="min-height:120px"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Editor Pane (split: code + live preview) -->
+    <div class="tab-pane" id="pane-code">
+      <div class="code-split">
+        <div class="editor-wrap">
+          <div class="editor-toolbar">
+            <span class="file-name">index.js</span>
+            <div class="spacer"></div>
+            <span class="hint">Edit the generated code or write from scratch</span>
+          </div>
+          <div class="editor">
+            <textarea id="code-editor" spellcheck="false"></textarea>
+          </div>
+        </div>
+        <div class="code-preview-wrap">
+          <div class="editor-toolbar">
+            <span class="file-name">Live Preview</span>
+            <div class="spacer"></div>
+            <button class="header-btn secondary" id="btn-run-preview" style="padding:4px 12px;font-size:11px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21"/></svg>
+              Run
+            </button>
+          </div>
+          <div class="code-preview" id="code-preview">
+            <div class="code-preview-placeholder">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".2"><polygon points="5 3 19 12 5 21"/></svg>
+              <p>Click <strong>Run</strong> to preview your extension</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output Pane -->
+    <div class="tab-pane" id="pane-output">
+      <div class="output-panel">
+        <div class="output-files" id="output-tabs">
+          <div class="output-file-tab active" data-file="plugin.json">plugin.json</div>
+          <div class="output-file-tab" data-file="index.js">index.js</div>
+        </div>
+        <div class="output-code">
+          <pre id="output-content"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="builder.js"></script>
+</body>
+</html>
