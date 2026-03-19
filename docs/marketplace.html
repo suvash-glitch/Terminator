@@ -185,12 +185,14 @@ nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(-
 .mp-swatch{width:16px;height:16px;border-radius:4px;border:1px solid rgba(255,255,255,0.06)}
 
 /* Install hint */
-.mp-install-hint{
+.mp-download-btn{
   font-size:11px;font-weight:600;padding:6px 16px;border-radius:8px;
-  background:rgba(0,240,255,0.08);color:var(--accent);border:1px solid rgba(0,240,255,0.15);
-  white-space:nowrap;flex-shrink:0;cursor:default;transition:all .15s;
+  background:var(--accent);color:#0a0a14;border:none;
+  white-space:nowrap;flex-shrink:0;cursor:pointer;transition:all .15s;
+  display:inline-flex;align-items:center;gap:5px;text-decoration:none;
 }
-.mp-install-hint:hover{background:rgba(0,240,255,0.15)}
+.mp-download-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--accent-glow);color:#0a0a14}
+.mp-download-btn svg{flex-shrink:0}
 
 /* Empty */
 .mp-empty{
@@ -327,7 +329,8 @@ footer a:hover{color:#fff}
     card += '<span class="mp-tag '+typeClass+'">' + esc(TYPE_LABELS[p.type]||p.type||"") + '</span>';
     if(p.tags){for(var j=0;j<Math.min(p.tags.length,2);j++) card += '<span class="mp-tag subtle">' + esc(p.tags[j]) + '</span>';}
     card += '</div>';
-    card += '<span class="mp-install-hint">Install in app</span>';
+    var pkgUrl = p.packageUrl || ("https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/"+esc(p.id)+".termext");
+    card += '<a class="mp-download-btn" href="'+pkgUrl+'" download="'+esc(p.id)+'.termext" title="Download .termext package"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</a>';
     card += '</div></div>';
     return card;
   }

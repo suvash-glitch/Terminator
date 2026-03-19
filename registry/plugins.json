@@ -10,7 +10,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "📍",
-      "tags": ["statusbar", "pane", "productivity"],
+      "tags": [
+        "statusbar",
+        "pane",
+        "productivity"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -18,7 +22,8 @@
         "plugin.json": "registry/plugins/active-pane-widget/plugin.json",
         "index.js": "registry/plugins/active-pane-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/active-pane-widget/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/active-pane-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/active-pane-widget.termext"
     },
     {
       "id": "ai-assistant",
@@ -28,7 +33,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🤖",
-      "tags": ["ai", "productivity", "developer-tools"],
+      "tags": [
+        "ai",
+        "productivity",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
@@ -36,7 +45,8 @@
         "plugin.json": "registry/plugins/ai-assistant/plugin.json",
         "index.js": "registry/plugins/ai-assistant/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ai-assistant/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ai-assistant/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/ai-assistant.termext"
     },
     {
       "id": "atom-dark",
@@ -46,7 +56,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "⚛️",
-      "tags": ["dark", "classic", "editor"],
+      "tags": [
+        "dark",
+        "classic",
+        "editor"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -55,7 +69,15 @@
         "index.js": "registry/plugins/atom-dark/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/atom-dark/",
-      "preview": ["#1D1F21", "#CC6666", "#B5BD68", "#81A2BE", "#F0C674", "#B294BB"]
+      "preview": [
+        "#1D1F21",
+        "#CC6666",
+        "#B5BD68",
+        "#81A2BE",
+        "#F0C674",
+        "#B294BB"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/atom-dark.termext"
     },
     {
       "id": "auto-rename",
@@ -65,7 +87,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "✏️",
-      "tags": ["productivity", "pane", "utility"],
+      "tags": [
+        "productivity",
+        "pane",
+        "utility"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
@@ -73,7 +99,8 @@
         "plugin.json": "registry/plugins/auto-rename/plugin.json",
         "index.js": "registry/plugins/auto-rename/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/auto-rename/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/auto-rename/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/auto-rename.termext"
     },
     {
       "id": "ayu-dark",
@@ -83,7 +110,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🌑",
-      "tags": ["dark", "warm", "popular"],
+      "tags": [
+        "dark",
+        "warm",
+        "popular"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -92,7 +123,15 @@
         "index.js": "registry/plugins/ayu-dark/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ayu-dark/",
-      "preview": ["#0A0E14", "#EA6C73", "#91B362", "#53BDFA", "#F9AF4F", "#FAE994"]
+      "preview": [
+        "#0A0E14",
+        "#EA6C73",
+        "#91B362",
+        "#53BDFA",
+        "#F9AF4F",
+        "#FAE994"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/ayu-dark.termext"
     },
     {
       "id": "ayu-mirage",
@@ -102,7 +141,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🌆",
-      "tags": ["dark", "warm", "soft"],
+      "tags": [
+        "dark",
+        "warm",
+        "soft"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -111,7 +154,15 @@
         "index.js": "registry/plugins/ayu-mirage/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ayu-mirage/",
-      "preview": ["#1F2430", "#F28779", "#BAE67E", "#73D0FF", "#FFD580", "#D4BFFF"]
+      "preview": [
+        "#1F2430",
+        "#F28779",
+        "#BAE67E",
+        "#73D0FF",
+        "#FFD580",
+        "#D4BFFF"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/ayu-mirage.termext"
     },
     {
       "id": "base-converter",
@@ -121,14 +172,19 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🔢",
-      "tags": ["utility", "converter", "developer-tools"],
+      "tags": [
+        "utility",
+        "converter",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {
         "plugin.json": "registry/plugins/base-converter/plugin.json"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/base-converter/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/base-converter/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/base-converter.termext"
     },
     {
       "id": "broadcast-groups",
@@ -138,12 +194,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "📡",
-      "tags": ["productivity", "pane", "utility"],
+      "tags": [
+        "productivity",
+        "pane",
+        "utility"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/broadcast-groups/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/broadcast-groups/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/broadcast-groups.termext"
     },
     {
       "id": "catppuccin-mocha",
@@ -153,7 +214,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🐱",
-      "tags": ["dark", "pastel", "popular"],
+      "tags": [
+        "dark",
+        "pastel",
+        "popular"
+      ],
       "category": "Themes",
       "featured": true,
       "downloads": 0,
@@ -162,7 +227,15 @@
         "index.js": "registry/plugins/catppuccin-mocha/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/catppuccin-mocha/",
-      "preview": ["#1E1E2E", "#F38BA8", "#A6E3A1", "#89B4FA", "#F9E2AF", "#F5C2E7"]
+      "preview": [
+        "#1E1E2E",
+        "#F38BA8",
+        "#A6E3A1",
+        "#89B4FA",
+        "#F9E2AF",
+        "#F5C2E7"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/catppuccin-mocha.termext"
     },
     {
       "id": "cheatsheet",
@@ -172,7 +245,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "📋",
-      "tags": ["reference", "productivity", "developer-tools"],
+      "tags": [
+        "reference",
+        "productivity",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
@@ -180,7 +257,8 @@
         "plugin.json": "registry/plugins/cheatsheet/plugin.json",
         "index.js": "registry/plugins/cheatsheet/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/cheatsheet/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/cheatsheet/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/cheatsheet.termext"
     },
     {
       "id": "claude-ai",
@@ -190,7 +268,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🧠",
-      "tags": ["ai", "popular", "developer-tools"],
+      "tags": [
+        "ai",
+        "popular",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": true,
       "downloads": 0,
@@ -198,7 +280,8 @@
         "plugin.json": "registry/plugins/claude-ai/plugin.json",
         "index.js": "registry/plugins/claude-ai/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/claude-ai/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/claude-ai/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/claude-ai.termext"
     },
     {
       "id": "clear-all",
@@ -208,7 +291,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "🗑️",
-      "tags": ["utility", "terminal", "cleanup"],
+      "tags": [
+        "utility",
+        "terminal",
+        "cleanup"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -216,7 +303,8 @@
         "plugin.json": "registry/plugins/clear-all/plugin.json",
         "index.js": "registry/plugins/clear-all/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/clear-all/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/clear-all/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/clear-all.termext"
     },
     {
       "id": "clock-widget",
@@ -226,7 +314,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "🕐",
-      "tags": ["statusbar", "time", "utility"],
+      "tags": [
+        "statusbar",
+        "time",
+        "utility"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -234,7 +326,8 @@
         "plugin.json": "registry/plugins/clock-widget/plugin.json",
         "index.js": "registry/plugins/clock-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/clock-widget/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/clock-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/clock-widget.termext"
     },
     {
       "id": "cobalt2",
@@ -244,7 +337,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "💎",
-      "tags": ["dark", "blue", "popular"],
+      "tags": [
+        "dark",
+        "blue",
+        "popular"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -253,7 +350,15 @@
         "index.js": "registry/plugins/cobalt2/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/cobalt2/",
-      "preview": ["#193549", "#FF628C", "#3AD900", "#0088FF", "#FFC600", "#FF9D00"]
+      "preview": [
+        "#193549",
+        "#FF628C",
+        "#3AD900",
+        "#0088FF",
+        "#FFC600",
+        "#FF9D00"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/cobalt2.termext"
     },
     {
       "id": "color-picker",
@@ -263,14 +368,19 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🎨",
-      "tags": ["utility", "design", "developer-tools"],
+      "tags": [
+        "utility",
+        "design",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {
         "plugin.json": "registry/plugins/color-picker/plugin.json"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/color-picker/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/color-picker/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/color-picker.termext"
     },
     {
       "id": "command-palette-plus",
@@ -280,12 +390,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🔎",
-      "tags": ["productivity", "search", "utility"],
+      "tags": [
+        "productivity",
+        "search",
+        "utility"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/command-palette-plus/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/command-palette-plus/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/command-palette-plus.termext"
     },
     {
       "id": "copy-cwd",
@@ -295,7 +410,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "📋",
-      "tags": ["utility", "clipboard", "productivity"],
+      "tags": [
+        "utility",
+        "clipboard",
+        "productivity"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -303,7 +422,8 @@
         "plugin.json": "registry/plugins/copy-cwd/plugin.json",
         "index.js": "registry/plugins/copy-cwd/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/copy-cwd/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/copy-cwd/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/copy-cwd.termext"
     },
     {
       "id": "cyberpunk",
@@ -313,7 +433,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🌃",
-      "tags": ["dark", "neon", "cyberpunk"],
+      "tags": [
+        "dark",
+        "neon",
+        "cyberpunk"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -322,7 +446,15 @@
         "index.js": "registry/plugins/cyberpunk/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/cyberpunk/",
-      "preview": ["#0A0A0F", "#FF2E97", "#39FF14", "#00D4FF", "#FFD700", "#BD00FF"]
+      "preview": [
+        "#0A0A0F",
+        "#FF2E97",
+        "#39FF14",
+        "#00D4FF",
+        "#FFD700",
+        "#BD00FF"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/cyberpunk.termext"
     },
     {
       "id": "date-widget",
@@ -332,7 +464,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "📅",
-      "tags": ["statusbar", "date", "utility"],
+      "tags": [
+        "statusbar",
+        "date",
+        "utility"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -340,7 +476,8 @@
         "plugin.json": "registry/plugins/date-widget/plugin.json",
         "index.js": "registry/plugins/date-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/date-widget/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/date-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/date-widget.termext"
     },
     {
       "id": "day-progress",
@@ -350,7 +487,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "📊",
-      "tags": ["statusbar", "progress", "productivity"],
+      "tags": [
+        "statusbar",
+        "progress",
+        "productivity"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -358,7 +499,8 @@
         "plugin.json": "registry/plugins/day-progress/plugin.json",
         "index.js": "registry/plugins/day-progress/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/day-progress/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/day-progress/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/day-progress.termext"
     },
     {
       "id": "decode-base64",
@@ -368,7 +510,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "🔓",
-      "tags": ["utility", "encoding", "developer-tools"],
+      "tags": [
+        "utility",
+        "encoding",
+        "developer-tools"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -376,7 +522,8 @@
         "plugin.json": "registry/plugins/decode-base64/plugin.json",
         "index.js": "registry/plugins/decode-base64/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/decode-base64/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/decode-base64/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/decode-base64.termext"
     },
     {
       "id": "diff-viewer",
@@ -386,12 +533,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🔀",
-      "tags": ["utility", "diff", "developer-tools"],
+      "tags": [
+        "utility",
+        "diff",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/diff-viewer/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/diff-viewer/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/diff-viewer.termext"
     },
     {
       "id": "disk-usage",
@@ -401,7 +553,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "💿",
-      "tags": ["utility", "system", "monitoring"],
+      "tags": [
+        "utility",
+        "system",
+        "monitoring"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -409,7 +565,8 @@
         "plugin.json": "registry/plugins/disk-usage/plugin.json",
         "index.js": "registry/plugins/disk-usage/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/disk-usage/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/disk-usage/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/disk-usage.termext"
     },
     {
       "id": "docker-dashboard",
@@ -419,7 +576,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🐳",
-      "tags": ["docker", "devops", "popular"],
+      "tags": [
+        "docker",
+        "devops",
+        "popular"
+      ],
       "category": "Extensions",
       "featured": true,
       "downloads": 0,
@@ -427,7 +588,8 @@
         "plugin.json": "registry/plugins/docker-dashboard/plugin.json",
         "index.js": "registry/plugins/docker-dashboard/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/docker-dashboard/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/docker-dashboard/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/docker-dashboard.termext"
     },
     {
       "id": "dracula-pro",
@@ -437,7 +599,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🧛",
-      "tags": ["dark", "pastel", "popular"],
+      "tags": [
+        "dark",
+        "pastel",
+        "popular"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -446,7 +612,15 @@
         "index.js": "registry/plugins/dracula-pro/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/dracula-pro/",
-      "preview": ["#22212C", "#FF9580", "#8AFF80", "#9580FF", "#FFFF80", "#FF80BF"]
+      "preview": [
+        "#22212C",
+        "#FF9580",
+        "#8AFF80",
+        "#9580FF",
+        "#FFFF80",
+        "#FF80BF"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/dracula-pro.termext"
     },
     {
       "id": "encode-base64",
@@ -456,7 +630,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "🔒",
-      "tags": ["utility", "encoding", "developer-tools"],
+      "tags": [
+        "utility",
+        "encoding",
+        "developer-tools"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -464,7 +642,8 @@
         "plugin.json": "registry/plugins/encode-base64/plugin.json",
         "index.js": "registry/plugins/encode-base64/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/encode-base64/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/encode-base64/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/encode-base64.termext"
     },
     {
       "id": "env-manager",
@@ -474,12 +653,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🔧",
-      "tags": ["utility", "environment", "developer-tools"],
+      "tags": [
+        "utility",
+        "environment",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/env-manager/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/env-manager/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/env-manager.termext"
     },
     {
       "id": "everforest",
@@ -489,7 +673,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🌿",
-      "tags": ["dark", "green", "nature"],
+      "tags": [
+        "dark",
+        "green",
+        "nature"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -498,7 +686,15 @@
         "index.js": "registry/plugins/everforest/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/everforest/",
-      "preview": ["#2D353B", "#E67E80", "#A7C080", "#7FBBB3", "#DBBC7F", "#D699B6"]
+      "preview": [
+        "#2D353B",
+        "#E67E80",
+        "#A7C080",
+        "#7FBBB3",
+        "#DBBC7F",
+        "#D699B6"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/everforest.termext"
     },
     {
       "id": "file-browser",
@@ -508,12 +704,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "📁",
-      "tags": ["utility", "files", "productivity"],
+      "tags": [
+        "utility",
+        "files",
+        "productivity"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/file-browser/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/file-browser/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/file-browser.termext"
     },
     {
       "id": "focus-mode",
@@ -523,7 +724,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🎯",
-      "tags": ["productivity", "focus", "popular"],
+      "tags": [
+        "productivity",
+        "focus",
+        "popular"
+      ],
       "category": "Extensions",
       "featured": true,
       "downloads": 0,
@@ -531,7 +736,8 @@
         "plugin.json": "registry/plugins/focus-mode/plugin.json",
         "index.js": "registry/plugins/focus-mode/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/focus-mode/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/focus-mode/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/focus-mode.termext"
     },
     {
       "id": "git-lens",
@@ -541,7 +747,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🔍",
-      "tags": ["git", "popular", "developer-tools"],
+      "tags": [
+        "git",
+        "popular",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": true,
       "downloads": 0,
@@ -549,7 +759,8 @@
         "plugin.json": "registry/plugins/git-lens/plugin.json",
         "index.js": "registry/plugins/git-lens/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/git-lens/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/git-lens/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/git-lens.termext"
     },
     {
       "id": "git-quick-commit",
@@ -559,7 +770,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "⚡",
-      "tags": ["git", "utility", "productivity"],
+      "tags": [
+        "git",
+        "utility",
+        "productivity"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -567,7 +782,8 @@
         "plugin.json": "registry/plugins/git-quick-commit/plugin.json",
         "index.js": "registry/plugins/git-quick-commit/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/git-quick-commit/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/git-quick-commit/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/git-quick-commit.termext"
     },
     {
       "id": "git-status",
@@ -577,7 +793,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "📊",
-      "tags": ["git", "utility", "developer-tools"],
+      "tags": [
+        "git",
+        "utility",
+        "developer-tools"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -585,7 +805,8 @@
         "plugin.json": "registry/plugins/git-status/plugin.json",
         "index.js": "registry/plugins/git-status/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/git-status/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/git-status/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/git-status.termext"
     },
     {
       "id": "github-dark",
@@ -595,7 +816,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🐙",
-      "tags": ["dark", "github", "popular"],
+      "tags": [
+        "dark",
+        "github",
+        "popular"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -604,7 +829,15 @@
         "index.js": "registry/plugins/github-dark/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/github-dark/",
-      "preview": ["#0D1117", "#FF7B72", "#3FB950", "#58A6FF", "#D29922", "#BC8CFF"]
+      "preview": [
+        "#0D1117",
+        "#FF7B72",
+        "#3FB950",
+        "#58A6FF",
+        "#D29922",
+        "#BC8CFF"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/github-dark.termext"
     },
     {
       "id": "github-light",
@@ -614,7 +847,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🐙",
-      "tags": ["light", "github", "clean"],
+      "tags": [
+        "light",
+        "github",
+        "clean"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -623,7 +860,15 @@
         "index.js": "registry/plugins/github-light/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/github-light/",
-      "preview": ["#FFFFFF", "#CF222E", "#116329", "#0969DA", "#4D2D00", "#8250DF"]
+      "preview": [
+        "#FFFFFF",
+        "#CF222E",
+        "#116329",
+        "#0969DA",
+        "#4D2D00",
+        "#8250DF"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/github-light.termext"
     },
     {
       "id": "greeting-widget",
@@ -633,7 +878,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "👋",
-      "tags": ["statusbar", "greeting", "fun"],
+      "tags": [
+        "statusbar",
+        "greeting",
+        "fun"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -641,7 +890,8 @@
         "plugin.json": "registry/plugins/greeting-widget/plugin.json",
         "index.js": "registry/plugins/greeting-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/greeting-widget/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/greeting-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/greeting-widget.termext"
     },
     {
       "id": "gruvbox-dark",
@@ -651,7 +901,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🟤",
-      "tags": ["dark", "retro", "warm"],
+      "tags": [
+        "dark",
+        "retro",
+        "warm"
+      ],
       "category": "Themes",
       "featured": true,
       "downloads": 0,
@@ -660,7 +914,15 @@
         "index.js": "registry/plugins/gruvbox-dark/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/gruvbox-dark/",
-      "preview": ["#282828", "#CC241D", "#98971A", "#458588", "#D79921", "#B16286"]
+      "preview": [
+        "#282828",
+        "#CC241D",
+        "#98971A",
+        "#458588",
+        "#D79921",
+        "#B16286"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/gruvbox-dark.termext"
     },
     {
       "id": "hash-generator",
@@ -670,12 +932,17 @@
       "type": "command",
       "author": "Terminator",
       "icon": "#️⃣",
-      "tags": ["utility", "crypto", "developer-tools"],
+      "tags": [
+        "utility",
+        "crypto",
+        "developer-tools"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/hash-generator/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/hash-generator/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/hash-generator.termext"
     },
     {
       "id": "hello-command",
@@ -685,7 +952,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "👋",
-      "tags": ["example", "starter", "utility"],
+      "tags": [
+        "example",
+        "starter",
+        "utility"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -693,7 +964,8 @@
         "plugin.json": "registry/plugins/hello-command/plugin.json",
         "index.js": "registry/plugins/hello-command/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/hello-command/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/hello-command/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/hello-command.termext"
     },
     {
       "id": "horizon",
@@ -703,7 +975,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🌅",
-      "tags": ["dark", "warm", "sunset"],
+      "tags": [
+        "dark",
+        "warm",
+        "sunset"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -712,7 +988,15 @@
         "index.js": "registry/plugins/horizon/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/horizon/",
-      "preview": ["#1C1E26", "#E95678", "#29D398", "#26BBD9", "#FAB795", "#EE64AC"]
+      "preview": [
+        "#1C1E26",
+        "#E95678",
+        "#29D398",
+        "#26BBD9",
+        "#FAB795",
+        "#EE64AC"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/horizon.termext"
     },
     {
       "id": "http-client",
@@ -722,12 +1006,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🌐",
-      "tags": ["api", "http", "developer-tools"],
+      "tags": [
+        "api",
+        "http",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/http-client/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/http-client/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/http-client.termext"
     },
     {
       "id": "ip-info",
@@ -737,7 +1026,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "🌐",
-      "tags": ["networking", "utility", "system"],
+      "tags": [
+        "networking",
+        "utility",
+        "system"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -745,7 +1038,8 @@
         "plugin.json": "registry/plugins/ip-info/plugin.json",
         "index.js": "registry/plugins/ip-info/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ip-info/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ip-info/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/ip-info.termext"
     },
     {
       "id": "json-viewer",
@@ -755,7 +1049,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "📄",
-      "tags": ["json", "utility", "developer-tools"],
+      "tags": [
+        "json",
+        "utility",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": true,
       "downloads": 0,
@@ -763,7 +1061,8 @@
         "plugin.json": "registry/plugins/json-viewer/plugin.json",
         "index.js": "registry/plugins/json-viewer/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/json-viewer/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/json-viewer/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/json-viewer.termext"
     },
     {
       "id": "jwt-decoder",
@@ -773,12 +1072,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🔑",
-      "tags": ["jwt", "security", "developer-tools"],
+      "tags": [
+        "jwt",
+        "security",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/jwt-decoder/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/jwt-decoder/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/jwt-decoder.termext"
     },
     {
       "id": "k8s-status",
@@ -788,12 +1092,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "☸️",
-      "tags": ["kubernetes", "devops", "monitoring"],
+      "tags": [
+        "kubernetes",
+        "devops",
+        "monitoring"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/k8s-status/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/k8s-status/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/k8s-status.termext"
     },
     {
       "id": "kanagawa",
@@ -803,7 +1112,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🌊",
-      "tags": ["dark", "japanese", "artistic"],
+      "tags": [
+        "dark",
+        "japanese",
+        "artistic"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -812,7 +1125,15 @@
         "index.js": "registry/plugins/kanagawa/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/kanagawa/",
-      "preview": ["#1F1F28", "#C34043", "#76946A", "#7E9CD8", "#C0A36E", "#957FB8"]
+      "preview": [
+        "#1F1F28",
+        "#C34043",
+        "#76946A",
+        "#7E9CD8",
+        "#C0A36E",
+        "#957FB8"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/kanagawa.termext"
     },
     {
       "id": "keyboard-widget",
@@ -822,7 +1143,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "⌨️",
-      "tags": ["statusbar", "keyboard", "reference"],
+      "tags": [
+        "statusbar",
+        "keyboard",
+        "reference"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -830,7 +1155,8 @@
         "plugin.json": "registry/plugins/keyboard-widget/plugin.json",
         "index.js": "registry/plugins/keyboard-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/keyboard-widget/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/keyboard-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/keyboard-widget.termext"
     },
     {
       "id": "kill-process",
@@ -840,7 +1166,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "💀",
-      "tags": ["utility", "process", "terminal"],
+      "tags": [
+        "utility",
+        "process",
+        "terminal"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -848,7 +1178,8 @@
         "plugin.json": "registry/plugins/kill-process/plugin.json",
         "index.js": "registry/plugins/kill-process/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/kill-process/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/kill-process/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/kill-process.termext"
     },
     {
       "id": "log-highlighter",
@@ -858,12 +1189,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "📝",
-      "tags": ["logging", "utility", "developer-tools"],
+      "tags": [
+        "logging",
+        "utility",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/log-highlighter/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/log-highlighter/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/log-highlighter.termext"
     },
     {
       "id": "lorem-ipsum",
@@ -873,7 +1209,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "📝",
-      "tags": ["utility", "text", "placeholder"],
+      "tags": [
+        "utility",
+        "text",
+        "placeholder"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -881,7 +1221,8 @@
         "plugin.json": "registry/plugins/lorem-ipsum/plugin.json",
         "index.js": "registry/plugins/lorem-ipsum/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/lorem-ipsum/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/lorem-ipsum/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/lorem-ipsum.termext"
     },
     {
       "id": "material-darker",
@@ -891,7 +1232,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🎨",
-      "tags": ["dark", "material", "modern"],
+      "tags": [
+        "dark",
+        "material",
+        "modern"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -900,7 +1245,15 @@
         "index.js": "registry/plugins/material-darker/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/material-darker/",
-      "preview": ["#212121", "#F07178", "#C3E88D", "#82AAFF", "#FFCB6B", "#C792EA"]
+      "preview": [
+        "#212121",
+        "#F07178",
+        "#C3E88D",
+        "#82AAFF",
+        "#FFCB6B",
+        "#C792EA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/material-darker.termext"
     },
     {
       "id": "memory-widget",
@@ -910,7 +1263,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "💾",
-      "tags": ["statusbar", "memory", "monitoring"],
+      "tags": [
+        "statusbar",
+        "memory",
+        "monitoring"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -918,7 +1275,8 @@
         "plugin.json": "registry/plugins/memory-widget/plugin.json",
         "index.js": "registry/plugins/memory-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/memory-widget/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/memory-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/memory-widget.termext"
     },
     {
       "id": "minimal-clock",
@@ -928,7 +1286,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "🕑",
-      "tags": ["statusbar", "time", "minimal"],
+      "tags": [
+        "statusbar",
+        "time",
+        "minimal"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -936,7 +1298,8 @@
         "plugin.json": "registry/plugins/minimal-clock/plugin.json",
         "index.js": "registry/plugins/minimal-clock/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/minimal-clock/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/minimal-clock/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/minimal-clock.termext"
     },
     {
       "id": "moonlight",
@@ -946,7 +1309,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🌙",
-      "tags": ["dark", "pastel", "dreamy"],
+      "tags": [
+        "dark",
+        "pastel",
+        "dreamy"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -955,7 +1322,15 @@
         "index.js": "registry/plugins/moonlight/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/moonlight/",
-      "preview": ["#222436", "#FF757F", "#C3E88D", "#82AAFF", "#FFC777", "#C099FF"]
+      "preview": [
+        "#222436",
+        "#FF757F",
+        "#C3E88D",
+        "#82AAFF",
+        "#FFC777",
+        "#C099FF"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/moonlight.termext"
     },
     {
       "id": "new-here",
@@ -965,7 +1340,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "📂",
-      "tags": ["utility", "terminal", "productivity"],
+      "tags": [
+        "utility",
+        "terminal",
+        "productivity"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -973,7 +1352,8 @@
         "plugin.json": "registry/plugins/new-here/plugin.json",
         "index.js": "registry/plugins/new-here/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/new-here/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/new-here/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/new-here.termext"
     },
     {
       "id": "night-owl",
@@ -983,7 +1363,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🦉",
-      "tags": ["dark", "navy", "popular"],
+      "tags": [
+        "dark",
+        "navy",
+        "popular"
+      ],
       "category": "Themes",
       "featured": true,
       "downloads": 0,
@@ -992,7 +1376,15 @@
         "index.js": "registry/plugins/night-owl/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/night-owl/",
-      "preview": ["#011627", "#EF5350", "#22DA6E", "#82AAFF", "#ADDB67", "#C792EA"]
+      "preview": [
+        "#011627",
+        "#EF5350",
+        "#22DA6E",
+        "#82AAFF",
+        "#ADDB67",
+        "#C792EA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/night-owl.termext"
     },
     {
       "id": "nord-aurora",
@@ -1002,7 +1394,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "❄️",
-      "tags": ["dark", "cool", "nordic"],
+      "tags": [
+        "dark",
+        "cool",
+        "nordic"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -1011,7 +1407,15 @@
         "index.js": "registry/plugins/nord-aurora/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/nord-aurora/",
-      "preview": ["#2E3440", "#BF616A", "#A3BE8C", "#81A1C1", "#EBCB8B", "#B48EAD"]
+      "preview": [
+        "#2E3440",
+        "#BF616A",
+        "#A3BE8C",
+        "#81A1C1",
+        "#EBCB8B",
+        "#B48EAD"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/nord-aurora.termext"
     },
     {
       "id": "notification-rules",
@@ -1021,12 +1425,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🔔",
-      "tags": ["notifications", "automation", "productivity"],
+      "tags": [
+        "notifications",
+        "automation",
+        "productivity"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/notification-rules/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/notification-rules/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/notification-rules.termext"
     },
     {
       "id": "npm-scripts",
@@ -1036,7 +1445,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "📦",
-      "tags": ["npm", "node", "developer-tools"],
+      "tags": [
+        "npm",
+        "node",
+        "developer-tools"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -1044,7 +1457,8 @@
         "plugin.json": "registry/plugins/npm-scripts/plugin.json",
         "index.js": "registry/plugins/npm-scripts/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/npm-scripts/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/npm-scripts/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/npm-scripts.termext"
     },
     {
       "id": "ocean-theme",
@@ -1054,7 +1468,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🌊",
-      "tags": ["dark", "blue", "calming"],
+      "tags": [
+        "dark",
+        "blue",
+        "calming"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -1063,7 +1481,15 @@
         "index.js": "registry/plugins/ocean-theme/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ocean-theme/",
-      "preview": ["#0B1A2D", "#E06C75", "#59C99D", "#3D8FD1", "#E5C07B", "#B668CD"]
+      "preview": [
+        "#0B1A2D",
+        "#E06C75",
+        "#59C99D",
+        "#3D8FD1",
+        "#E5C07B",
+        "#B668CD"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/ocean-theme.termext"
     },
     {
       "id": "one-dark-pro",
@@ -1073,7 +1499,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🌑",
-      "tags": ["dark", "popular", "classic"],
+      "tags": [
+        "dark",
+        "popular",
+        "classic"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -1082,7 +1512,15 @@
         "index.js": "registry/plugins/one-dark-pro/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/one-dark-pro/",
-      "preview": ["#282c34", "#e06c75", "#98c379", "#61afef", "#d19a66", "#c678dd"]
+      "preview": [
+        "#282c34",
+        "#e06c75",
+        "#98c379",
+        "#61afef",
+        "#d19a66",
+        "#c678dd"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/one-dark-pro.termext"
     },
     {
       "id": "one-monokai",
@@ -1092,7 +1530,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🎭",
-      "tags": ["dark", "monokai", "hybrid"],
+      "tags": [
+        "dark",
+        "monokai",
+        "hybrid"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -1101,7 +1543,15 @@
         "index.js": "registry/plugins/one-monokai/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/one-monokai/",
-      "preview": ["#282c34", "#F92672", "#A6E22E", "#66D9EF", "#E6DB74", "#AE81FF"]
+      "preview": [
+        "#282c34",
+        "#F92672",
+        "#A6E22E",
+        "#66D9EF",
+        "#E6DB74",
+        "#AE81FF"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/one-monokai.termext"
     },
     {
       "id": "open-finder",
@@ -1111,7 +1561,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "📁",
-      "tags": ["utility", "macos", "finder"],
+      "tags": [
+        "utility",
+        "macos",
+        "finder"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -1119,7 +1573,8 @@
         "plugin.json": "registry/plugins/open-finder/plugin.json",
         "index.js": "registry/plugins/open-finder/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/open-finder/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/open-finder/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/open-finder.termext"
     },
     {
       "id": "palenight",
@@ -1129,7 +1584,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🌃",
-      "tags": ["dark", "purple", "material"],
+      "tags": [
+        "dark",
+        "purple",
+        "material"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -1138,7 +1597,15 @@
         "index.js": "registry/plugins/palenight/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/palenight/",
-      "preview": ["#292D3E", "#F07178", "#C3E88D", "#82AAFF", "#FFCB6B", "#C792EA"]
+      "preview": [
+        "#292D3E",
+        "#F07178",
+        "#C3E88D",
+        "#82AAFF",
+        "#FFCB6B",
+        "#C792EA"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/palenight.termext"
     },
     {
       "id": "pane-activity",
@@ -1148,7 +1615,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "📡",
-      "tags": ["statusbar", "pane", "monitoring"],
+      "tags": [
+        "statusbar",
+        "pane",
+        "monitoring"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -1156,7 +1627,8 @@
         "plugin.json": "registry/plugins/pane-activity/plugin.json",
         "index.js": "registry/plugins/pane-activity/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/pane-activity/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/pane-activity/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/pane-activity.termext"
     },
     {
       "id": "pane-counter",
@@ -1166,7 +1638,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "🔢",
-      "tags": ["statusbar", "pane", "utility"],
+      "tags": [
+        "statusbar",
+        "pane",
+        "utility"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -1174,7 +1650,8 @@
         "plugin.json": "registry/plugins/pane-counter/plugin.json",
         "index.js": "registry/plugins/pane-counter/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/pane-counter/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/pane-counter/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/pane-counter.termext"
     },
     {
       "id": "poimandres",
@@ -1184,7 +1661,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "💫",
-      "tags": ["dark", "ethereal", "soft"],
+      "tags": [
+        "dark",
+        "ethereal",
+        "soft"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -1193,7 +1674,15 @@
         "index.js": "registry/plugins/poimandres/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/poimandres/",
-      "preview": ["#1B1E28", "#D0679D", "#5DE4C7", "#89DDFF", "#FFFAC2", "#FCC5E9"]
+      "preview": [
+        "#1B1E28",
+        "#D0679D",
+        "#5DE4C7",
+        "#89DDFF",
+        "#FFFAC2",
+        "#FCC5E9"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/poimandres.termext"
     },
     {
       "id": "pomodoro-timer",
@@ -1203,7 +1692,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🍅",
-      "tags": ["productivity", "timer", "popular"],
+      "tags": [
+        "productivity",
+        "timer",
+        "popular"
+      ],
       "category": "Extensions",
       "featured": true,
       "downloads": 0,
@@ -1211,7 +1704,8 @@
         "plugin.json": "registry/plugins/pomodoro-timer/plugin.json",
         "index.js": "registry/plugins/pomodoro-timer/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/pomodoro-timer/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/pomodoro-timer/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/pomodoro-timer.termext"
     },
     {
       "id": "powershell",
@@ -1221,7 +1715,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🔵",
-      "tags": ["dark", "blue", "windows"],
+      "tags": [
+        "dark",
+        "blue",
+        "windows"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -1230,7 +1728,15 @@
         "index.js": "registry/plugins/powershell/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/powershell/",
-      "preview": ["#012456", "#FF6161", "#3BC986", "#6871FF", "#EAAB53", "#D681FF"]
+      "preview": [
+        "#012456",
+        "#FF6161",
+        "#3BC986",
+        "#6871FF",
+        "#EAAB53",
+        "#D681FF"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/powershell.termext"
     },
     {
       "id": "process-tree",
@@ -1240,12 +1746,17 @@
       "type": "command",
       "author": "Terminator",
       "icon": "🌳",
-      "tags": ["process", "system", "utility"],
+      "tags": [
+        "process",
+        "system",
+        "utility"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/process-tree/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/process-tree/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/process-tree.termext"
     },
     {
       "id": "quick-notes",
@@ -1255,7 +1766,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "📝",
-      "tags": ["notes", "productivity", "utility"],
+      "tags": [
+        "notes",
+        "productivity",
+        "utility"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
@@ -1263,7 +1778,8 @@
         "plugin.json": "registry/plugins/quick-notes/plugin.json",
         "index.js": "registry/plugins/quick-notes/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/quick-notes/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/quick-notes/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/quick-notes.termext"
     },
     {
       "id": "quick-ssh",
@@ -1273,7 +1789,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🔗",
-      "tags": ["ssh", "networking", "productivity"],
+      "tags": [
+        "ssh",
+        "networking",
+        "productivity"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
@@ -1281,7 +1801,8 @@
         "plugin.json": "registry/plugins/quick-ssh/plugin.json",
         "index.js": "registry/plugins/quick-ssh/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/quick-ssh/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/quick-ssh/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/quick-ssh.termext"
     },
     {
       "id": "regex-tester",
@@ -1291,7 +1812,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🔍",
-      "tags": ["regex", "utility", "developer-tools"],
+      "tags": [
+        "regex",
+        "utility",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
@@ -1299,7 +1824,8 @@
         "plugin.json": "registry/plugins/regex-tester/plugin.json",
         "index.js": "registry/plugins/regex-tester/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/regex-tester/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/regex-tester/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/regex-tester.termext"
     },
     {
       "id": "repeat-last",
@@ -1309,7 +1835,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "🔄",
-      "tags": ["utility", "terminal", "productivity"],
+      "tags": [
+        "utility",
+        "terminal",
+        "productivity"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -1317,7 +1847,8 @@
         "plugin.json": "registry/plugins/repeat-last/plugin.json",
         "index.js": "registry/plugins/repeat-last/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/repeat-last/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/repeat-last/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/repeat-last.termext"
     },
     {
       "id": "rose-pine",
@@ -1327,7 +1858,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🌹",
-      "tags": ["dark", "elegant", "muted"],
+      "tags": [
+        "dark",
+        "elegant",
+        "muted"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -1336,7 +1871,15 @@
         "index.js": "registry/plugins/rose-pine/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/rose-pine/",
-      "preview": ["#191724", "#EB6F92", "#9CCFD8", "#31748F", "#F6C177", "#C4A7E7"]
+      "preview": [
+        "#191724",
+        "#EB6F92",
+        "#9CCFD8",
+        "#31748F",
+        "#F6C177",
+        "#C4A7E7"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/rose-pine.termext"
     },
     {
       "id": "session-timer",
@@ -1346,7 +1889,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "⏱️",
-      "tags": ["statusbar", "timer", "productivity"],
+      "tags": [
+        "statusbar",
+        "timer",
+        "productivity"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -1354,7 +1901,8 @@
         "plugin.json": "registry/plugins/session-timer/plugin.json",
         "index.js": "registry/plugins/session-timer/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/session-timer/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/session-timer/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/session-timer.termext"
     },
     {
       "id": "shades-of-purple",
@@ -1364,7 +1912,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "💜",
-      "tags": ["dark", "purple", "neon"],
+      "tags": [
+        "dark",
+        "purple",
+        "neon"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -1373,7 +1925,15 @@
         "index.js": "registry/plugins/shades-of-purple/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/shades-of-purple/",
-      "preview": ["#2D2B55", "#EC3A37", "#3AD900", "#6943FF", "#FAD000", "#FF7200"]
+      "preview": [
+        "#2D2B55",
+        "#EC3A37",
+        "#3AD900",
+        "#6943FF",
+        "#FAD000",
+        "#FF7200"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/shades-of-purple.termext"
     },
     {
       "id": "snippet-runner",
@@ -1383,7 +1943,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🚀",
-      "tags": ["snippets", "productivity", "developer-tools"],
+      "tags": [
+        "snippets",
+        "productivity",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
@@ -1391,7 +1955,8 @@
         "plugin.json": "registry/plugins/snippet-runner/plugin.json",
         "index.js": "registry/plugins/snippet-runner/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/snippet-runner/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/snippet-runner/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/snippet-runner.termext"
     },
     {
       "id": "solarized-light",
@@ -1401,7 +1966,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "☀️",
-      "tags": ["light", "classic", "balanced"],
+      "tags": [
+        "light",
+        "classic",
+        "balanced"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -1410,7 +1979,15 @@
         "index.js": "registry/plugins/solarized-light/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/solarized-light/",
-      "preview": ["#FDF6E3", "#DC322F", "#859900", "#268BD2", "#B58900", "#D33682"]
+      "preview": [
+        "#FDF6E3",
+        "#DC322F",
+        "#859900",
+        "#268BD2",
+        "#B58900",
+        "#D33682"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/solarized-light.termext"
     },
     {
       "id": "split-layout-manager",
@@ -1420,12 +1997,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "📐",
-      "tags": ["layout", "pane", "productivity"],
+      "tags": [
+        "layout",
+        "pane",
+        "productivity"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/split-layout-manager/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/split-layout-manager/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/split-layout-manager.termext"
     },
     {
       "id": "synthwave-84",
@@ -1435,7 +2017,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🎵",
-      "tags": ["dark", "retro", "neon"],
+      "tags": [
+        "dark",
+        "retro",
+        "neon"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -1444,7 +2030,15 @@
         "index.js": "registry/plugins/synthwave-84/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/synthwave-84/",
-      "preview": ["#262335", "#FE4450", "#72F1B8", "#36F9F6", "#FEDE5D", "#FF7EDB"]
+      "preview": [
+        "#262335",
+        "#FE4450",
+        "#72F1B8",
+        "#36F9F6",
+        "#FEDE5D",
+        "#FF7EDB"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/synthwave-84.termext"
     },
     {
       "id": "system-monitor",
@@ -1454,7 +2048,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "📊",
-      "tags": ["statusbar", "monitoring", "system"],
+      "tags": [
+        "statusbar",
+        "monitoring",
+        "system"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -1462,7 +2060,8 @@
         "plugin.json": "registry/plugins/system-monitor/plugin.json",
         "index.js": "registry/plugins/system-monitor/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/system-monitor/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/system-monitor/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/system-monitor.termext"
     },
     {
       "id": "tab-colorizer",
@@ -1472,7 +2071,11 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🎨",
-      "tags": ["tabs", "customization", "utility"],
+      "tags": [
+        "tabs",
+        "customization",
+        "utility"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
@@ -1480,7 +2083,8 @@
         "plugin.json": "registry/plugins/tab-colorizer/plugin.json",
         "index.js": "registry/plugins/tab-colorizer/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tab-colorizer/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tab-colorizer/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/tab-colorizer.termext"
     },
     {
       "id": "tab-search",
@@ -1490,12 +2094,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🔍",
-      "tags": ["search", "tabs", "productivity"],
+      "tags": [
+        "search",
+        "tabs",
+        "productivity"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tab-search/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tab-search/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/tab-search.termext"
     },
     {
       "id": "terminal-recorder",
@@ -1505,12 +2114,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🎬",
-      "tags": ["recording", "utility", "productivity"],
+      "tags": [
+        "recording",
+        "utility",
+        "productivity"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/terminal-recorder/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/terminal-recorder/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/terminal-recorder.termext"
     },
     {
       "id": "timestamp-converter",
@@ -1520,12 +2134,17 @@
       "type": "command",
       "author": "Terminator",
       "icon": "🕰️",
-      "tags": ["utility", "time", "converter"],
+      "tags": [
+        "utility",
+        "time",
+        "converter"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/timestamp-converter/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/timestamp-converter/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/timestamp-converter.termext"
     },
     {
       "id": "timestamp-insert",
@@ -1535,7 +2154,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "🕐",
-      "tags": ["utility", "time", "productivity"],
+      "tags": [
+        "utility",
+        "time",
+        "productivity"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -1543,7 +2166,8 @@
         "plugin.json": "registry/plugins/timestamp-insert/plugin.json",
         "index.js": "registry/plugins/timestamp-insert/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/timestamp-insert/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/timestamp-insert/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/timestamp-insert.termext"
     },
     {
       "id": "todo-scanner",
@@ -1553,12 +2177,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "✅",
-      "tags": ["todo", "productivity", "developer-tools"],
+      "tags": [
+        "todo",
+        "productivity",
+        "developer-tools"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/todo-scanner/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/todo-scanner/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/todo-scanner.termext"
     },
     {
       "id": "tokyo-night",
@@ -1568,7 +2197,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🗼",
-      "tags": ["dark", "neon", "popular"],
+      "tags": [
+        "dark",
+        "neon",
+        "popular"
+      ],
       "category": "Themes",
       "featured": true,
       "downloads": 0,
@@ -1577,7 +2210,15 @@
         "index.js": "registry/plugins/tokyo-night/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tokyo-night/",
-      "preview": ["#1A1B26", "#F7768E", "#9ECE6A", "#7AA2F7", "#E0AF68", "#BB9AF7"]
+      "preview": [
+        "#1A1B26",
+        "#F7768E",
+        "#9ECE6A",
+        "#7AA2F7",
+        "#E0AF68",
+        "#BB9AF7"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/tokyo-night.termext"
     },
     {
       "id": "top-processes",
@@ -1587,7 +2228,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "📈",
-      "tags": ["system", "monitoring", "utility"],
+      "tags": [
+        "system",
+        "monitoring",
+        "utility"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -1595,7 +2240,8 @@
         "plugin.json": "registry/plugins/top-processes/plugin.json",
         "index.js": "registry/plugins/top-processes/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/top-processes/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/top-processes/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/top-processes.termext"
     },
     {
       "id": "tree-view",
@@ -1605,7 +2251,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "🌲",
-      "tags": ["files", "directory", "utility"],
+      "tags": [
+        "files",
+        "directory",
+        "utility"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -1613,7 +2263,8 @@
         "plugin.json": "registry/plugins/tree-view/plugin.json",
         "index.js": "registry/plugins/tree-view/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tree-view/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tree-view/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/tree-view.termext"
     },
     {
       "id": "ubuntu",
@@ -1623,7 +2274,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🟣",
-      "tags": ["dark", "linux", "classic"],
+      "tags": [
+        "dark",
+        "linux",
+        "classic"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -1632,7 +2287,15 @@
         "index.js": "registry/plugins/ubuntu/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ubuntu/",
-      "preview": ["#300A24", "#CC0000", "#4E9A06", "#3465A4", "#C4A000", "#75507B"]
+      "preview": [
+        "#300A24",
+        "#CC0000",
+        "#4E9A06",
+        "#3465A4",
+        "#C4A000",
+        "#75507B"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/ubuntu.termext"
     },
     {
       "id": "uptime-widget",
@@ -1642,7 +2305,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "⏳",
-      "tags": ["statusbar", "uptime", "monitoring"],
+      "tags": [
+        "statusbar",
+        "uptime",
+        "monitoring"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -1650,7 +2317,8 @@
         "plugin.json": "registry/plugins/uptime-widget/plugin.json",
         "index.js": "registry/plugins/uptime-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/uptime-widget/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/uptime-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/uptime-widget.termext"
     },
     {
       "id": "uuid-gen",
@@ -1660,7 +2328,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "🆔",
-      "tags": ["utility", "generator", "developer-tools"],
+      "tags": [
+        "utility",
+        "generator",
+        "developer-tools"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -1668,7 +2340,8 @@
         "plugin.json": "registry/plugins/uuid-gen/plugin.json",
         "index.js": "registry/plugins/uuid-gen/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/uuid-gen/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/uuid-gen/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/uuid-gen.termext"
     },
     {
       "id": "vim-keybindings",
@@ -1678,12 +2351,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "📗",
-      "tags": ["vim", "keybindings", "productivity"],
+      "tags": [
+        "vim",
+        "keybindings",
+        "productivity"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/vim-keybindings/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/vim-keybindings/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/vim-keybindings.termext"
     },
     {
       "id": "vitesse-dark",
@@ -1693,7 +2371,11 @@
       "type": "theme",
       "author": "Terminator",
       "icon": "🍂",
-      "tags": ["dark", "warm", "earth-tones"],
+      "tags": [
+        "dark",
+        "warm",
+        "earth-tones"
+      ],
       "category": "Themes",
       "featured": false,
       "downloads": 0,
@@ -1702,7 +2384,15 @@
         "index.js": "registry/plugins/vitesse-dark/index.js"
       },
       "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/vitesse-dark/",
-      "preview": ["#121212", "#CB7676", "#4D9375", "#6394BF", "#E6CC77", "#D9739F"]
+      "preview": [
+        "#121212",
+        "#CB7676",
+        "#4D9375",
+        "#6394BF",
+        "#E6CC77",
+        "#D9739F"
+      ],
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/vitesse-dark.termext"
     },
     {
       "id": "weather",
@@ -1712,7 +2402,11 @@
       "type": "command",
       "author": "Terminator",
       "icon": "🌤️",
-      "tags": ["weather", "utility", "fun"],
+      "tags": [
+        "weather",
+        "utility",
+        "fun"
+      ],
       "category": "Commands",
       "featured": false,
       "downloads": 0,
@@ -1720,7 +2414,8 @@
         "plugin.json": "registry/plugins/weather/plugin.json",
         "index.js": "registry/plugins/weather/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/weather/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/weather/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/weather.termext"
     },
     {
       "id": "week-info",
@@ -1730,7 +2425,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "📆",
-      "tags": ["statusbar", "date", "utility"],
+      "tags": [
+        "statusbar",
+        "date",
+        "utility"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -1738,7 +2437,8 @@
         "plugin.json": "registry/plugins/week-info/plugin.json",
         "index.js": "registry/plugins/week-info/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/week-info/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/week-info/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/week-info.termext"
     },
     {
       "id": "word-clock",
@@ -1748,7 +2448,11 @@
       "type": "statusbar",
       "author": "Terminator",
       "icon": "🔤",
-      "tags": ["statusbar", "time", "fun"],
+      "tags": [
+        "statusbar",
+        "time",
+        "fun"
+      ],
       "category": "Status Bar",
       "featured": false,
       "downloads": 0,
@@ -1756,7 +2460,8 @@
         "plugin.json": "registry/plugins/word-clock/plugin.json",
         "index.js": "registry/plugins/word-clock/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/word-clock/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/word-clock/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/word-clock.termext"
     },
     {
       "id": "workspace-switcher",
@@ -1766,12 +2471,17 @@
       "type": "extension",
       "author": "Terminator",
       "icon": "🔀",
-      "tags": ["workspace", "productivity", "utility"],
+      "tags": [
+        "workspace",
+        "productivity",
+        "utility"
+      ],
       "category": "Extensions",
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/workspace-switcher/"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/workspace-switcher/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/workspace-switcher.termext"
     }
   ]
 }

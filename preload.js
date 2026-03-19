@@ -76,6 +76,10 @@ contextBridge.exposeInMainWorld("terminator", {
   // Marketplace
   fetchRegistry: () => ipcRenderer.invoke("fetch-registry"),
   installFromRegistry: (params) => ipcRenderer.invoke("install-from-registry", params),
+  // Package install
+  installTermext: (filePath) => ipcRenderer.invoke("install-termext", filePath),
+  downloadAndInstallTermext: (params) => ipcRenderer.invoke("download-and-install-termext", params),
+  pickTermextFile: () => ipcRenderer.invoke("pick-termext-file"),
   onUpdateStatus: (callback) => ipcRenderer.on("update-status", (_, data) => callback(data)),
   // Window controls (Windows/Linux)
   winMinimize: () => ipcRenderer.send("win-minimize"),

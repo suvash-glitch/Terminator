@@ -1705,3 +1705,78 @@ ipcMain.handle("uninstall-plugin", (_, pluginDir) => {
   }
 });
 
+// Install from .termext package file (zip)
+ipcMain.handle("install-termext", async (_, filePath) => {
+  const safePath = sanitizePath(filePath);
+  if (!safePath) return { error: "Invalid file path" };
+  if (!safePath.endsWith(".termext") && !safePath.endsWith(".zip")) return { error: "Not a .termext package" };
+  if (!fs.existsSync(safePath)) return { error: "File not found" };
+  try {
+    // Extract to a temp dir first to read the manifest
+    const tmpDir = path.join(app.getPath("temp"), `termext-${Date.now()}`);
+    fs.mkdirSync(tmpDir, { recursive: true });
+    await execFileAsync("unzip", ["-o", "-q", safePath, "-d", tmpDir], { timeout: 10000 });
+    // Read manifest to get plugin id
+    const manifestPath = path.join(tmpDir, "plugin.json");
+    if (!fs.existsSync(manifestPath)) {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+      return { error: "Package missing plugin.json" };
+    }
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    if (!manifest.name || !manifest.type || !manifest.main) {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+      return { error: "Invalid plugin manifest" };
+    }
+    // Copy to plugins dir
+    const pluginId = manifest.name.replace(/[^a-zA-Z0-9_-]/g, "-").toLowerCase();
+    const dest = path.join(PLUGINS_DIR, pluginId);
+    if (fs.existsSync(dest)) fs.rmSync(dest, { recursive: true, force: true });
+    fs.cpSync(tmpDir, dest, { recursive: true });
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+    return { ok: true, id: pluginId, manifest };
+  } catch (e) {
+    return { error: e.message };
+  }
+});
+
+// Download .termext package from URL and install
+ipcMain.handle("download-and-install-termext", async (_, { url, id }) => {
+  if (typeof url !== "string" || typeof id !== "string") return { error: "Invalid parameters" };
+  if (id.includes("..") || id.includes("/") || id.includes("\\")) return { error: "Invalid plugin id" };
+  const tmpFile = path.join(app.getPath("temp"), `${id}-${Date.now()}.termext`);
+  try {
+    const res = await electronNet.fetch(url, { method: "GET" });
+    if (!res.ok) throw new Error(`Download failed: ${res.status}`);
+    const buf = Buffer.from(await res.arrayBuffer());
+    fs.writeFileSync(tmpFile, buf);
+    // Extract
+    const dest = path.join(PLUGINS_DIR, id);
+    fs.mkdirSync(dest, { recursive: true });
+    await execFileAsync("unzip", ["-o", "-q", tmpFile, "-d", dest], { timeout: 10000 });
+    // Validate
+    const manifestPath = path.join(dest, "plugin.json");
+    if (!fs.existsSync(manifestPath)) {
+      fs.rmSync(dest, { recursive: true, force: true });
+      throw new Error("Package missing plugin.json");
+    }
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    fs.unlinkSync(tmpFile);
+    return { ok: true, id, manifest };
+  } catch (e) {
+    try { fs.unlinkSync(tmpFile); } catch {}
+    return { error: e.message };
+  }
+});
+
+// Open file dialog to pick a .termext package
+ipcMain.handle("pick-termext-file", async () => {
+  const { dialog } = require("electron");
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: "Install Extension Package",
+    filters: [{ name: "Terminator Extension", extensions: ["termext", "zip"] }],
+    properties: ["openFile"],
+  });
+  if (result.canceled || !result.filePaths.length) return { canceled: true };
+  return { filePath: result.filePaths[0] };
+});
+

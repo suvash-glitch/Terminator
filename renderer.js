@@ -3168,13 +3168,20 @@
             if (result.error) throw new Error(result.error);
             _mpInstalledNames.delete(entry.id);
           } else {
-            // Try marketplace install (remote + local fallback)
-            const result = await window.terminator.installFromRegistry({
-              id: entry.id,
-              files: entry.files || { "plugin.json": "", "index.js": "" },
-              downloadUrl: entry.downloadUrl || "",
-            });
-            if (result.error) throw new Error(result.error);
+            // Try .termext package download first, then file-based fallback
+            let installed = false;
+            if (entry.packageUrl) {
+              const pkgResult = await window.terminator.downloadAndInstallTermext({ url: entry.packageUrl, id: entry.id });
+              if (pkgResult.ok) installed = true;
+            }
+            if (!installed) {
+              const result = await window.terminator.installFromRegistry({
+                id: entry.id,
+                files: entry.files || { "plugin.json": "", "index.js": "" },
+                downloadUrl: entry.downloadUrl || "",
+              });
+              if (result.error) throw new Error(result.error);
+            }
             await activateSinglePlugin(entry.id, entry.type);
             _mpInstalledNames.add(entry.id);
           }
@@ -3318,6 +3325,7 @@
     (function setupMarketplace() {
       const filters = document.getElementById("marketplace-filters");
       const search = document.getElementById("marketplace-search");
+      const installFileBtn = document.getElementById("mp-install-file-btn");
       let activeFilter = "all";
 
       if (filters) {
@@ -3335,6 +3343,27 @@
         search.addEventListener("input", () => {
           clearTimeout(debounce);
           debounce = setTimeout(() => filterMarketplace(activeFilter, search.value), 150);
+        });
+      }
+      // Install from .termext file
+      if (installFileBtn) {
+        installFileBtn.addEventListener("click", async () => {
+          const pick = await window.terminator.pickTermextFile();
+          if (pick.canceled) return;
+          installFileBtn.textContent = "Installing...";
+          installFileBtn.disabled = true;
+          try {
+            const result = await window.terminator.installTermext(pick.filePath);
+            if (result.error) throw new Error(result.error);
+            await activateSinglePlugin(result.id, result.manifest.type);
+            if (result.manifest.type === "theme") _refreshThemeUIs();
+            showToast(`${result.manifest.name || result.id} installed from package`);
+            await fetchAndRenderMarketplace();
+          } catch (err) {
+            showToast("Install failed: " + err.message, "error");
+          }
+          installFileBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Install .termext';
+          installFileBtn.disabled = false;
         });
       }
     })();
