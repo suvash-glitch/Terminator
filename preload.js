@@ -11,6 +11,8 @@ contextBridge.exposeInMainWorld("terminator", {
   getGitBranch: (dir) => ipcRenderer.invoke("get-git-branch", dir),
   getGitStatus: (dir) => ipcRenderer.invoke("get-git-status", dir),
   toggleFullscreen: () => ipcRenderer.send("toggle-fullscreen"),
+  toggleZenMode: () => ipcRenderer.invoke("toggle-zen-mode"),
+  onZenModeChanged: (callback) => ipcRenderer.on("zen-mode-changed", (_, active) => callback(active)),
   quit: () => ipcRenderer.send("quit-app"),
   notify: (title, body) => ipcRenderer.send("show-notification", title, body),
   openInEditor: (filePath) => ipcRenderer.send("open-in-editor", filePath),

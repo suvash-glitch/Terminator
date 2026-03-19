@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Notification, shell, net: electronNet } = require("electron");
+const { app, BrowserWindow, ipcMain, Notification, shell, net: electronNet, screen } = require("electron");
 const pty = require("node-pty");
 const net = require("net");
 const path = require("path");
@@ -1497,6 +1497,52 @@ ipcMain.handle("get-default-shell", () => {
 
 ipcMain.on("toggle-fullscreen", () => {
   if (mainWindow) mainWindow.setFullScreen(!mainWindow.isFullScreen());
+});
+
+// Zen Mode: fullscreen across all monitors with no chrome
+let zenModeActive = false;
+let zenPreBounds = null;
+let zenWasMaximized = false;
+let zenWasFullScreen = false;
+
+ipcMain.handle("toggle-zen-mode", () => {
+  if (!mainWindow) return false;
+  zenModeActive = !zenModeActive;
+  if (zenModeActive) {
+    // Save current state for restore
+    zenWasFullScreen = mainWindow.isFullScreen();
+    zenWasMaximized = mainWindow.isMaximized();
+    zenPreBounds = mainWindow.getBounds();
+    // Exit native fullscreen first (it locks to one display)
+    if (zenWasFullScreen) mainWindow.setFullScreen(false);
+    // Calculate combined bounds across ALL displays
+    const displays = screen.getAllDisplays();
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const d of displays) {
+      minX = Math.min(minX, d.bounds.x);
+      minY = Math.min(minY, d.bounds.y);
+      maxX = Math.max(maxX, d.bounds.x + d.bounds.width);
+      maxY = Math.max(maxY, d.bounds.y + d.bounds.height);
+    }
+    if (process.platform === "darwin") {
+      mainWindow.setSimpleFullScreen(true);
+    }
+    mainWindow.setAlwaysOnTop(true, "screen-saver");
+    mainWindow.setBounds({ x: minX, y: minY, width: maxX - minX, height: maxY - minY });
+    mainWindow.setMenuBarVisibility(false);
+  } else {
+    // Restore previous state
+    mainWindow.setAlwaysOnTop(false);
+    if (process.platform === "darwin") {
+      mainWindow.setSimpleFullScreen(false);
+    }
+    mainWindow.setMenuBarVisibility(true);
+    if (zenPreBounds) mainWindow.setBounds(zenPreBounds);
+    if (zenWasMaximized) mainWindow.maximize();
+    if (zenWasFullScreen) mainWindow.setFullScreen(true);
+  }
+  mainWindow.webContents.send("zen-mode-changed", zenModeActive);
+  return zenModeActive;
 });
 
 ipcMain.on("quit-app", () => {

@@ -1224,6 +1224,31 @@
     }
     body.ide-mode .ide-sidebar { display: flex; }
     body.ide-mode .tabbar { display: none; }
+
+    /* Zen Mode: distraction-free fullscreen across all monitors */
+    body.zen-mode .titlebar { display: none; }
+    body.zen-mode .tabbar { display: none; }
+    body.zen-mode .bottombar { display: none; }
+    body.zen-mode .ide-sidebar { display: none; }
+    body.zen-mode .pane-header { height: 0; min-height: 0; padding: 0; overflow: hidden; border: none; }
+    body.zen-mode .pane-body { padding-top: 0; }
+    body.zen-mode .pane-indicator { display: none; }
+
+    .zen-exit-hint {
+      display: none;
+      position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.75); color: rgba(255,255,255,0.7);
+      padding: 6px 18px; border-radius: 0 0 8px 8px;
+      font-size: 11px; font-family: inherit; z-index: 99999;
+      backdrop-filter: blur(8px); pointer-events: none;
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    body.zen-mode .zen-exit-hint { display: block; }
+    body.zen-mode .zen-exit-hint.visible { opacity: 1; }
+
+    #btn-zen-mode.active-toggle {
+      color: var(--t-accent); background: color-mix(in srgb, var(--t-accent) 15%, transparent);
+    }
     /* IDE mode: hide pane headers for cleaner look, fullscreen active pane */
     body.ide-mode .pane-header { height: 0; min-height: 0; padding: 0; overflow: hidden; border: none; }
     body.ide-mode .pane-body { padding-top: 4px; }

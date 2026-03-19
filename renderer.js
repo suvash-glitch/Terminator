@@ -23,6 +23,7 @@
     let confirmClose = true;
     let customKeybindings = {}; // action -> shortcut override
     let ideMode = false; // IDE sidebar mode
+    let zenMode = false; // Zen mode: distraction-free fullscreen across all monitors
     let ideVisiblePanes = []; // pane IDs visible in IDE mode (single = fullscreen, multiple = split)
 
     // Feature state (used by multiple sections)
@@ -238,32 +239,53 @@
     // LAYOUT
     // ============================================================
     let fitRAF = null;
-    function fitAllTerminals() {
+    let pendingSavedScroll = null;
+    function fitAllTerminals(savedScrollPositions) {
+      // If we already have pre-saved scroll positions queued (from renderLayout),
+      // don't let a ResizeObserver call overwrite them with corrupted state
+      if (savedScrollPositions) {
+        pendingSavedScroll = savedScrollPositions;
+      }
       if (fitRAF) cancelAnimationFrame(fitRAF);
       fitRAF = requestAnimationFrame(() => {
         fitRAF = null;
+        // Use pre-saved positions if available, otherwise capture current state
+        const scrollState = pendingSavedScroll || new Map();
+        if (!pendingSavedScroll) {
+          for (const [id, pane] of panes) {
+            const viewport = pane.el.querySelector(".xterm-viewport");
+            if (viewport) {
+              scrollState.set(id, {
+                scrollTop: viewport.scrollTop,
+                atBottom: viewport.scrollTop >= viewport.scrollHeight - viewport.clientHeight - 10
+              });
+            }
+          }
+        }
+        pendingSavedScroll = null;
+
         for (const [id, pane] of panes) {
           try {
-            // Save scroll state before fit (fit can reset scroll position)
-            const viewport = pane.el.querySelector(".xterm-viewport");
-            const wasAtBottom = viewport
-              ? viewport.scrollTop >= viewport.scrollHeight - viewport.clientHeight - 10
-              : true;
-            const prevScrollTop = viewport ? viewport.scrollTop : 0;
-
             pane.fitAddon.fit();
             window.terminator.resize(id, pane.term.cols, pane.term.rows);
-
-            // Restore scroll position after fit
-            if (viewport) {
-              if (wasAtBottom) {
-                pane.term.scrollToBottom();
-              } else if (viewport.scrollTop !== prevScrollTop) {
-                viewport.scrollTop = prevScrollTop;
-              }
-            }
           } catch {}
         }
+
+        // Restore scroll positions after all fits are done
+        // Use a second rAF to ensure xterm has finished rendering
+        requestAnimationFrame(() => {
+          for (const [id, pos] of scrollState) {
+            const pane = panes.get(id);
+            if (!pane) continue;
+            const viewport = pane.el.querySelector(".xterm-viewport");
+            if (!viewport) continue;
+            if (pos.atBottom) {
+              pane.term.scrollToBottom();
+            } else {
+              viewport.scrollTop = pos.scrollTop;
+            }
+          }
+        });
       });
     }
 
@@ -299,7 +321,7 @@
         }
         // Filter to only existing panes
         ideVisiblePanes = ideVisiblePanes.filter(id => panes.has(id));
-        if (ideVisiblePanes.length === 0) { fitAllTerminals(); return; }
+        if (ideVisiblePanes.length === 0) { fitAllTerminals(scrollPositions); return; }
 
         const rowEl = document.createElement("div");
         rowEl.className = "grid-row"; rowEl.style.flex = "1";
@@ -313,8 +335,7 @@
           if (pane) { pane.el.style.flex = "1"; rowEl.appendChild(pane.el); }
         });
         grid.appendChild(rowEl);
-        fitAllTerminals();
-        restoreScrollPositions(scrollPositions);
+        fitAllTerminals(scrollPositions);
         return;
       }
 
@@ -333,28 +354,7 @@
         frag.appendChild(rowEl);
       }
       grid.appendChild(frag);
-      fitAllTerminals();
-      restoreScrollPositions(scrollPositions);
-    }
-
-    // Restore terminal scroll positions after DOM reattachment
-    function restoreScrollPositions(scrollPositions) {
-      // Use rAF to ensure DOM has settled before restoring scroll
-      requestAnimationFrame(() => {
-        for (const [id, pos] of scrollPositions) {
-          const pane = panes.get(id);
-          if (!pane) continue;
-          const viewport = pane.el.querySelector(".xterm-viewport");
-          if (!viewport) continue;
-          if (pos.atBottom) {
-            // If user was at the bottom, stay at bottom
-            pane.term.scrollToBottom();
-          } else {
-            // Restore exact scroll position
-            viewport.scrollTop = pos.scrollTop;
-          }
-        }
-      });
+      fitAllTerminals(scrollPositions);
     }
 
     function renderIdeEditorTabs() {
@@ -1117,6 +1117,7 @@
       { label: "Reset Layout", action: () => resetLayout(), category: "Layout" },
       { label: "Toggle Broadcast", shortcut: "Cmd+Shift+B", action: () => toggleBroadcast(), category: "Layout" },
       { label: "Toggle Fullscreen", action: () => window.terminator.toggleFullscreen(), category: "Layout" },
+      { label: "Zen Mode (All Monitors)", shortcut: "Cmd+Shift+Z", action: () => toggleZenMode(), category: "View" },
       // Pane
       { label: "Rename Pane", action: () => { if (activeId) renamePaneUI(activeId); }, category: "Pane" },
       { label: "Lock/Unlock Pane", action: () => { if (activeId) togglePaneLock(activeId); }, category: "Pane" },
@@ -2118,6 +2119,8 @@
       else if (meta && e.shiftKey && (e.key === "S" || e.key === "s")) { e.preventDefault(); saveCurrentSession(); }
       else if (meta && e.shiftKey && (e.key === "X" || e.key === "x")) { e.preventDefault(); closeAllOthers(); }
       else if (meta && e.shiftKey && (e.key === "I" || e.key === "i")) { e.preventDefault(); toggleIdeMode(); }
+      else if (meta && e.shiftKey && (e.key === "Z" || e.key === "z")) { e.preventDefault(); toggleZenMode(); }
+      else if (e.key === "Escape" && zenMode) { e.preventDefault(); toggleZenMode(); }
       else if (meta && e.ctrlKey && e.key === "ArrowRight") { e.preventDefault(); resizePaneKeyboard("right"); }
       else if (meta && e.ctrlKey && e.key === "ArrowLeft") { e.preventDefault(); resizePaneKeyboard("left"); }
       else if (meta && e.ctrlKey && e.key === "ArrowDown") { e.preventDefault(); resizePaneKeyboard("down"); }
@@ -4649,6 +4652,41 @@
       showToast(ideMode ? "IDE Mode ON" : "IDE Mode OFF");
       setTimeout(() => fitAllTerminals(), 50);
     }
+
+    // ============================================================
+    // ZEN MODE
+    // ============================================================
+    const zenModeBtn = document.getElementById("btn-zen-mode");
+    const zenExitHint = document.getElementById("zen-exit-hint");
+    let zenHintTimer = null;
+
+    async function toggleZenMode() {
+      const active = await window.terminator.toggleZenMode();
+      zenMode = active;
+      document.body.classList.toggle("zen-mode", zenMode);
+      zenModeBtn.classList.toggle("active-toggle", zenMode);
+      if (zenMode) {
+        // Show exit hint briefly
+        zenExitHint.classList.add("visible");
+        clearTimeout(zenHintTimer);
+        zenHintTimer = setTimeout(() => zenExitHint.classList.remove("visible"), 3000);
+      } else {
+        zenExitHint.classList.remove("visible");
+        clearTimeout(zenHintTimer);
+      }
+      showToast(zenMode ? "Zen Mode — all monitors" : "Zen Mode OFF");
+      setTimeout(() => fitAllTerminals(), 100);
+    }
+
+    zenModeBtn.addEventListener("click", () => toggleZenMode());
+
+    // Listen for zen mode changes from main process (e.g. if exited via OS)
+    window.terminator.onZenModeChanged((active) => {
+      zenMode = active;
+      document.body.classList.toggle("zen-mode", zenMode);
+      zenModeBtn.classList.toggle("active-toggle", zenMode);
+      setTimeout(() => fitAllTerminals(), 100);
+    });
 
     function updateIdeSidebar() {
       if (!ideMode) return;
