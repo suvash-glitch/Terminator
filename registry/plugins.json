@@ -1,0 +1,1777 @@
+{
+  "version": 1,
+  "updated": "2026-03-19T00:00:00Z",
+  "plugins": [
+    {
+      "id": "active-pane-widget",
+      "name": "Active Pane Widget",
+      "description": "Show active pane name or ID in statusbar",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "📍",
+      "tags": ["statusbar", "pane", "productivity"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/active-pane-widget/plugin.json",
+        "index.js": "registry/plugins/active-pane-widget/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/active-pane-widget/"
+    },
+    {
+      "id": "ai-assistant",
+      "name": "AI Assistant",
+      "description": "AI chat assistant with multi-provider support (Anthropic, OpenAI, Google, Ollama)",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🤖",
+      "tags": ["ai", "productivity", "developer-tools"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/ai-assistant/plugin.json",
+        "index.js": "registry/plugins/ai-assistant/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ai-assistant/"
+    },
+    {
+      "id": "atom-dark",
+      "name": "Atom Dark",
+      "description": "Classic Atom editor dark theme with neutral gray tones and balanced colors",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "⚛️",
+      "tags": ["dark", "classic", "editor"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/atom-dark/plugin.json",
+        "index.js": "registry/plugins/atom-dark/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/atom-dark/",
+      "preview": ["#1D1F21", "#CC6666", "#B5BD68", "#81A2BE", "#F0C674", "#B294BB"]
+    },
+    {
+      "id": "auto-rename",
+      "name": "Auto Rename",
+      "description": "Auto-rename pane tabs based on cd/ssh commands",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "✏️",
+      "tags": ["productivity", "pane", "utility"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/auto-rename/plugin.json",
+        "index.js": "registry/plugins/auto-rename/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/auto-rename/"
+    },
+    {
+      "id": "ayu-dark",
+      "name": "Ayu Dark",
+      "description": "Ayu dark theme with warm accent colors on a deep black background",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🌑",
+      "tags": ["dark", "warm", "popular"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/ayu-dark/plugin.json",
+        "index.js": "registry/plugins/ayu-dark/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ayu-dark/",
+      "preview": ["#0A0E14", "#EA6C73", "#91B362", "#53BDFA", "#F9AF4F", "#FAE994"]
+    },
+    {
+      "id": "ayu-mirage",
+      "name": "Ayu Mirage",
+      "description": "Ayu mirage theme with soft blues and warm accents on a dusky background",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🌆",
+      "tags": ["dark", "warm", "soft"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/ayu-mirage/plugin.json",
+        "index.js": "registry/plugins/ayu-mirage/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ayu-mirage/",
+      "preview": ["#1F2430", "#F28779", "#BAE67E", "#73D0FF", "#FFD580", "#D4BFFF"]
+    },
+    {
+      "id": "base-converter",
+      "name": "Base Converter",
+      "description": "Side panel number base converter (dec/hex/bin/oct)",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🔢",
+      "tags": ["utility", "converter", "developer-tools"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/base-converter/plugin.json"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/base-converter/"
+    },
+    {
+      "id": "broadcast-groups",
+      "name": "Broadcast Groups",
+      "description": "Broadcast input to grouped terminal panes simultaneously",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "📡",
+      "tags": ["productivity", "pane", "utility"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/broadcast-groups/"
+    },
+    {
+      "id": "catppuccin-mocha",
+      "name": "Catppuccin Mocha",
+      "description": "Warm dark base with soft pastel colors from the Catppuccin Mocha palette",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🐱",
+      "tags": ["dark", "pastel", "popular"],
+      "category": "Themes",
+      "featured": true,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/catppuccin-mocha/plugin.json",
+        "index.js": "registry/plugins/catppuccin-mocha/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/catppuccin-mocha/",
+      "preview": ["#1E1E2E", "#F38BA8", "#A6E3A1", "#89B4FA", "#F9E2AF", "#F5C2E7"]
+    },
+    {
+      "id": "cheatsheet",
+      "name": "Cheatsheet",
+      "description": "Side panel with command cheatsheets for git, docker, npm",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "📋",
+      "tags": ["reference", "productivity", "developer-tools"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/cheatsheet/plugin.json",
+        "index.js": "registry/plugins/cheatsheet/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/cheatsheet/"
+    },
+    {
+      "id": "claude-ai",
+      "name": "Claude AI",
+      "description": "AI autocomplete and chat — supports Anthropic, OpenAI, Google Gemini, Ollama, and OpenAI-compatible providers",
+      "version": "2.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🧠",
+      "tags": ["ai", "popular", "developer-tools"],
+      "category": "Extensions",
+      "featured": true,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/claude-ai/plugin.json",
+        "index.js": "registry/plugins/claude-ai/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/claude-ai/"
+    },
+    {
+      "id": "clear-all",
+      "name": "Clear All",
+      "description": "Clear all terminal pane buffers",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "🗑️",
+      "tags": ["utility", "terminal", "cleanup"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/clear-all/plugin.json",
+        "index.js": "registry/plugins/clear-all/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/clear-all/"
+    },
+    {
+      "id": "clock-widget",
+      "name": "Clock Widget",
+      "description": "Show current time HH:MM:SS in statusbar",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "🕐",
+      "tags": ["statusbar", "time", "utility"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/clock-widget/plugin.json",
+        "index.js": "registry/plugins/clock-widget/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/clock-widget/"
+    },
+    {
+      "id": "cobalt2",
+      "name": "Cobalt2",
+      "description": "Wes Bos' Cobalt2 theme with vivid blue background and high contrast",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "💎",
+      "tags": ["dark", "blue", "popular"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/cobalt2/plugin.json",
+        "index.js": "registry/plugins/cobalt2/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/cobalt2/",
+      "preview": ["#193549", "#FF628C", "#3AD900", "#0088FF", "#FFC600", "#FF9D00"]
+    },
+    {
+      "id": "color-picker",
+      "name": "Color Picker",
+      "description": "Side panel color picker with hex/rgb/hsl values",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🎨",
+      "tags": ["utility", "design", "developer-tools"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/color-picker/plugin.json"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/color-picker/"
+    },
+    {
+      "id": "command-palette-plus",
+      "name": "Command Palette Plus",
+      "description": "Enhanced command palette with fuzzy search and recent commands",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🔎",
+      "tags": ["productivity", "search", "utility"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/command-palette-plus/"
+    },
+    {
+      "id": "copy-cwd",
+      "name": "Copy CWD",
+      "description": "Copy current working directory to clipboard",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "📋",
+      "tags": ["utility", "clipboard", "productivity"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/copy-cwd/plugin.json",
+        "index.js": "registry/plugins/copy-cwd/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/copy-cwd/"
+    },
+    {
+      "id": "cyberpunk",
+      "name": "Cyberpunk",
+      "description": "Neon-drenched cyberpunk aesthetic with hot pink, electric cyan, and acid green accents",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🌃",
+      "tags": ["dark", "neon", "cyberpunk"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/cyberpunk/plugin.json",
+        "index.js": "registry/plugins/cyberpunk/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/cyberpunk/",
+      "preview": ["#0A0A0F", "#FF2E97", "#39FF14", "#00D4FF", "#FFD700", "#BD00FF"]
+    },
+    {
+      "id": "date-widget",
+      "name": "Date Widget",
+      "description": "Show current date in statusbar",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "📅",
+      "tags": ["statusbar", "date", "utility"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/date-widget/plugin.json",
+        "index.js": "registry/plugins/date-widget/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/date-widget/"
+    },
+    {
+      "id": "day-progress",
+      "name": "Day Progress",
+      "description": "Show day progress percentage bar in statusbar",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "📊",
+      "tags": ["statusbar", "progress", "productivity"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/day-progress/plugin.json",
+        "index.js": "registry/plugins/day-progress/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/day-progress/"
+    },
+    {
+      "id": "decode-base64",
+      "name": "Decode Base64",
+      "description": "Decode base64 from clipboard",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "🔓",
+      "tags": ["utility", "encoding", "developer-tools"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/decode-base64/plugin.json",
+        "index.js": "registry/plugins/decode-base64/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/decode-base64/"
+    },
+    {
+      "id": "diff-viewer",
+      "name": "Diff Viewer",
+      "description": "Side-by-side diff viewer for comparing text and files",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🔀",
+      "tags": ["utility", "diff", "developer-tools"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/diff-viewer/"
+    },
+    {
+      "id": "disk-usage",
+      "name": "Disk Usage",
+      "description": "Show disk usage with df -h",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "💿",
+      "tags": ["utility", "system", "monitoring"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/disk-usage/plugin.json",
+        "index.js": "registry/plugins/disk-usage/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/disk-usage/"
+    },
+    {
+      "id": "docker-dashboard",
+      "name": "Docker Dashboard",
+      "description": "Docker container management dashboard with live status, actions, and command palette integration",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🐳",
+      "tags": ["docker", "devops", "popular"],
+      "category": "Extensions",
+      "featured": true,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/docker-dashboard/plugin.json",
+        "index.js": "registry/plugins/docker-dashboard/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/docker-dashboard/"
+    },
+    {
+      "id": "dracula-pro",
+      "name": "Dracula Pro",
+      "description": "Dracula Pro soft variant with muted pastels on a refined dark background",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🧛",
+      "tags": ["dark", "pastel", "popular"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/dracula-pro/plugin.json",
+        "index.js": "registry/plugins/dracula-pro/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/dracula-pro/",
+      "preview": ["#22212C", "#FF9580", "#8AFF80", "#9580FF", "#FFFF80", "#FF80BF"]
+    },
+    {
+      "id": "encode-base64",
+      "name": "Encode Base64",
+      "description": "Encode clipboard contents to base64",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "🔒",
+      "tags": ["utility", "encoding", "developer-tools"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/encode-base64/plugin.json",
+        "index.js": "registry/plugins/encode-base64/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/encode-base64/"
+    },
+    {
+      "id": "env-manager",
+      "name": "Env Manager",
+      "description": "Environment variable manager for viewing and editing env vars",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🔧",
+      "tags": ["utility", "environment", "developer-tools"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/env-manager/"
+    },
+    {
+      "id": "everforest",
+      "name": "Everforest",
+      "description": "Comfortable and pleasant green forest color scheme for eyes",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🌿",
+      "tags": ["dark", "green", "nature"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/everforest/plugin.json",
+        "index.js": "registry/plugins/everforest/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/everforest/",
+      "preview": ["#2D353B", "#E67E80", "#A7C080", "#7FBBB3", "#DBBC7F", "#D699B6"]
+    },
+    {
+      "id": "file-browser",
+      "name": "File Browser",
+      "description": "Side panel file browser for navigating the filesystem",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "📁",
+      "tags": ["utility", "files", "productivity"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/file-browser/"
+    },
+    {
+      "id": "focus-mode",
+      "name": "Focus Mode",
+      "description": "Toggle distraction-free focus mode hiding UI chrome",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🎯",
+      "tags": ["productivity", "focus", "popular"],
+      "category": "Extensions",
+      "featured": true,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/focus-mode/plugin.json",
+        "index.js": "registry/plugins/focus-mode/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/focus-mode/"
+    },
+    {
+      "id": "git-lens",
+      "name": "Git Lens",
+      "description": "Git integration panel with branch info, file status, recent commits, and quick git commands",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🔍",
+      "tags": ["git", "popular", "developer-tools"],
+      "category": "Extensions",
+      "featured": true,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/git-lens/plugin.json",
+        "index.js": "registry/plugins/git-lens/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/git-lens/"
+    },
+    {
+      "id": "git-quick-commit",
+      "name": "Git Quick Commit",
+      "description": "Git add all and quick commit",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "⚡",
+      "tags": ["git", "utility", "productivity"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/git-quick-commit/plugin.json",
+        "index.js": "registry/plugins/git-quick-commit/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/git-quick-commit/"
+    },
+    {
+      "id": "git-status",
+      "name": "Git Status",
+      "description": "Run git status in active terminal",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "📊",
+      "tags": ["git", "utility", "developer-tools"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/git-status/plugin.json",
+        "index.js": "registry/plugins/git-status/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/git-status/"
+    },
+    {
+      "id": "github-dark",
+      "name": "GitHub Dark",
+      "description": "GitHub's official dark theme with cool grays and familiar accent colors",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🐙",
+      "tags": ["dark", "github", "popular"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/github-dark/plugin.json",
+        "index.js": "registry/plugins/github-dark/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/github-dark/",
+      "preview": ["#0D1117", "#FF7B72", "#3FB950", "#58A6FF", "#D29922", "#BC8CFF"]
+    },
+    {
+      "id": "github-light",
+      "name": "GitHub Light",
+      "description": "GitHub's official light theme with clean whites and crisp syntax colors",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🐙",
+      "tags": ["light", "github", "clean"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/github-light/plugin.json",
+        "index.js": "registry/plugins/github-light/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/github-light/",
+      "preview": ["#FFFFFF", "#CF222E", "#116329", "#0969DA", "#4D2D00", "#8250DF"]
+    },
+    {
+      "id": "greeting-widget",
+      "name": "Greeting Widget",
+      "description": "Show time-appropriate greeting in statusbar",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "👋",
+      "tags": ["statusbar", "greeting", "fun"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/greeting-widget/plugin.json",
+        "index.js": "registry/plugins/greeting-widget/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/greeting-widget/"
+    },
+    {
+      "id": "gruvbox-dark",
+      "name": "Gruvbox Dark",
+      "description": "Warm retro groove color scheme with earthy tones",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🟤",
+      "tags": ["dark", "retro", "warm"],
+      "category": "Themes",
+      "featured": true,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/gruvbox-dark/plugin.json",
+        "index.js": "registry/plugins/gruvbox-dark/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/gruvbox-dark/",
+      "preview": ["#282828", "#CC241D", "#98971A", "#458588", "#D79921", "#B16286"]
+    },
+    {
+      "id": "hash-generator",
+      "name": "Hash Generator",
+      "description": "Generate MD5, SHA-1, SHA-256 hashes from input text",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "#️⃣",
+      "tags": ["utility", "crypto", "developer-tools"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/hash-generator/"
+    },
+    {
+      "id": "hello-command",
+      "name": "Hello Command",
+      "description": "A simple example command plugin that says hello",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "👋",
+      "tags": ["example", "starter", "utility"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/hello-command/plugin.json",
+        "index.js": "registry/plugins/hello-command/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/hello-command/"
+    },
+    {
+      "id": "horizon",
+      "name": "Horizon",
+      "description": "Horizon warm dark theme with rosy red and orange sunset accents",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🌅",
+      "tags": ["dark", "warm", "sunset"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/horizon/plugin.json",
+        "index.js": "registry/plugins/horizon/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/horizon/",
+      "preview": ["#1C1E26", "#E95678", "#29D398", "#26BBD9", "#FAB795", "#EE64AC"]
+    },
+    {
+      "id": "http-client",
+      "name": "HTTP Client",
+      "description": "Side panel HTTP client for making REST API requests",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🌐",
+      "tags": ["api", "http", "developer-tools"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/http-client/"
+    },
+    {
+      "id": "ip-info",
+      "name": "IP Info",
+      "description": "Show IP addresses via ifconfig",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "🌐",
+      "tags": ["networking", "utility", "system"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/ip-info/plugin.json",
+        "index.js": "registry/plugins/ip-info/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ip-info/"
+    },
+    {
+      "id": "json-viewer",
+      "name": "JSON Viewer",
+      "description": "Side panel JSON formatter and viewer",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "📄",
+      "tags": ["json", "utility", "developer-tools"],
+      "category": "Extensions",
+      "featured": true,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/json-viewer/plugin.json",
+        "index.js": "registry/plugins/json-viewer/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/json-viewer/"
+    },
+    {
+      "id": "jwt-decoder",
+      "name": "JWT Decoder",
+      "description": "Decode and inspect JSON Web Tokens",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🔑",
+      "tags": ["jwt", "security", "developer-tools"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/jwt-decoder/"
+    },
+    {
+      "id": "k8s-status",
+      "name": "K8s Status",
+      "description": "Kubernetes cluster status and pod management dashboard",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "☸️",
+      "tags": ["kubernetes", "devops", "monitoring"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/k8s-status/"
+    },
+    {
+      "id": "kanagawa",
+      "name": "Kanagawa",
+      "description": "Dark color scheme inspired by the colors of the famous painting by Katsushika Hokusai",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🌊",
+      "tags": ["dark", "japanese", "artistic"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/kanagawa/plugin.json",
+        "index.js": "registry/plugins/kanagawa/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/kanagawa/",
+      "preview": ["#1F1F28", "#C34043", "#76946A", "#7E9CD8", "#C0A36E", "#957FB8"]
+    },
+    {
+      "id": "keyboard-widget",
+      "name": "Keyboard Widget",
+      "description": "Show keyboard shortcuts hint in statusbar",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "⌨️",
+      "tags": ["statusbar", "keyboard", "reference"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/keyboard-widget/plugin.json",
+        "index.js": "registry/plugins/keyboard-widget/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/keyboard-widget/"
+    },
+    {
+      "id": "kill-process",
+      "name": "Kill Process",
+      "description": "Send Ctrl+C to active pane to kill running process",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "💀",
+      "tags": ["utility", "process", "terminal"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/kill-process/plugin.json",
+        "index.js": "registry/plugins/kill-process/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/kill-process/"
+    },
+    {
+      "id": "log-highlighter",
+      "name": "Log Highlighter",
+      "description": "Syntax highlighting for log files with color-coded levels",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "📝",
+      "tags": ["logging", "utility", "developer-tools"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/log-highlighter/"
+    },
+    {
+      "id": "lorem-ipsum",
+      "name": "Lorem Ipsum",
+      "description": "Paste lorem ipsum text into terminal",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "📝",
+      "tags": ["utility", "text", "placeholder"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/lorem-ipsum/plugin.json",
+        "index.js": "registry/plugins/lorem-ipsum/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/lorem-ipsum/"
+    },
+    {
+      "id": "material-darker",
+      "name": "Material Darker",
+      "description": "Material Design darker variant with clean, modern colors",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🎨",
+      "tags": ["dark", "material", "modern"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/material-darker/plugin.json",
+        "index.js": "registry/plugins/material-darker/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/material-darker/",
+      "preview": ["#212121", "#F07178", "#C3E88D", "#82AAFF", "#FFCB6B", "#C792EA"]
+    },
+    {
+      "id": "memory-widget",
+      "name": "Memory Widget",
+      "description": "Show JS heap memory usage in statusbar",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "💾",
+      "tags": ["statusbar", "memory", "monitoring"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/memory-widget/plugin.json",
+        "index.js": "registry/plugins/memory-widget/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/memory-widget/"
+    },
+    {
+      "id": "minimal-clock",
+      "name": "Minimal Clock",
+      "description": "Show just HH:MM in monospace in statusbar",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "🕑",
+      "tags": ["statusbar", "time", "minimal"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/minimal-clock/plugin.json",
+        "index.js": "registry/plugins/minimal-clock/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/minimal-clock/"
+    },
+    {
+      "id": "moonlight",
+      "name": "Moonlight",
+      "description": "Moonlight theme with cool indigo background and dreamy pastel accents",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🌙",
+      "tags": ["dark", "pastel", "dreamy"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/moonlight/plugin.json",
+        "index.js": "registry/plugins/moonlight/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/moonlight/",
+      "preview": ["#222436", "#FF757F", "#C3E88D", "#82AAFF", "#FFC777", "#C099FF"]
+    },
+    {
+      "id": "new-here",
+      "name": "New Here",
+      "description": "Open a new terminal at the current directory",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "📂",
+      "tags": ["utility", "terminal", "productivity"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/new-here/plugin.json",
+        "index.js": "registry/plugins/new-here/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/new-here/"
+    },
+    {
+      "id": "night-owl",
+      "name": "Night Owl",
+      "description": "Sarah Drasner's Night Owl with deep navy and vivid syntax highlights",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🦉",
+      "tags": ["dark", "navy", "popular"],
+      "category": "Themes",
+      "featured": true,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/night-owl/plugin.json",
+        "index.js": "registry/plugins/night-owl/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/night-owl/",
+      "preview": ["#011627", "#EF5350", "#22DA6E", "#82AAFF", "#ADDB67", "#C792EA"]
+    },
+    {
+      "id": "nord-aurora",
+      "name": "Nord Aurora",
+      "description": "Cool blue-gray tones inspired by the Nord color palette with aurora borealis accents",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "❄️",
+      "tags": ["dark", "cool", "nordic"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/nord-aurora/plugin.json",
+        "index.js": "registry/plugins/nord-aurora/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/nord-aurora/",
+      "preview": ["#2E3440", "#BF616A", "#A3BE8C", "#81A1C1", "#EBCB8B", "#B48EAD"]
+    },
+    {
+      "id": "notification-rules",
+      "name": "Notification Rules",
+      "description": "Custom notification rules for terminal events and output patterns",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🔔",
+      "tags": ["notifications", "automation", "productivity"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/notification-rules/"
+    },
+    {
+      "id": "npm-scripts",
+      "name": "NPM Scripts",
+      "description": "List npm scripts from package.json",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "📦",
+      "tags": ["npm", "node", "developer-tools"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/npm-scripts/plugin.json",
+        "index.js": "registry/plugins/npm-scripts/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/npm-scripts/"
+    },
+    {
+      "id": "ocean-theme",
+      "name": "Ocean",
+      "description": "A calming blue ocean-themed color scheme",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🌊",
+      "tags": ["dark", "blue", "calming"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/ocean-theme/plugin.json",
+        "index.js": "registry/plugins/ocean-theme/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ocean-theme/",
+      "preview": ["#0B1A2D", "#E06C75", "#59C99D", "#3D8FD1", "#E5C07B", "#B668CD"]
+    },
+    {
+      "id": "one-dark-pro",
+      "name": "One Dark Pro",
+      "description": "Atom One Dark Pro with rich syntax colors on a cool dark background",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🌑",
+      "tags": ["dark", "popular", "classic"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/one-dark-pro/plugin.json",
+        "index.js": "registry/plugins/one-dark-pro/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/one-dark-pro/",
+      "preview": ["#282c34", "#e06c75", "#98c379", "#61afef", "#d19a66", "#c678dd"]
+    },
+    {
+      "id": "one-monokai",
+      "name": "One Monokai",
+      "description": "One Monokai hybrid combining One Dark base with classic Monokai accents",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🎭",
+      "tags": ["dark", "monokai", "hybrid"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/one-monokai/plugin.json",
+        "index.js": "registry/plugins/one-monokai/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/one-monokai/",
+      "preview": ["#282c34", "#F92672", "#A6E22E", "#66D9EF", "#E6DB74", "#AE81FF"]
+    },
+    {
+      "id": "open-finder",
+      "name": "Open Finder",
+      "description": "Open current directory in Finder",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "📁",
+      "tags": ["utility", "macos", "finder"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/open-finder/plugin.json",
+        "index.js": "registry/plugins/open-finder/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/open-finder/"
+    },
+    {
+      "id": "palenight",
+      "name": "Palenight",
+      "description": "Material palenight with muted purples and soft pastel syntax colors",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🌃",
+      "tags": ["dark", "purple", "material"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/palenight/plugin.json",
+        "index.js": "registry/plugins/palenight/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/palenight/",
+      "preview": ["#292D3E", "#F07178", "#C3E88D", "#82AAFF", "#FFCB6B", "#C792EA"]
+    },
+    {
+      "id": "pane-activity",
+      "name": "Pane Activity",
+      "description": "Show which panes have recent activity",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "📡",
+      "tags": ["statusbar", "pane", "monitoring"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/pane-activity/plugin.json",
+        "index.js": "registry/plugins/pane-activity/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/pane-activity/"
+    },
+    {
+      "id": "pane-counter",
+      "name": "Pane Counter",
+      "description": "Show number of open panes in statusbar",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "🔢",
+      "tags": ["statusbar", "pane", "utility"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/pane-counter/plugin.json",
+        "index.js": "registry/plugins/pane-counter/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/pane-counter/"
+    },
+    {
+      "id": "poimandres",
+      "name": "Poimandres",
+      "description": "Poimandres dark theme with ethereal blues and soft lavender accents",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "💫",
+      "tags": ["dark", "ethereal", "soft"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/poimandres/plugin.json",
+        "index.js": "registry/plugins/poimandres/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/poimandres/",
+      "preview": ["#1B1E28", "#D0679D", "#5DE4C7", "#89DDFF", "#FFFAC2", "#FCC5E9"]
+    },
+    {
+      "id": "pomodoro-timer",
+      "name": "Pomodoro Timer",
+      "description": "25-minute pomodoro countdown timer",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🍅",
+      "tags": ["productivity", "timer", "popular"],
+      "category": "Extensions",
+      "featured": true,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/pomodoro-timer/plugin.json",
+        "index.js": "registry/plugins/pomodoro-timer/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/pomodoro-timer/"
+    },
+    {
+      "id": "powershell",
+      "name": "PowerShell",
+      "description": "PowerShell ISE classic blue theme with familiar Windows terminal colors",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🔵",
+      "tags": ["dark", "blue", "windows"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/powershell/plugin.json",
+        "index.js": "registry/plugins/powershell/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/powershell/",
+      "preview": ["#012456", "#FF6161", "#3BC986", "#6871FF", "#EAAB53", "#D681FF"]
+    },
+    {
+      "id": "process-tree",
+      "name": "Process Tree",
+      "description": "Visualize running processes in a tree hierarchy",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "🌳",
+      "tags": ["process", "system", "utility"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/process-tree/"
+    },
+    {
+      "id": "quick-notes",
+      "name": "Quick Notes",
+      "description": "Side panel with simple notes textarea",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "📝",
+      "tags": ["notes", "productivity", "utility"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/quick-notes/plugin.json",
+        "index.js": "registry/plugins/quick-notes/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/quick-notes/"
+    },
+    {
+      "id": "quick-ssh",
+      "name": "Quick SSH",
+      "description": "SSH connection manager with saved hosts, one-click connect, and connection profiles",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🔗",
+      "tags": ["ssh", "networking", "productivity"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/quick-ssh/plugin.json",
+        "index.js": "registry/plugins/quick-ssh/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/quick-ssh/"
+    },
+    {
+      "id": "regex-tester",
+      "name": "Regex Tester",
+      "description": "Side panel regex tester with match highlighting",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🔍",
+      "tags": ["regex", "utility", "developer-tools"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/regex-tester/plugin.json",
+        "index.js": "registry/plugins/regex-tester/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/regex-tester/"
+    },
+    {
+      "id": "repeat-last",
+      "name": "Repeat Last",
+      "description": "Repeat the last command in active terminal",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "🔄",
+      "tags": ["utility", "terminal", "productivity"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/repeat-last/plugin.json",
+        "index.js": "registry/plugins/repeat-last/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/repeat-last/"
+    },
+    {
+      "id": "rose-pine",
+      "name": "Rose Pine",
+      "description": "Muted and elegant palette with rose and gold accents on a dark pine base",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🌹",
+      "tags": ["dark", "elegant", "muted"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/rose-pine/plugin.json",
+        "index.js": "registry/plugins/rose-pine/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/rose-pine/",
+      "preview": ["#191724", "#EB6F92", "#9CCFD8", "#31748F", "#F6C177", "#C4A7E7"]
+    },
+    {
+      "id": "session-timer",
+      "name": "Session Timer",
+      "description": "Show time since session start in statusbar",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "⏱️",
+      "tags": ["statusbar", "timer", "productivity"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/session-timer/plugin.json",
+        "index.js": "registry/plugins/session-timer/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/session-timer/"
+    },
+    {
+      "id": "shades-of-purple",
+      "name": "Shades of Purple",
+      "description": "Ahmad Awais' Shades of Purple with bold purple tones and neon highlights",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "💜",
+      "tags": ["dark", "purple", "neon"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/shades-of-purple/plugin.json",
+        "index.js": "registry/plugins/shades-of-purple/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/shades-of-purple/",
+      "preview": ["#2D2B55", "#EC3A37", "#3AD900", "#6943FF", "#FAD000", "#FF7200"]
+    },
+    {
+      "id": "snippet-runner",
+      "name": "Snippet Runner",
+      "description": "Command snippet manager with categories, search, and one-click execution in terminal",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🚀",
+      "tags": ["snippets", "productivity", "developer-tools"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/snippet-runner/plugin.json",
+        "index.js": "registry/plugins/snippet-runner/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/snippet-runner/"
+    },
+    {
+      "id": "solarized-light",
+      "name": "Solarized Light",
+      "description": "Ethan Schoonover's Solarized light with precision-balanced colors",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "☀️",
+      "tags": ["light", "classic", "balanced"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/solarized-light/plugin.json",
+        "index.js": "registry/plugins/solarized-light/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/solarized-light/",
+      "preview": ["#FDF6E3", "#DC322F", "#859900", "#268BD2", "#B58900", "#D33682"]
+    },
+    {
+      "id": "split-layout-manager",
+      "name": "Split Layout Manager",
+      "description": "Save and restore custom split pane layouts",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "📐",
+      "tags": ["layout", "pane", "productivity"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/split-layout-manager/"
+    },
+    {
+      "id": "synthwave-84",
+      "name": "Synthwave '84",
+      "description": "Retro neon synthwave theme inspired by the '80s aesthetic",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🎵",
+      "tags": ["dark", "retro", "neon"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/synthwave-84/plugin.json",
+        "index.js": "registry/plugins/synthwave-84/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/synthwave-84/",
+      "preview": ["#262335", "#FE4450", "#72F1B8", "#36F9F6", "#FEDE5D", "#FF7EDB"]
+    },
+    {
+      "id": "system-monitor",
+      "name": "System Monitor",
+      "description": "Statusbar widget showing active pane count, current time, and terminal process info",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "📊",
+      "tags": ["statusbar", "monitoring", "system"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/system-monitor/plugin.json",
+        "index.js": "registry/plugins/system-monitor/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/system-monitor/"
+    },
+    {
+      "id": "tab-colorizer",
+      "name": "Tab Colorizer",
+      "description": "Color-code pane tabs via context menu",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🎨",
+      "tags": ["tabs", "customization", "utility"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/tab-colorizer/plugin.json",
+        "index.js": "registry/plugins/tab-colorizer/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tab-colorizer/"
+    },
+    {
+      "id": "tab-search",
+      "name": "Tab Search",
+      "description": "Quickly search and switch between open terminal tabs",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🔍",
+      "tags": ["search", "tabs", "productivity"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tab-search/"
+    },
+    {
+      "id": "terminal-recorder",
+      "name": "Terminal Recorder",
+      "description": "Record and replay terminal sessions as animated GIFs",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🎬",
+      "tags": ["recording", "utility", "productivity"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/terminal-recorder/"
+    },
+    {
+      "id": "timestamp-converter",
+      "name": "Timestamp Converter",
+      "description": "Convert between Unix timestamps and human-readable dates",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "🕰️",
+      "tags": ["utility", "time", "converter"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/timestamp-converter/"
+    },
+    {
+      "id": "timestamp-insert",
+      "name": "Timestamp Insert",
+      "description": "Insert current ISO timestamp into terminal",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "🕐",
+      "tags": ["utility", "time", "productivity"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/timestamp-insert/plugin.json",
+        "index.js": "registry/plugins/timestamp-insert/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/timestamp-insert/"
+    },
+    {
+      "id": "todo-scanner",
+      "name": "Todo Scanner",
+      "description": "Scan project files for TODO, FIXME, and HACK comments",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "✅",
+      "tags": ["todo", "productivity", "developer-tools"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/todo-scanner/"
+    },
+    {
+      "id": "tokyo-night",
+      "name": "Tokyo Night",
+      "description": "Deep navy background with vibrant neon accents inspired by Tokyo Night",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🗼",
+      "tags": ["dark", "neon", "popular"],
+      "category": "Themes",
+      "featured": true,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/tokyo-night/plugin.json",
+        "index.js": "registry/plugins/tokyo-night/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tokyo-night/",
+      "preview": ["#1A1B26", "#F7768E", "#9ECE6A", "#7AA2F7", "#E0AF68", "#BB9AF7"]
+    },
+    {
+      "id": "top-processes",
+      "name": "Top Processes",
+      "description": "Show top processes by CPU usage",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "📈",
+      "tags": ["system", "monitoring", "utility"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/top-processes/plugin.json",
+        "index.js": "registry/plugins/top-processes/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/top-processes/"
+    },
+    {
+      "id": "tree-view",
+      "name": "Tree View",
+      "description": "Show directory tree structure",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "🌲",
+      "tags": ["files", "directory", "utility"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/tree-view/plugin.json",
+        "index.js": "registry/plugins/tree-view/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tree-view/"
+    },
+    {
+      "id": "ubuntu",
+      "name": "Ubuntu",
+      "description": "Classic Ubuntu terminal colors with the iconic aubergine purple background",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🟣",
+      "tags": ["dark", "linux", "classic"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/ubuntu/plugin.json",
+        "index.js": "registry/plugins/ubuntu/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ubuntu/",
+      "preview": ["#300A24", "#CC0000", "#4E9A06", "#3465A4", "#C4A000", "#75507B"]
+    },
+    {
+      "id": "uptime-widget",
+      "name": "Uptime Widget",
+      "description": "Show session uptime in statusbar",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "⏳",
+      "tags": ["statusbar", "uptime", "monitoring"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/uptime-widget/plugin.json",
+        "index.js": "registry/plugins/uptime-widget/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/uptime-widget/"
+    },
+    {
+      "id": "uuid-gen",
+      "name": "UUID Gen",
+      "description": "Generate a UUID using uuidgen",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "🆔",
+      "tags": ["utility", "generator", "developer-tools"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/uuid-gen/plugin.json",
+        "index.js": "registry/plugins/uuid-gen/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/uuid-gen/"
+    },
+    {
+      "id": "vim-keybindings",
+      "name": "Vim Keybindings",
+      "description": "Vim-style keybindings for terminal navigation and editing",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "📗",
+      "tags": ["vim", "keybindings", "productivity"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/vim-keybindings/"
+    },
+    {
+      "id": "vitesse-dark",
+      "name": "Vitesse Dark",
+      "description": "Vitesse dark theme by Anthony Fu with warm earth tones and clean contrast",
+      "version": "1.0.0",
+      "type": "theme",
+      "author": "Terminator",
+      "icon": "🍂",
+      "tags": ["dark", "warm", "earth-tones"],
+      "category": "Themes",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/vitesse-dark/plugin.json",
+        "index.js": "registry/plugins/vitesse-dark/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/vitesse-dark/",
+      "preview": ["#121212", "#CB7676", "#4D9375", "#6394BF", "#E6CC77", "#D9739F"]
+    },
+    {
+      "id": "weather",
+      "name": "Weather",
+      "description": "Show current weather in terminal",
+      "version": "1.0.0",
+      "type": "command",
+      "author": "Terminator",
+      "icon": "🌤️",
+      "tags": ["weather", "utility", "fun"],
+      "category": "Commands",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/weather/plugin.json",
+        "index.js": "registry/plugins/weather/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/weather/"
+    },
+    {
+      "id": "week-info",
+      "name": "Week Info",
+      "description": "Show week number and day of week in statusbar",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "📆",
+      "tags": ["statusbar", "date", "utility"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/week-info/plugin.json",
+        "index.js": "registry/plugins/week-info/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/week-info/"
+    },
+    {
+      "id": "word-clock",
+      "name": "Word Clock",
+      "description": "Show time as words in statusbar",
+      "version": "1.0.0",
+      "type": "statusbar",
+      "author": "Terminator",
+      "icon": "🔤",
+      "tags": ["statusbar", "time", "fun"],
+      "category": "Status Bar",
+      "featured": false,
+      "downloads": 0,
+      "files": {
+        "plugin.json": "registry/plugins/word-clock/plugin.json",
+        "index.js": "registry/plugins/word-clock/index.js"
+      },
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/word-clock/"
+    },
+    {
+      "id": "workspace-switcher",
+      "name": "Workspace Switcher",
+      "description": "Save and switch between named workspace configurations",
+      "version": "1.0.0",
+      "type": "extension",
+      "author": "Terminator",
+      "icon": "🔀",
+      "tags": ["workspace", "productivity", "utility"],
+      "category": "Extensions",
+      "featured": false,
+      "downloads": 0,
+      "files": {},
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/workspace-switcher/"
+    }
+  ]
+}

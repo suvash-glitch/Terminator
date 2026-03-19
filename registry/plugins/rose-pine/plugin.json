@@ -1,0 +1,7 @@
+{
+  "name": "rose-pine",
+  "version": "1.0.0",
+  "description": "Muted and elegant palette with rose and gold accents on a dark pine base",
+  "type": "theme",
+  "main": "index.js"
+}

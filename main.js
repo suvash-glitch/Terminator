@@ -31,8 +31,10 @@ function sanitizePath(p) {
   if (typeof p !== "string") return null;
   if (p.includes("\0")) return null;
   const resolved = path.resolve(p);
-  // Block path traversal patterns in the original input
-  if (p.includes("../") || p.includes("..\\")) return null;
+  // Block traversal outside home directory or /tmp
+  const home = os.homedir();
+  const tmp = os.tmpdir();
+  if (!resolved.startsWith(home) && !resolved.startsWith(tmp) && !resolved.startsWith("/tmp")) return null;
   return resolved;
 }
 
@@ -56,7 +58,12 @@ const PROFILES_PATH = path.join(app.getPath("userData"), "profiles.json");
 const RECENTS_PATH = path.join(app.getPath("userData"), "recents.json");
 
 function readJSON(p, fallback) {
-  try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return fallback; }
+  try {
+    return JSON.parse(fs.readFileSync(p, "utf8"));
+  } catch (err) {
+    if (err.code !== 'ENOENT') log('error', `Failed to read ${path.basename(p)}:`, err.message);
+    return fallback;
+  }
 }
 function writeJSON(p, data) {
   fs.writeFileSync(p, JSON.stringify(data, null, 2));
@@ -110,7 +117,7 @@ function createWindow() {
   });
 
   mainWindow.loadFile("index.html");
-  mainWindow.setFullScreen(true);
+  mainWindow.maximize();
 
   mainWindow.on("closed", () => {
     for (const [, p] of ptys) p.kill();
@@ -438,15 +445,13 @@ async function handleSocketCommand(raw, conn) {
   }
 }
 
-function getCwdForPty(id) {
+async function getCwdForPty(id) {
   const p = ptys.get(id);
   if (!p) return null;
   try {
     const pid = String(p.pid);
     if (process.platform === "win32") return null;
-    const result = execFileSync("lsof", ["-p", pid, "-Fn"], {
-      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
-    }).trim();
+    const result = await execFileAsync("lsof", ["-p", pid, "-Fn"]);
     const lines = result.split("\n");
     for (let i = 0; i < lines.length; i++) {
       if (lines[i] === "fcwd" && i + 1 < lines.length && lines[i + 1].startsWith("n")) {
@@ -457,7 +462,7 @@ function getCwdForPty(id) {
   } catch { return null; }
 }
 
-function getProcessForPty(id) {
+async function getProcessForPty(id) {
   const p = ptys.get(id);
   if (!p) return null;
   try {
@@ -465,14 +470,10 @@ function getProcessForPty(id) {
     if (process.platform === "win32") return null;
     let childPid;
     try {
-      childPid = execFileSync("pgrep", ["-P", pid], {
-        encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
-      }).trim().split("\n")[0];
+      childPid = (await execFileAsync("pgrep", ["-P", pid])).split("\n")[0];
     } catch {}
     const targetPid = childPid || pid;
-    const result = execFileSync("ps", ["-o", "comm=", "-p", targetPid], {
-      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
-    }).trim();
+    const result = await execFileAsync("ps", ["-o", "comm=", "-p", targetPid]);
     return result.split("/").pop() || null;
   } catch { return null; }
 }
@@ -536,46 +537,64 @@ ipcMain.handle("create-terminal", (_, cwd) => {
 });
 
 ipcMain.on("terminal-input", (_, id, data) => {
-  if (!ptys.has(id)) return;
+  if (typeof id !== "number" || typeof data !== "string") return;
   const p = ptys.get(id);
   if (p) p.write(data);
 });
 
 ipcMain.on("terminal-resize", (_, id, cols, rows) => {
+  if (typeof id !== "number") return;
+  const c = Number(cols), r = Number(rows);
+  if (!Number.isInteger(c) || !Number.isInteger(r) || c < 1 || r < 1 || c > 500 || r > 500) return;
   const p = ptys.get(id);
-  if (p) p.resize(cols, rows);
+  if (p) p.resize(c, r);
 });
 
 ipcMain.on("terminal-kill", (_, id) => {
+  if (typeof id !== "number") return;
   const p = ptys.get(id);
   if (p) { p.kill(); ptys.delete(id); }
 });
 
 ipcMain.on("terminal-broadcast", (_, ids, data) => {
+  if (!Array.isArray(ids) || typeof data !== "string") return;
   for (const id of ids) {
+    if (typeof id !== "number") continue;
     const p = ptys.get(id);
     if (p) p.write(data);
   }
 });
 
-// Get cwd for a terminal
+// Get cwd for a terminal (async to avoid blocking event loop)
 ipcMain.handle("get-terminal-cwd", async (_, id) => {
   const p = ptys.get(id);
   if (!p) return null;
   try {
     const pid = String(p.pid);
     if (process.platform === "win32") {
-      // Windows: use wmic or PowerShell
       try {
-        const result = execFileSync("powershell", ["-Command", `(Get-Process -Id ${pid}).Path`], {
-          encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
-        }).trim();
+        const { execFile: execFileCb } = require("child_process");
+        const result = await new Promise((resolve, reject) => {
+          execFileCb("powershell", ["-Command",
+            `(Get-CimInstance Win32_Process -Filter "ProcessId=${parseInt(pid, 10)}").ExecutablePath; ` +
+            `$wmiObj = (Get-CimInstance Win32_Process -Filter "ProcessId=${parseInt(pid, 10)}"); ` +
+            `Invoke-CimMethod -InputObject $wmiObj -MethodName GetOwner | Out-Null; ` +
+            `[System.IO.Directory]::GetCurrentDirectory()`
+          ], { encoding: "utf8", timeout: 2000 }, (err, stdout) => {
+            if (err) reject(err); else resolve(stdout.trim());
+          });
+        });
         return result || null;
       } catch { return null; }
     }
-    const result = execFileSync("lsof", ["-p", pid, "-Fn"], {
-      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
-    }).trim();
+    const { execFile: execFileCb } = require("child_process");
+    const result = await new Promise((resolve, reject) => {
+      execFileCb("lsof", ["-p", pid, "-Fn"], {
+        encoding: "utf8", timeout: 2000
+      }, (err, stdout) => {
+        if (err) reject(err); else resolve(stdout.trim());
+      });
+    });
     const lines = result.split("\n");
     for (let i = 0; i < lines.length; i++) {
       if (lines[i] === "fcwd" && i + 1 < lines.length && lines[i + 1].startsWith("n")) {
@@ -586,33 +605,45 @@ ipcMain.handle("get-terminal-cwd", async (_, id) => {
   } catch { return null; }
 });
 
-// Get process name for a terminal
+// Get process name for a terminal (async to avoid blocking event loop)
 ipcMain.handle("get-terminal-process", async (_, id) => {
   const p = ptys.get(id);
   if (!p) return null;
+  const { execFile: execFileCb } = require("child_process");
+  const execFileAsync = (cmd, args, opts) => new Promise((resolve, reject) => {
+    execFileCb(cmd, args, { encoding: "utf8", timeout: 2000, ...opts }, (err, stdout) => {
+      if (err) reject(err); else resolve(stdout.trim());
+    });
+  });
   try {
     const pid = String(p.pid);
     if (process.platform === "win32") {
       try {
-        const result = execFileSync("powershell", ["-Command",
-          `(Get-CimInstance Win32_Process -Filter "ParentProcessId=${pid}" | Select-Object -First 1).Name`
-        ], { encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"] }).trim();
+        const result = await execFileAsync("powershell", ["-Command",
+          `(Get-CimInstance Win32_Process -Filter "ParentProcessId=${parseInt(pid, 10)}" | Select-Object -First 1).Name`
+        ]);
         return result || null;
       } catch { return null; }
     }
     let childPid;
     try {
-      childPid = execFileSync("pgrep", ["-P", pid], {
-        encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
-      }).trim().split("\n")[0];
+      childPid = (await execFileAsync("pgrep", ["-P", pid])).split("\n")[0];
     } catch {}
     const targetPid = childPid || pid;
-    const result = execFileSync("ps", ["-o", "comm=", "-p", targetPid], {
-      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
-    }).trim();
+    const result = await execFileAsync("ps", ["-o", "comm=", "-p", targetPid]);
     return result.split("/").pop() || null;
   } catch { return null; }
 });
+
+// Async exec helper (avoids blocking event loop)
+const execFileAsync = (cmd, args, opts) => {
+  const { execFile: execFileCb } = require("child_process");
+  return new Promise((resolve, reject) => {
+    execFileCb(cmd, args, { encoding: "utf8", timeout: 2000, ...opts }, (err, stdout) => {
+      if (err) reject(err); else resolve(stdout.trim());
+    });
+  });
+};
 
 // Get git branch for a directory
 ipcMain.handle("get-git-branch", async (_, dirPath) => {
@@ -620,9 +651,7 @@ ipcMain.handle("get-git-branch", async (_, dirPath) => {
   const safePath = sanitizePath(dirPath);
   if (!safePath) return null;
   try {
-    const branch = execFileSync("git", ["-C", safePath, "rev-parse", "--abbrev-ref", "HEAD"], {
-      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
-    }).trim();
+    const branch = await execFileAsync("git", ["-C", safePath, "rev-parse", "--abbrev-ref", "HEAD"]);
     return branch || null;
   } catch { return null; }
 });
@@ -633,9 +662,7 @@ ipcMain.handle("get-git-status", async (_, dirPath) => {
   const safePath = sanitizePath(dirPath);
   if (!safePath) return null;
   try {
-    const status = execFileSync("git", ["-C", safePath, "status", "--porcelain"], {
-      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
-    }).trim();
+    const status = await execFileAsync("git", ["-C", safePath, "status", "--porcelain"]);
     return status ? "dirty" : "clean";
   } catch { return null; }
 });
@@ -688,11 +715,9 @@ ipcMain.on("save-recents", (_, data) => writeJSON(RECENTS_PATH, data));
 ipcMain.handle("load-recents", () => readJSON(RECENTS_PATH, []));
 
 // Cron management
-function getCrontab() {
+async function getCrontab() {
   try {
-    return execFileSync("crontab", ["-l"], {
-      encoding: "utf8", stdio: ["pipe", "pipe", "pipe"]
-    });
+    return await execFileAsync("crontab", ["-l"]);
   } catch { return ""; }
 }
 
@@ -708,14 +733,14 @@ function setCrontab(content) {
 
 ipcMain.handle("cron-list", async () => {
   try {
-    const raw = getCrontab();
+    const raw = await getCrontab();
     return raw.trim().split("\n").filter(l => l && !l.startsWith("#")).map((line, i) => ({ id: i, line, enabled: true }));
   } catch { return []; }
 });
 
 ipcMain.handle("cron-add", async (_, cronLine) => {
   try {
-    const existing = getCrontab().trim();
+    const existing = (await getCrontab()).trim();
     const newCron = existing ? existing + "\n" + cronLine : cronLine;
     setCrontab(newCron);
     return true;
@@ -724,11 +749,19 @@ ipcMain.handle("cron-add", async (_, cronLine) => {
 
 ipcMain.handle("cron-remove", async (_, index) => {
   try {
-    const lines = getCrontab().trim().split("\n");
-    const active = lines.filter(l => l && !l.startsWith("#"));
-    active.splice(index, 1);
-    const comments = lines.filter(l => l.startsWith("#"));
-    const newCron = [...comments, ...active].join("\n");
+    const lines = (await getCrontab()).trim().split("\n");
+    // Build a list tracking original line positions for active (non-comment) lines
+    let activeIdx = 0;
+    const newLines = [];
+    for (const line of lines) {
+      if (!line || line.startsWith("#")) {
+        newLines.push(line);
+      } else {
+        if (activeIdx !== index) newLines.push(line);
+        activeIdx++;
+      }
+    }
+    const newCron = newLines.join("\n");
     if (newCron.trim()) {
       setCrontab(newCron);
     } else {
@@ -738,20 +771,22 @@ ipcMain.handle("cron-remove", async (_, index) => {
   } catch { return false; }
 });
 
-// Fuzzy file finder
+// Fuzzy file finder (async)
 ipcMain.handle("find-files", async (_, query, dirs) => {
+  if (!query || typeof query !== "string" || !Array.isArray(dirs)) return [];
+  // Validate directories
+  const safeDirs = dirs.map(d => sanitizePath(d)).filter(Boolean);
+  if (safeDirs.length === 0) return [];
   try {
-    const args = [];
-    for (const d of dirs) args.push(d);
-    args.push("-maxdepth", "5", "-type", "f",
+    const args = [...safeDirs,
+      "-maxdepth", "5", "-type", "f",
       "-not", "-path", "*/node_modules/*",
       "-not", "-path", "*/.git/*",
       "-not", "-path", "*/dist/*",
-      "-not", "-path", "*/.next/*");
-    const result = execFileSync("find", args, {
-      encoding: "utf8", timeout: 5000, stdio: ["pipe", "pipe", "pipe"],
-      maxBuffer: 1024 * 1024
-    }).trim();
+      "-not", "-path", "*/.next/*"];
+    const result = await execFileAsync("find", args, {
+      timeout: 5000, maxBuffer: 1024 * 1024
+    });
     if (!result) return [];
     const files = result.split("\n").slice(0, 5000);
     const q = query.toLowerCase();
@@ -789,22 +824,21 @@ ipcMain.handle("system-stats", async () => {
     const memUsage = Math.round(((totalMem - freeMem) / totalMem) * 100);
     const memGB = ((totalMem - freeMem) / 1073741824).toFixed(1);
     const totalGB = (totalMem / 1073741824).toFixed(1);
-    // Disk usage
+    // Disk usage (async)
     let diskUsage = null;
     try {
       if (process.platform === "win32") {
-        const result = execFileSync("powershell", ["-Command",
+        const result = await execFileAsync("powershell", ["-Command",
           "Get-PSDrive C | Select-Object Used,Free | ConvertTo-Json"
-        ], { encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"] }).trim();
+        ]);
         const info = JSON.parse(result);
         const usedGB = (info.Used / 1073741824).toFixed(0) + "G";
         const totalGB = ((info.Used + info.Free) / 1073741824).toFixed(0) + "G";
         const pct = Math.round(info.Used / (info.Used + info.Free) * 100);
         diskUsage = { used: usedGB, total: totalGB, percent: pct };
       } else {
-        const df = execFileSync("df", ["-h", "/"], {
-          encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
-        }).trim().split("\n").pop().split(/\s+/);
+        const dfResult = await execFileAsync("df", ["-h", "/"]);
+        const df = dfResult.split("\n").pop().split(/\s+/);
         diskUsage = { used: df[2], total: df[1], percent: parseInt(df[4]) };
       }
     } catch {}
@@ -864,12 +898,34 @@ ipcMain.handle("docker-ps-all", async () => {
 
 // Environment variables for a terminal
 ipcMain.handle("get-terminal-env", async (_, id) => {
-  // Return process.env (the pty inherits it)
-  const envPairs = [];
-  for (const [k, v] of Object.entries(process.env)) {
-    envPairs.push({ key: k, value: v });
+  const p = ptys.get(id);
+  if (!p) {
+    // Fallback to parent env if PTY not found
+    return Object.entries(process.env).map(([key, value]) => ({ key, value })).sort((a, b) => a.key.localeCompare(b.key));
   }
-  return envPairs.sort((a, b) => a.key.localeCompare(b.key));
+  // Try to read the child process's environment on macOS/Linux
+  if (process.platform !== "win32") {
+    try {
+      const pid = String(p.pid);
+      let childPid;
+      try { childPid = (await execFileAsync("pgrep", ["-P", pid])).split("\n")[0]; } catch {}
+      const targetPid = childPid || pid;
+      const envData = await execFileAsync("ps", ["-p", targetPid, "-o", "command=", "-E"], { timeout: 3000 });
+      // ps -E output is limited; fall back to /proc on Linux or parent env on macOS
+      if (process.platform === "linux") {
+        try {
+          const envStr = fs.readFileSync(`/proc/${targetPid}/environ`, "utf8");
+          const pairs = envStr.split("\0").filter(Boolean).map(entry => {
+            const eq = entry.indexOf("=");
+            return eq > 0 ? { key: entry.slice(0, eq), value: entry.slice(eq + 1) } : null;
+          }).filter(Boolean);
+          if (pairs.length > 0) return pairs.sort((a, b) => a.key.localeCompare(b.key));
+        } catch {}
+      }
+    } catch {}
+  }
+  // Fallback: return inherited env (what the PTY started with)
+  return Object.entries(process.env).map(([key, value]) => ({ key, value })).sort((a, b) => a.key.localeCompare(b.key));
 });
 
 // File preview
@@ -912,7 +968,7 @@ const PROJECTS_DATA_PATH = path.join(app.getPath("userData"), "projects.json");
 ipcMain.on("save-projects", (_, data) => writeJSON(PROJECTS_DATA_PATH, data));
 ipcMain.handle("load-projects", () => readJSON(PROJECTS_DATA_PATH, null));
 
-// Get child process tree for smart naming
+// Get child process tree for smart naming (async)
 ipcMain.handle("get-process-tree", async (_, id) => {
   const p = ptys.get(id);
   if (!p) return null;
@@ -920,22 +976,19 @@ ipcMain.handle("get-process-tree", async (_, id) => {
     const pid = String(p.pid);
     if (process.platform === "win32") {
       try {
-        const result = execFileSync("powershell", ["-Command",
-          `Get-CimInstance Win32_Process -Filter "ParentProcessId=${pid}" | Select-Object ProcessId,Name,CommandLine | ConvertTo-Json`
-        ], { encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"] }).trim();
+        const result = await execFileAsync("powershell", ["-Command",
+          `Get-CimInstance Win32_Process -Filter "ParentProcessId=${parseInt(pid, 10)}" | Select-Object ProcessId,Name,CommandLine | ConvertTo-Json`
+        ]);
         const procs = JSON.parse(result);
         const proc = Array.isArray(procs) ? procs[procs.length - 1] : procs;
         if (proc) return { pid: String(proc.ProcessId), comm: proc.Name, args: proc.CommandLine || "" };
         return null;
       } catch { return null; }
     }
-    const childPids = execFileSync("pgrep", ["-P", pid], {
-      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
-    }).trim().split("\n").filter(Boolean);
+    const childPidsStr = await execFileAsync("pgrep", ["-P", pid]);
+    const childPids = childPidsStr.split("\n").filter(Boolean);
     if (childPids.length === 0) return null;
-    const result = execFileSync("ps", ["-o", "pid=,comm=,args=", "-p", childPids.join(",")], {
-      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
-    }).trim();
+    const result = await execFileAsync("ps", ["-o", "pid=,comm=,args=", "-p", childPids.join(",")]);
     if (!result) return null;
     const lines = result.split("\n").map(l => l.trim()).filter(Boolean);
     if (lines.length === 0) return null;
@@ -950,20 +1003,27 @@ ipcMain.handle("get-process-tree", async (_, id) => {
 // ============================================================
 
 // Helper: create a temporary SSH_ASKPASS script that echoes the password
+// Uses a file descriptor approach to avoid password on disk longer than necessary
 function createAskpassScript(password) {
   const tmpDir = app.getPath("temp");
-  const scriptPath = path.join(tmpDir, `terminator-askpass-${Date.now()}.sh`);
+  const scriptPath = path.join(tmpDir, `terminator-askpass-${process.pid}-${Date.now()}.sh`);
   // Escape single quotes in password for the shell script
   const escaped = password.replace(/'/g, "'\\''");
   fs.writeFileSync(scriptPath, `#!/bin/sh\necho '${escaped}'\n`, { mode: 0o700 });
+  // Schedule cleanup even if process crashes
+  process.once('exit', () => { try { fs.unlinkSync(scriptPath); } catch {} });
   return scriptPath;
 }
 
 function cleanupAskpass(scriptPath) {
-  try { fs.unlinkSync(scriptPath); } catch {}
+  if (!scriptPath) return;
+  try { fs.unlinkSync(scriptPath); } catch (err) {
+    if (err.code !== 'ENOENT') log('error', 'Failed to cleanup askpass script:', err.message);
+  }
 }
 
 function buildSshEnv(password) {
+  if (!password) return { env: { ...process.env }, askpassScript: null };
   const askpassScript = createAskpassScript(password);
   const env = {
     ...process.env,
@@ -1082,7 +1142,10 @@ ipcMain.handle("ssh-remote-open-all", async (_, { host, user, port, password, se
             if (sent) return;
             if (data.toLowerCase().includes("password")) {
               sent = true;
-              setTimeout(() => p.write(password + "\r"), 100);
+              // Briefly suppress output while sending password to avoid it appearing in scrollback
+              setTimeout(() => {
+                p.write(password + "\r");
+              }, 100);
               onData.dispose();
             }
           });
@@ -1166,10 +1229,15 @@ ipcMain.handle("ai-chat", async (_, params) => {
 // Port Manager
 ipcMain.handle("list-ports", async () => {
   try {
-    const result = execSync("lsof -iTCP -sTCP:LISTEN -nP 2>/dev/null | tail -n +2", { encoding: "utf8", timeout: 5000 }).trim();
+    const result = execFileSync("lsof", ["-iTCP", "-sTCP:LISTEN", "-nP"], {
+      encoding: "utf8", timeout: 5000, stdio: ["pipe", "pipe", "pipe"]
+    }).trim();
     if (!result) return [];
+    const lines = result.split("\n");
+    // Skip header line
+    const dataLines = lines.slice(1);
     const seen = new Set();
-    return result.split("\n").filter(Boolean).map(line => {
+    return dataLines.filter(Boolean).map(line => {
       const parts = line.trim().split(/\s+/);
       const process = parts[0] || "", pid = parts[1] || "", protocol = parts[7] || "TCP", nameField = parts[8] || "";
       const portMatch = nameField.match(/:(\d+)$/);
@@ -1184,7 +1252,7 @@ ipcMain.handle("list-ports", async () => {
 ipcMain.handle("kill-port", async (_, pid) => {
   const n = parseInt(pid, 10);
   if (!Number.isInteger(n) || n <= 0) return false;
-  try { execSync(`kill -9 ${n}`, { timeout: 3000 }); return true; } catch { return false; }
+  try { execFileSync("kill", ["-9", String(n)], { timeout: 3000, stdio: ["pipe", "pipe", "pipe"] }); return true; } catch { return false; }
 });
 
 // Per-pane process stats
@@ -1193,9 +1261,18 @@ ipcMain.handle("get-pane-stats", async (_, id) => {
   if (!p) return null;
   try {
     let targetPid;
-    try { targetPid = execSync(`pgrep -P ${p.pid} 2>/dev/null | head -1`, { encoding: "utf8", timeout: 2000 }).trim() || p.pid; } catch { targetPid = p.pid; }
-    const result = execSync(`ps -p ${targetPid} -o %cpu,%mem 2>/dev/null | tail -1`, { encoding: "utf8", timeout: 2000 }).trim();
-    const parts = result.split(/\s+/).map(s => parseFloat(s));
+    try {
+      const children = execFileSync("pgrep", ["-P", String(p.pid)], {
+        encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
+      }).trim().split("\n").filter(Boolean);
+      targetPid = children[0] || String(p.pid);
+    } catch { targetPid = String(p.pid); }
+    const result = execFileSync("ps", ["-p", String(targetPid), "-o", "%cpu,%mem"], {
+      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
+    }).trim();
+    const lines = result.split("\n");
+    const dataLine = lines.length > 1 ? lines[lines.length - 1].trim() : "";
+    const parts = dataLine.split(/\s+/).map(s => parseFloat(s));
     if (parts.length >= 2 && !isNaN(parts[0])) return { cpu: parts[0], memory: parts[1], pid: targetPid };
     return null;
   } catch { return null; }
@@ -1225,6 +1302,84 @@ ipcMain.handle("exec-pipeline-step", async (_, { command, cwd }) => {
 ipcMain.on("save-cmd-bookmarks", (_, data) => writeJSON(CMD_BOOKMARKS_PATH, data));
 ipcMain.handle("load-cmd-bookmarks", () => readJSON(CMD_BOOKMARKS_PATH, []));
 
+// ============================================================
+// SECRETS MANAGER
+// ============================================================
+const crypto = require("crypto");
+const SECRETS_PATH = path.join(app.getPath("userData"), "secrets.json");
+const SECRETS_KEY_SEED = os.hostname() + os.userInfo().username + "terminator-vault";
+function getSecretsKey() {
+  return crypto.createHash("sha256").update(SECRETS_KEY_SEED).digest();
+}
+function encryptSecrets(data) {
+  const key = getSecretsKey();
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
+  let encrypted = cipher.update(JSON.stringify(data), "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return { iv: iv.toString("hex"), data: encrypted };
+}
+function decryptSecrets(encrypted) {
+  const key = getSecretsKey();
+  const iv = Buffer.from(encrypted.iv, "hex");
+  const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
+  let decrypted = decipher.update(encrypted.data, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+  return JSON.parse(decrypted);
+}
+ipcMain.handle("load-secrets", () => {
+  try {
+    const raw = fs.readFileSync(SECRETS_PATH, "utf8");
+    const encrypted = JSON.parse(raw);
+    return decryptSecrets(encrypted);
+  } catch { return []; }
+});
+ipcMain.on("save-secrets", (_, secrets) => {
+  try {
+    const encrypted = encryptSecrets(secrets);
+    fs.writeFileSync(SECRETS_PATH, JSON.stringify(encrypted), "utf8");
+  } catch (e) { log("error", "Failed to save secrets:", e.message); }
+});
+ipcMain.handle("inject-secrets", (_, { id, secrets }) => {
+  const p = ptys.get(id);
+  if (!p) return { error: "Terminal not found" };
+  // Inject env vars by writing export commands (hidden from history with leading space)
+  for (const s of secrets) {
+    if (s.key && s.value) {
+      // Use leading space to avoid shell history, and printf to avoid echo issues
+      p.write(` export ${s.key}=${JSON.stringify(s.value)}\n`);
+    }
+  }
+  return { ok: true, count: secrets.length };
+});
+
+// ============================================================
+// STARTUP TASKS
+// ============================================================
+const STARTUP_TASKS_PATH = path.join(app.getPath("userData"), "startup-tasks.json");
+ipcMain.on("save-startup-tasks", (_, data) => writeJSON(STARTUP_TASKS_PATH, data));
+ipcMain.handle("load-startup-tasks", () => readJSON(STARTUP_TASKS_PATH, []));
+
+// ============================================================
+// STATUS BAR HELPERS
+// ============================================================
+ipcMain.handle("get-k8s-context", async () => {
+  try {
+    return execFileSync("kubectl", ["config", "current-context"], {
+      encoding: "utf8", timeout: 3000, stdio: ["pipe", "pipe", "pipe"]
+    }).trim();
+  } catch { return null; }
+});
+ipcMain.handle("get-aws-profile", async () => {
+  return process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || null;
+});
+ipcMain.handle("get-node-version", async () => {
+  try {
+    return execFileSync("node", ["--version"], {
+      encoding: "utf8", timeout: 2000, stdio: ["pipe", "pipe", "pipe"]
+    }).trim();
+  } catch { return null; }
+});
 
 // Settings
 const SETTINGS_PATH = path.join(app.getPath("userData"), "settings.json");
@@ -1406,40 +1561,133 @@ ipcMain.handle("get-plugin-code", (_, pluginName) => {
   }
 });
 
-// Plugin store: list available (bundled) plugins
-ipcMain.handle("list-available-plugins", () => {
-  const bundledDir = path.join(__dirname, "examples", "plugins");
-  const available = [];
+// ============================================================
+// MARKETPLACE / PLUGIN REGISTRY
+// ============================================================
+const REGISTRY_URL = "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins.json";
+let _registryCache = null;
+let _registryCacheTime = 0;
+const REGISTRY_TTL = 5 * 60 * 1000; // 5 minutes
+
+ipcMain.handle("fetch-registry", async () => {
+  // Return cache if fresh
+  if (_registryCache && (Date.now() - _registryCacheTime < REGISTRY_TTL)) {
+    return _registryCache;
+  }
   try {
-    const entries = fs.readdirSync(bundledDir, { withFileTypes: true });
-    for (const entry of entries) {
-      if (!entry.isDirectory()) continue;
-      const manifestPath = path.join(bundledDir, entry.name, "plugin.json");
-      try {
-        const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-        if (!manifest.name || !manifest.type || !manifest.main) continue;
-        const installed = fs.existsSync(path.join(PLUGINS_DIR, entry.name, "plugin.json"));
-        available.push({ dir: entry.name, manifest, installed });
-      } catch {}
+    const res = await electronNet.fetch(REGISTRY_URL, { method: "GET" });
+    if (!res.ok) {
+      // Fallback: try loading from local bundled registry
+      return loadLocalRegistry();
     }
-  } catch {}
-  return available;
+    const data = await res.json();
+    if (data && Array.isArray(data.plugins)) {
+      _registryCache = data;
+      _registryCacheTime = Date.now();
+      return data;
+    }
+    return loadLocalRegistry();
+  } catch {
+    return loadLocalRegistry();
+  }
 });
 
-// Install plugin: copy from bundled examples to user plugins dir
+function loadLocalRegistry() {
+  try {
+    const localPath = path.join(__dirname, "registry", "plugins.json");
+    if (fs.existsSync(localPath)) {
+      const data = JSON.parse(fs.readFileSync(localPath, "utf8"));
+      _registryCache = data;
+      _registryCacheTime = Date.now();
+      return data;
+    }
+  } catch {}
+  return { version: 1, plugins: [] };
+}
+
+// Install from marketplace: download files from registry
+ipcMain.handle("install-from-registry", async (_, { id, files, downloadUrl }) => {
+  if (typeof id !== "string" || id.includes("..") || id.includes("/") || id.includes("\\")) {
+    return { error: "Invalid plugin id" };
+  }
+  const dest = path.join(PLUGINS_DIR, id);
+  try {
+    fs.mkdirSync(dest, { recursive: true });
+    // Try remote download first
+    let downloaded = false;
+    if (downloadUrl && files) {
+      try {
+        for (const [filename, remotePath] of Object.entries(files)) {
+          const url = downloadUrl + filename;
+          const res = await electronNet.fetch(url, { method: "GET" });
+          if (!res.ok) throw new Error(`Failed to fetch ${filename}: ${res.status}`);
+          const text = await res.text();
+          fs.writeFileSync(path.join(dest, filename), text);
+        }
+        downloaded = true;
+      } catch (fetchErr) {
+        log("info", `Remote download failed for ${id}, trying local: ${fetchErr.message}`);
+      }
+    }
+    // Fallback: copy from local registry dir
+    if (!downloaded) {
+      const localSrc = path.join(__dirname, "registry", "plugins", id);
+      if (fs.existsSync(localSrc)) {
+        fs.cpSync(localSrc, dest, { recursive: true });
+      } else {
+        fs.rmSync(dest, { recursive: true, force: true });
+        return { error: "Plugin not available" };
+      }
+    }
+    return { ok: true };
+  } catch (e) {
+    try { fs.rmSync(dest, { recursive: true, force: true }); } catch {}
+    return { error: e.message };
+  }
+});
+
+// Legacy: list available from bundled examples (kept for backward compat)
+ipcMain.handle("list-available-plugins", () => {
+  // Try registry dir first, then examples
+  for (const base of [path.join(__dirname, "registry", "plugins"), path.join(__dirname, "examples", "plugins")]) {
+    try {
+      const entries = fs.readdirSync(base, { withFileTypes: true });
+      const available = [];
+      for (const entry of entries) {
+        if (!entry.isDirectory()) continue;
+        const manifestPath = path.join(base, entry.name, "plugin.json");
+        try {
+          const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+          if (!manifest.name || !manifest.type || !manifest.main) continue;
+          const installed = fs.existsSync(path.join(PLUGINS_DIR, entry.name, "plugin.json"));
+          available.push({ dir: entry.name, manifest, installed });
+        } catch {}
+      }
+      if (available.length > 0) return available;
+    } catch {}
+  }
+  return [];
+});
+
+// Legacy: install from bundled
 ipcMain.handle("install-plugin", (_, pluginDir) => {
   if (typeof pluginDir !== "string" || pluginDir.includes("..") || pluginDir.includes("/") || pluginDir.includes("\\")) {
     return { error: "Invalid plugin name" };
   }
-  const src = path.join(__dirname, "examples", "plugins", pluginDir);
-  const dest = path.join(PLUGINS_DIR, pluginDir);
-  try {
-    if (!fs.existsSync(src)) return { error: "Plugin not found" };
-    fs.cpSync(src, dest, { recursive: true });
-    return { ok: true };
-  } catch (e) {
-    return { error: e.message };
+  // Try registry dir first, then examples
+  for (const base of [path.join(__dirname, "registry", "plugins"), path.join(__dirname, "examples", "plugins")]) {
+    const src = path.join(base, pluginDir);
+    if (fs.existsSync(src)) {
+      const dest = path.join(PLUGINS_DIR, pluginDir);
+      try {
+        fs.cpSync(src, dest, { recursive: true });
+        return { ok: true };
+      } catch (e) {
+        return { error: e.message };
+      }
+    }
   }
+  return { error: "Plugin not found" };
 });
 
 // Uninstall plugin: remove from user plugins dir

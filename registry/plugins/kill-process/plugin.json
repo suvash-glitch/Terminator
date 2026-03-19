@@ -1,0 +1,1 @@
+{"name":"kill-process","version":"1.0.0","description":"Send Ctrl+C to active pane to kill running process","type":"command","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}

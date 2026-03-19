@@ -15,14 +15,22 @@ case "${1:-}" in
     if [ -S "$HOME/.terminator/terminator.sock" ]; then
       # App might already be running — try to talk to it
       if node "$CLI" list &>/dev/null; then
-        # Already running, just bring to front if no args
+        # Already running, bring to front
         if [ $# -eq 0 ]; then
-          osascript -e 'tell application "Terminator" to activate' 2>/dev/null || true
+          # Try packaged app name first, then fall back to Electron (dev mode)
+          osascript -e 'tell application "Terminator" to activate' 2>/dev/null \
+            || osascript -e 'tell application "Electron" to activate' 2>/dev/null \
+            || osascript -e '
+              tell application "System Events"
+                set frontmost of (first process whose name contains "Electron") to true
+              end tell' 2>/dev/null \
+            || echo "Terminator is running (use 'terminator list' to see sessions)"
         fi
         exit 0
       fi
     fi
-    cd "$DIR" && exec npx electron . &>/dev/null &
+    echo "Starting Terminator..."
+    cd "$DIR" && npx electron . &>/dev/null &
     disown
     ;;
 esac

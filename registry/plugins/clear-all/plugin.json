@@ -1,0 +1,1 @@
+{"name":"clear-all","version":"1.0.0","description":"Clear all terminal pane buffers","type":"command","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}

@@ -1,0 +1,1 @@
+{"name":"repeat-last","version":"1.0.0","description":"Repeat the last command in active terminal","type":"command","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}

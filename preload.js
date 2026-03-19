@@ -73,11 +73,24 @@ contextBridge.exposeInMainWorld("terminator", {
   listAvailablePlugins: () => ipcRenderer.invoke("list-available-plugins"),
   installPlugin: (dir) => ipcRenderer.invoke("install-plugin", dir),
   uninstallPlugin: (dir) => ipcRenderer.invoke("uninstall-plugin", dir),
+  // Marketplace
+  fetchRegistry: () => ipcRenderer.invoke("fetch-registry"),
+  installFromRegistry: (params) => ipcRenderer.invoke("install-from-registry", params),
   onUpdateStatus: (callback) => ipcRenderer.on("update-status", (_, data) => callback(data)),
   // Window controls (Windows/Linux)
   winMinimize: () => ipcRenderer.send("win-minimize"),
   winMaximize: () => ipcRenderer.send("win-maximize"),
   winClose: () => ipcRenderer.send("win-close"),
   platform: process.platform,
-
+  // Secrets manager
+  loadSecrets: () => ipcRenderer.invoke("load-secrets"),
+  saveSecrets: (data) => ipcRenderer.send("save-secrets", data),
+  injectSecrets: (params) => ipcRenderer.invoke("inject-secrets", params),
+  // Startup tasks
+  saveStartupTasks: (data) => ipcRenderer.send("save-startup-tasks", data),
+  loadStartupTasks: () => ipcRenderer.invoke("load-startup-tasks"),
+  // Status bar helpers
+  getK8sContext: () => ipcRenderer.invoke("get-k8s-context"),
+  getAwsProfile: () => ipcRenderer.invoke("get-aws-profile"),
+  getNodeVersion: () => ipcRenderer.invoke("get-node-version"),
 });

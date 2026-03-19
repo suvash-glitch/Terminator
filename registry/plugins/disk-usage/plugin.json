@@ -1,0 +1,1 @@
+{"name":"disk-usage","version":"1.0.0","description":"Show disk usage with df -h","type":"command","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}

@@ -257,10 +257,12 @@
       width: 12px; height: 12px; border-radius: 50%; border: none; background: #ff5f57;
       color: transparent; font-size: 9px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      opacity: 0; transition: opacity 0.15s; line-height: 1;
+      opacity: 0.15; transition: opacity 0.15s; line-height: 1;
     }
-    .pane:hover .pane-close { opacity: 1; }
+    .pane:hover .pane-close, .pane-close:focus { opacity: 1; }
     .pane-close:hover { color: #730c00; }
+    /* Touch devices: always show close button */
+    @media (hover: none) { .pane-close { opacity: 0.6; } }
 
     .pane-badges {
       position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
@@ -1668,6 +1670,167 @@
     }
 
     /* ============================================================
+       MARKETPLACE
+       ============================================================ */
+    .marketplace {
+      display: flex; flex-direction: column; height: 100%; overflow: hidden;
+    }
+    .marketplace-header {
+      flex-shrink: 0; padding: 0 0 12px;
+      border-bottom: 1px solid var(--t-border);
+    }
+    .marketplace-title-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    }
+    .marketplace-title {
+      font-size: 18px; font-weight: 700; color: var(--t-fg); margin: 0;
+      letter-spacing: -0.3px;
+    }
+    .marketplace-count {
+      font-size: 11px; color: var(--t-fg); opacity: 0.4;
+      font-family: "SF Mono", Menlo, monospace;
+    }
+    .marketplace-search-wrap {
+      position: relative; margin-bottom: 12px;
+    }
+    .marketplace-search-icon {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--t-fg); opacity: 0.3; pointer-events: none;
+    }
+    #marketplace-search {
+      width: 100%; padding: 9px 12px 9px 36px;
+      border: 1px solid var(--t-border); border-radius: 8px;
+      background: color-mix(in srgb, var(--t-bg) 50%, var(--t-ui));
+      color: var(--t-fg); font-size: 13px; outline: none;
+      transition: border-color .15s;
+    }
+    #marketplace-search:focus {
+      border-color: var(--t-accent);
+    }
+    #marketplace-search::placeholder {
+      color: var(--t-fg); opacity: 0.3;
+    }
+    .marketplace-filters {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .mp-filter {
+      font-size: 11px; font-weight: 600; padding: 5px 12px;
+      border-radius: 20px; border: 1px solid var(--t-border);
+      background: transparent; color: var(--t-fg); opacity: 0.6;
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .mp-filter:hover { opacity: 1; border-color: var(--t-accent); }
+    .mp-filter.active {
+      background: var(--t-accent); color: #0a0a14;
+      border-color: var(--t-accent); opacity: 1;
+    }
+    .marketplace-body {
+      flex: 1; overflow-y: auto; padding: 16px 0 0;
+    }
+    .marketplace-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
+    }
+    /* Marketplace Card */
+    .mp-card {
+      border: 1px solid var(--t-border); border-radius: 10px;
+      padding: 14px; display: flex; flex-direction: column; gap: 8px;
+      background: color-mix(in srgb, var(--t-ui) 40%, var(--t-bg));
+      transition: border-color .15s, transform .15s;
+      cursor: default; position: relative;
+    }
+    .mp-card:hover {
+      border-color: color-mix(in srgb, var(--t-accent) 40%, var(--t-border));
+      transform: translateY(-1px);
+    }
+    .mp-card.installed {
+      border-color: color-mix(in srgb, #00e676 20%, var(--t-border));
+    }
+    .mp-card-top {
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .mp-card-icon {
+      font-size: 26px; line-height: 1; flex-shrink: 0;
+      width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--t-accent) 8%, transparent);
+    }
+    .mp-card-info { flex: 1; min-width: 0; }
+    .mp-card-name {
+      font-size: 13px; font-weight: 600; color: var(--t-fg);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mp-card-author {
+      font-size: 10px; color: var(--t-fg); opacity: 0.4; margin-top: 1px;
+    }
+    .mp-card-desc {
+      font-size: 11px; color: var(--t-fg); opacity: 0.55;
+      line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .mp-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; margin-top: auto;
+    }
+    .mp-card-tags {
+      display: flex; gap: 4px; flex-wrap: wrap; flex: 1; min-width: 0;
+    }
+    .mp-tag {
+      font-size: 9px; font-weight: 500; padding: 2px 7px;
+      border-radius: 4px; white-space: nowrap;
+      background: color-mix(in srgb, var(--t-fg) 8%, transparent);
+      color: var(--t-fg); opacity: 0.5;
+    }
+    .mp-card-btn {
+      font-size: 11px; font-weight: 600; padding: 5px 14px;
+      border-radius: 6px; border: none; cursor: pointer;
+      white-space: nowrap; transition: all .15s; flex-shrink: 0;
+    }
+    .mp-card-btn.install {
+      background: var(--t-accent); color: #0a0a14;
+    }
+    .mp-card-btn.install:hover {
+      background: color-mix(in srgb, var(--t-accent) 80%, white);
+    }
+    .mp-card-btn.uninstall {
+      background: rgba(255,69,58,0.12); color: #ff453a;
+    }
+    .mp-card-btn.uninstall:hover { background: rgba(255,69,58,0.22); }
+    .mp-card-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .mp-card-installed-dot {
+      position: absolute; top: 10px; right: 10px;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #00e676;
+    }
+    /* Theme preview swatch */
+    .mp-theme-preview {
+      display: flex; gap: 3px; margin-top: 2px;
+    }
+    .mp-theme-swatch {
+      width: 14px; height: 14px; border-radius: 3px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    /* Loading & empty states */
+    .marketplace-loading {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 60px 20px; gap: 12px;
+      color: var(--t-fg); opacity: 0.4; font-size: 13px;
+    }
+    .mp-spinner {
+      width: 28px; height: 28px; border: 2px solid var(--t-border);
+      border-top-color: var(--t-accent); border-radius: 50%;
+      animation: mp-spin 0.8s linear infinite;
+    }
+    @keyframes mp-spin { to { transform: rotate(360deg); } }
+    .marketplace-empty {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 60px 20px; gap: 10px;
+      color: var(--t-fg); opacity: 0.35; font-size: 13px;
+    }
+    .marketplace-empty p { margin: 0; }
+
+    /* ============================================================
        Sparklines (agent-a219a98e)
        ============================================================ */
     /* Pane Sparkline */
@@ -1980,6 +2143,147 @@
       max-width: calc(100vw - 20px);
       overflow-y: auto;
     }
+
+    /* ============================================================
+       STATUS BAR WIDGETS
+       ============================================================ */
+    .bottombar-widget {
+      font-family: "SF Mono", monospace;
+      font-size: 10px;
+      color: var(--t-fg);
+      opacity: 0.5;
+      display: none;
+      align-items: center;
+      gap: 4px;
+      padding: 0 6px;
+      border-left: 1px solid rgba(255,255,255,0.06);
+      cursor: default;
+      white-space: nowrap;
+    }
+    .bottombar-widget.visible { display: inline-flex; }
+    .bottombar-widget .widget-icon { font-size: 10px; opacity: 0.6; }
+    .bottombar-widget .widget-label { color: var(--t-accent); opacity: 0.8; }
+
+    /* ============================================================
+       SECRETS MANAGER
+       ============================================================ */
+    .secret-row {
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--t-border);
+      font-family: "SF Mono", monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .secret-row:hover { background: rgba(255,255,255,0.03); }
+    .secret-row .secret-key {
+      color: var(--t-accent); font-weight: 600; min-width: 100px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .secret-row .secret-value {
+      color: var(--t-fg); opacity: 0.5; flex: 1;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px;
+    }
+    .secret-row .secret-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
+    .secret-row:hover .secret-actions { opacity: 1; }
+    .secret-row .secret-actions button {
+      background: none; border: none; color: var(--t-fg); opacity: 0.5;
+      cursor: pointer; padding: 2px 4px; border-radius: 3px; font-size: 10px;
+    }
+    .secret-row .secret-actions button:hover { background: rgba(255,255,255,0.1); }
+    .secret-row .secret-actions button.danger:hover { color: #ff453a; background: rgba(255,69,58,0.15); }
+    .secret-row .secret-check { width: 14px; height: 14px; accent-color: var(--t-accent); cursor: pointer; }
+    .secrets-empty { padding: 32px 16px; text-align: center; color: var(--t-fg); opacity: 0.35; font-size: 12px; }
+
+    /* ============================================================
+       STARTUP TASKS
+       ============================================================ */
+    .startup-task-item {
+      padding: 10px 18px; display: flex; align-items: center; gap: 10px;
+      cursor: pointer; transition: background 0.1s;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .startup-task-item:hover { background: color-mix(in srgb, var(--t-accent) 8%, transparent); }
+    .startup-task-item .startup-task-info { flex: 1; min-width: 0; }
+    .startup-task-item .startup-task-name {
+      font-size: 13px; color: var(--t-fg); font-weight: 500;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .startup-task-item .startup-task-desc {
+      font-size: 10px; color: var(--t-fg); opacity: 0.4; margin-top: 2px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .startup-task-item .startup-task-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
+    .startup-task-item:hover .startup-task-actions { opacity: 1; }
+    .startup-task-item .startup-task-actions button {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
+      color: var(--t-fg); opacity: 0.6; cursor: pointer; padding: 3px 8px;
+      border-radius: 4px; font-size: 10px; font-family: inherit;
+    }
+    .startup-task-item .startup-task-actions button:hover { background: rgba(255,255,255,0.12); }
+    .startup-task-item .startup-task-actions button.danger:hover { color: #ff453a; background: rgba(255,69,58,0.15); }
+    .startup-task-item .startup-task-auto {
+      font-size: 9px; color: #30d158;
+      background: color-mix(in srgb, #30d158 12%, transparent);
+      padding: 1px 6px; border-radius: 3px; font-weight: 600; letter-spacing: 0.3px;
+    }
+    .startup-tasks-empty { padding: 32px 16px; text-align: center; color: var(--t-fg); opacity: 0.35; font-size: 12px; }
+
+    /* ============================================================
+       ENHANCED PIP FLOATING PANES
+       ============================================================ */
+    .pane.floating .pip-controls {
+      display: flex; position: absolute; top: 2px; right: 50px;
+      gap: 4px; z-index: 10; opacity: 0; transition: opacity 0.15s;
+    }
+    .pane.floating:hover .pip-controls { opacity: 1; }
+    .pip-controls button {
+      background: rgba(255,255,255,0.1); border: none; color: var(--t-fg);
+      width: 20px; height: 20px; border-radius: 4px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 10px; padding: 0;
+    }
+    .pip-controls button:hover { background: rgba(255,255,255,0.2); }
+    .pane.floating .pip-opacity-slider {
+      position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+      width: 80px; height: 4px; opacity: 0; transition: opacity 0.15s;
+      accent-color: var(--t-accent); z-index: 10;
+    }
+    .pane.floating:hover .pip-opacity-slider { opacity: 0.7; }
+    .pane.pip-compact .pane-header { height: 22px; font-size: 10px; }
+    .pane.pip-compact .pane-body { padding: 0; }
+
+    /* ============================================================
+       QUICK ACTIONS ON OUTPUT
+       ============================================================ */
+    .quick-action-menu {
+      display: none; position: fixed; z-index: 1001;
+      background: var(--t-ui); border: 1px solid var(--t-border);
+      border-radius: 10px; padding: 4px; min-width: 200px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      backdrop-filter: blur(16px); animation: slideDown 0.1s ease;
+    }
+    .quick-action-menu.visible { display: block; }
+    .quick-action-header {
+      padding: 6px 12px 4px; font-size: 9px; color: var(--t-fg); opacity: 0.4;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--t-border); margin-bottom: 2px;
+    }
+    .quick-action-value {
+      padding: 2px 12px 6px; font-size: 11px; color: var(--t-accent);
+      font-family: "SF Mono", monospace; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
+      border-bottom: 1px solid var(--t-border); margin-bottom: 2px;
+    }
+    .quick-action-item {
+      padding: 6px 12px; cursor: pointer; font-size: 12px; color: var(--t-fg);
+      display: flex; align-items: center; gap: 8px;
+      transition: background 0.08s; border-radius: 6px;
+    }
+    .quick-action-item:hover { background: color-mix(in srgb, var(--t-accent) 18%, transparent); }
+    .quick-action-item .qa-icon { font-size: 12px; width: 16px; text-align: center; opacity: 0.6; }
 
     /* ============================================================
        RESPONSIVE: Large windows (min-width: 1600px)

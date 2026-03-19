@@ -1,0 +1,1 @@
+{"name":"session-timer","version":"1.0.0","description":"Show time since session start in statusbar","type":"statusbar","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}

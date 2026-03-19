@@ -1,0 +1,1 @@
+{"name":"notification-rules","version":"1.0.0","description":"Configure notification rules for terminal output patterns","type":"extension","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}

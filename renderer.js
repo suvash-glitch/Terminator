@@ -163,6 +163,14 @@
       return skipPermissions ? "claude --dangerously-skip-permissions" : "claude";
     }
 
+    function launchClaude(id) {
+      window.terminator.sendInput(id, getClaudeCommand() + "\n");
+      if (skipPermissions) {
+        // Claude Code runs in raw mode — use \r (carriage return) for Enter
+        setTimeout(() => window.terminator.sendInput(id, "/effort max\r"), 3000);
+      }
+    }
+
     // ============================================================
     // THEME
     // ============================================================
@@ -182,7 +190,7 @@
       root.style.setProperty("--t-border", t.border);
       root.style.setProperty("--t-accent", t.term.cursor || "#00f0ff");
 
-      // Also apply inline styles for maximum reliability
+      // Apply inline styles for elements that need explicit updates
       document.body.style.background = t.body;
       document.body.style.color = t.term.foreground || "#cccccc";
       document.querySelectorAll(".titlebar, .bottombar").forEach(el => {
@@ -235,12 +243,46 @@
       fitRAF = requestAnimationFrame(() => {
         fitRAF = null;
         for (const [id, pane] of panes) {
-          try { pane.fitAddon.fit(); window.terminator.resize(id, pane.term.cols, pane.term.rows); } catch {}
+          try {
+            // Save scroll state before fit (fit can reset scroll position)
+            const viewport = pane.el.querySelector(".xterm-viewport");
+            const wasAtBottom = viewport
+              ? viewport.scrollTop >= viewport.scrollHeight - viewport.clientHeight - 10
+              : true;
+            const prevScrollTop = viewport ? viewport.scrollTop : 0;
+
+            pane.fitAddon.fit();
+            window.terminator.resize(id, pane.term.cols, pane.term.rows);
+
+            // Restore scroll position after fit
+            if (viewport) {
+              if (wasAtBottom) {
+                pane.term.scrollToBottom();
+              } else if (viewport.scrollTop !== prevScrollTop) {
+                viewport.scrollTop = prevScrollTop;
+              }
+            }
+          } catch {}
         }
       });
     }
 
     function renderLayout() {
+      // Save scroll positions before DOM manipulation (prevents scroll-to-top bug)
+      const scrollPositions = new Map();
+      for (const [id, pane] of panes) {
+        const viewport = pane.el.querySelector(".xterm-viewport");
+        if (viewport) {
+          scrollPositions.set(id, {
+            scrollTop: viewport.scrollTop,
+            atBottom: viewport.scrollTop >= viewport.scrollHeight - viewport.clientHeight - 10
+          });
+        }
+      }
+      // Detach pane elements before clearing to preserve xterm state
+      for (const [, pane] of panes) {
+        if (pane.el.parentNode) pane.el.parentNode.removeChild(pane.el);
+      }
       grid.innerHTML = "";
       const n = panes.size;
       paneCountEl.textContent = n === 0 ? "No terminals" : `${n} terminal${n > 1 ? "s" : ""}`;
@@ -272,13 +314,15 @@
         });
         grid.appendChild(rowEl);
         fitAllTerminals();
+        restoreScrollPositions(scrollPositions);
         return;
       }
 
-      // Normal mode: standard grid layout
+      // Normal mode: standard grid layout (use fragment to batch DOM writes)
+      const frag = document.createDocumentFragment();
       for (let ri = 0; ri < layout.length; ri++) {
         const row = layout[ri];
-        if (ri > 0) { const h = document.createElement("div"); h.className = "resize-handle-h"; setupHorizontalResize(h, ri); grid.appendChild(h); }
+        if (ri > 0) { const h = document.createElement("div"); h.className = "resize-handle-h"; setupHorizontalResize(h, ri); frag.appendChild(h); }
         const rowEl = document.createElement("div"); rowEl.className = "grid-row"; rowEl.style.flex = row.flex;
         for (let ci = 0; ci < row.cols.length; ci++) {
           const col = row.cols[ci];
@@ -286,9 +330,31 @@
           const pane = panes.get(col.paneId);
           if (pane) { pane.el.style.flex = col.flex; rowEl.appendChild(pane.el); }
         }
-        grid.appendChild(rowEl);
+        frag.appendChild(rowEl);
       }
+      grid.appendChild(frag);
       fitAllTerminals();
+      restoreScrollPositions(scrollPositions);
+    }
+
+    // Restore terminal scroll positions after DOM reattachment
+    function restoreScrollPositions(scrollPositions) {
+      // Use rAF to ensure DOM has settled before restoring scroll
+      requestAnimationFrame(() => {
+        for (const [id, pos] of scrollPositions) {
+          const pane = panes.get(id);
+          if (!pane) continue;
+          const viewport = pane.el.querySelector(".xterm-viewport");
+          if (!viewport) continue;
+          if (pos.atBottom) {
+            // If user was at the bottom, stay at bottom
+            pane.term.scrollToBottom();
+          } else {
+            // Restore exact scroll position
+            viewport.scrollTop = pos.scrollTop;
+          }
+        }
+      });
     }
 
     function renderIdeEditorTabs() {
@@ -513,8 +579,13 @@
       } catch {}
     }
 
-    // Update all pane titles periodically
-    setInterval(() => { for (const [id] of panes) updatePaneTitle(id); }, 3000);
+    // Update pane titles periodically with batching (max 5 concurrent to avoid IPC flood)
+    setInterval(async () => {
+      const ids = [...panes.keys()];
+      for (let i = 0; i < ids.length; i += 5) {
+        await Promise.all(ids.slice(i, i + 5).map(id => updatePaneTitle(id)));
+      }
+    }, 5000);
 
     function renamePaneUI(id) {
       const pane = panes.get(id); if (!pane) return;
@@ -664,9 +735,17 @@
       const fitAddon = new FitAddon.FitAddon();
       term.loadAddon(fitAddon);
       let searchAddon = null;
-      try { searchAddon = new SearchAddon.SearchAddon(); term.loadAddon(searchAddon); } catch {}
-      try { term.loadAddon(new WebLinksAddon.WebLinksAddon()); } catch {}
+      try { searchAddon = new SearchAddon.SearchAddon(); term.loadAddon(searchAddon); } catch (e) { console.warn("SearchAddon failed:", e.message); }
+      try { term.loadAddon(new WebLinksAddon.WebLinksAddon()); } catch (e) { console.warn("WebLinksAddon failed:", e.message); }
       term.open(body);
+      // Try WebGL renderer, fall back to canvas if GPU unavailable
+      try {
+        if (typeof WebglAddon !== "undefined") {
+          const webgl = new WebglAddon.WebglAddon();
+          webgl.onContextLoss(() => { webgl.dispose(); console.warn("WebGL context lost for pane", id); });
+          term.loadAddon(webgl);
+        }
+      } catch (e) { console.warn("WebGL addon failed, using canvas renderer:", e.message); }
 
       // Copy on select
       term.onSelectionChange(() => {
@@ -786,16 +865,21 @@
     // ============================================================
     // IPC
     // ============================================================
-    const MAX_RAW_BUFFER = bufferLimit; // configurable per pane
 
     window.terminator.onData((id, data) => {
       const pane = panes.get(id);
       if (!pane) return;
       pane.term.write(data);
-      // Accumulate raw output for session restore
-      pane.rawBuffer += data;
-      if (pane.rawBuffer.length > MAX_RAW_BUFFER) {
-        pane.rawBuffer = pane.rawBuffer.slice(-MAX_RAW_BUFFER);
+      // Accumulate raw output for session restore using chunked array
+      if (!pane._rawChunks) pane._rawChunks = [];
+      pane._rawChunks.push(data);
+      pane._rawSize = (pane._rawSize || 0) + data.length;
+      // Compact when over limit or too many chunks (prevent unbounded array growth)
+      if (pane._rawSize > bufferLimit || pane._rawChunks.length > 500) {
+        const joined = pane._rawChunks.join("");
+        pane.rawBuffer = joined.slice(-bufferLimit);
+        pane._rawChunks = [pane.rawBuffer];
+        pane._rawSize = pane.rawBuffer.length;
       }
       // Activity dot for inactive panes
       if (id !== activeId && pane.activityDot) pane.activityDot.classList.add("visible");
@@ -849,7 +933,7 @@
         { label: "Color: " + (pane?.color || "none"), action: () => cyclePaneColor(paneId) },
         { label: pane?.locked ? "Unlock Pane" : "Lock Pane", action: () => togglePaneLock(paneId) },
         { label: "Save Output", action: () => captureOutput(paneId) },
-        { label: "Float Pane", action: () => toggleFloating(paneId) },
+        { label: floatingPanes.has(paneId) ? "Restore from PiP" : "Float Pane (PiP)", action: () => toggleFloating(paneId) },
         { label: loggingPanes.has(paneId) ? "Stop Logging" : "Start Logging", action: () => toggleLogging(paneId) },
         { sep: true },
         { label: "Split Right", shortcut: "Cmd+D", action: () => { setActive(paneId); splitPane("horizontal"); }},
@@ -868,7 +952,13 @@
         el.addEventListener("click", () => { contextMenuEl.classList.remove("visible"); item.action(); });
         contextMenuEl.appendChild(el);
       }
-      contextMenuEl.style.left = x + "px"; contextMenuEl.style.top = y + "px"; contextMenuEl.classList.add("visible");
+      contextMenuEl.classList.add("visible");
+      // Position with viewport bounds checking
+      const menuRect = contextMenuEl.getBoundingClientRect();
+      const viewW = window.innerWidth, viewH = window.innerHeight;
+      const finalX = (x + menuRect.width > viewW) ? Math.max(0, viewW - menuRect.width - 4) : x;
+      const finalY = (y + menuRect.height > viewH) ? Math.max(0, viewH - menuRect.height - 4) : y;
+      contextMenuEl.style.left = finalX + "px"; contextMenuEl.style.top = finalY + "px";
     }
     document.addEventListener("click", () => contextMenuEl.classList.remove("visible"));
 
@@ -876,6 +966,7 @@
     // SNIPPETS
     // ============================================================
     function openSnippetRunner() {
+      if (_paletteCleanup) { _paletteCleanup(); _paletteCleanup = null; }
       const overlay = document.getElementById("palette-overlay");
       const input = document.getElementById("palette-input");
       const results = document.getElementById("palette-results");
@@ -915,7 +1006,7 @@
           }
           overlay.classList.remove("visible"); input.placeholder = "Type a command..."; input.removeEventListener("keydown", handler); input.removeEventListener("input", inputHandler);
         }
-        if (e.key === "ArrowDown") { e.preventDefault(); selected++; render(input.value); }
+        if (e.key === "ArrowDown") { e.preventDefault(); selected = Math.min(selected + 1, Math.max(0, results.querySelectorAll(".palette-item").length - 1)); render(input.value); }
         if (e.key === "ArrowUp") { e.preventDefault(); selected = Math.max(0, selected - 1); render(input.value); }
       };
       const inputHandler = () => { selected = 0; render(input.value); };
@@ -928,6 +1019,7 @@
     // PROFILES
     // ============================================================
     function openProfileManager() {
+      if (_paletteCleanup) { _paletteCleanup(); _paletteCleanup = null; }
       const overlay = document.getElementById("palette-overlay");
       const input = document.getElementById("palette-input");
       const results = document.getElementById("palette-results");
@@ -963,7 +1055,7 @@
           else { const items = results.querySelectorAll(".palette-item"); items[selected]?.click(); }
           overlay.classList.remove("visible"); input.placeholder = "Type a command..."; input.removeEventListener("keydown", handler); input.removeEventListener("input", inputHandler);
         }
-        if (e.key === "ArrowDown") { e.preventDefault(); selected++; render(input.value); }
+        if (e.key === "ArrowDown") { e.preventDefault(); selected = Math.min(selected + 1, Math.max(0, results.querySelectorAll(".palette-item").length - 1)); render(input.value); }
         if (e.key === "ArrowUp") { e.preventDefault(); selected = Math.max(0, selected - 1); render(input.value); }
       };
       const inputHandler = () => { selected = 0; render(input.value); };
@@ -1077,7 +1169,7 @@
       // Quick Launch
       ...launchProjects.map(p => ({
         label: `Launch: ${p.name} + Claude`, category: "Launch",
-        action: async () => { const id = await addTerminal(p.path); if (id !== undefined) setTimeout(() => window.terminator.sendInput(id, getClaudeCommand() + "\n"), 150); }
+        action: async () => { const id = await addTerminal(p.path); if (id !== undefined) setTimeout(() => launchClaude(id), 150); }
       })),
       // View
       { label: "Toggle IDE Mode", shortcut: "Cmd+Shift+I", action: () => toggleIdeMode(), category: "View" },
@@ -1086,6 +1178,8 @@
     ];
 
     function openPalette() {
+      // Clean up any existing palette handlers before opening a new one
+      if (_paletteCleanup) { _paletteCleanup(); _paletteCleanup = null; }
       paletteOverlay.classList.add("visible");
       paletteInput.placeholder = "Type a command...";
       paletteInput.value = ""; paletteSelectedIdx = 0;
@@ -1140,6 +1234,10 @@
       for (const [id] of panes) {
         const pane = panes.get(id);
         const cwd = await window.terminator.getCwd(id);
+        // Compact raw chunks into rawBuffer for serialization
+        if (pane._rawChunks && pane._rawChunks.length > 0) {
+          pane.rawBuffer = pane._rawChunks.join("").slice(-bufferLimit);
+        }
         paneStates.push({
           cwd: cwd || null,
           customName: pane.customName || null,
@@ -1175,8 +1273,14 @@
 
         // V2 format: full pane states with scrollback
         if (session.version === 2 && session.paneStates && session.paneStates.length > 0) {
+          let failedCount = 0;
           for (const ps of session.paneStates) {
-            const id = await createPaneObj(ps.cwd);
+            let id;
+            try { id = await createPaneObj(ps.cwd); } catch (e) {
+              console.error("Failed to restore pane:", e);
+              failedCount++;
+              continue;
+            }
             const pane = panes.get(id);
             if (pane) {
               // Replay saved scrollback buffer (with ANSI codes for color)
@@ -1238,7 +1342,12 @@
 
           const first = [...panes.keys()][0];
           if (first) setActive(first);
-          showToast(`Session restored (${session.paneStates.length} panes with scrollback)`);
+          const restoredCount = session.paneStates.length - failedCount;
+          if (failedCount > 0) {
+            showToast(`Session restored (${restoredCount}/${session.paneStates.length} panes — ${failedCount} failed)`, "error");
+          } else {
+            showToast(`Session restored (${restoredCount} panes with scrollback)`);
+          }
 
         // V1 fallback: just cwds
         } else if (session.cwds && session.cwds.length > 0) {
@@ -1365,7 +1474,8 @@
       }
       updateTabBar();
     }
-    setInterval(enrichTabData, 3000);
+    // Stagger from pane title updates (runs at 4s offset from the 5s title update)
+    setTimeout(() => setInterval(enrichTabData, 5000), 2000);
 
     function updateWelcomeScreen() {
       const welcome = document.getElementById("welcome");
@@ -1412,17 +1522,20 @@
       });
     }
 
-    // Hook tab bar/welcome into layout changes
-    const _origRenderLayout = renderLayout;
-    renderLayout = function() { _origRenderLayout(); updatePaneNumbers(); updateWelcomeScreen(); };
-    const _origSetActive = setActive;
-    setActive = function(id) {
-      _origSetActive(id); updateTabBar(); trackRecentDir(id);
-      // Clear activity dot and watcher badge
-      const pane = panes.get(id);
-      if (pane && pane.activityDot) pane.activityDot.classList.remove("visible");
-      if (pane) { const wb = pane.el.querySelector(".watcher-badge"); if (wb) wb.classList.remove("visible"); }
-    };
+    // Post-hooks for layout and active changes (avoids fragile monkey-patching chain)
+    const _layoutHooks = [updatePaneNumbers, updateWelcomeScreen];
+    const _setActiveHooks = [
+      (id) => { updateTabBar(); trackRecentDir(id); },
+      (id) => {
+        const pane = panes.get(id);
+        if (pane && pane.activityDot) pane.activityDot.classList.remove("visible");
+        if (pane) { const wb = pane.el.querySelector(".watcher-badge"); if (wb) wb.classList.remove("visible"); }
+      },
+    ];
+    const _baseRenderLayout = renderLayout;
+    renderLayout = function() { _baseRenderLayout(); for (const fn of _layoutHooks) fn(); };
+    const _baseSetActive = setActive;
+    setActive = function(id) { _baseSetActive(id); for (const fn of _setActiveHooks) fn(id); };
 
     // ============================================================
     // CRON MANAGER
@@ -1494,6 +1607,7 @@
     }
 
     function openRecentDirs() {
+      if (_paletteCleanup) { _paletteCleanup(); _paletteCleanup = null; }
       const overlay = document.getElementById("palette-overlay");
       const input = document.getElementById("palette-input");
       const results = document.getElementById("palette-results");
@@ -1524,7 +1638,7 @@
       const handler = (e) => {
         if (e.key === "Escape") { overlay.classList.remove("visible"); input.placeholder = "Type a command..."; input.removeEventListener("keydown", handler); input.removeEventListener("input", inputHandler); return; }
         if (e.key === "Enter") { e.preventDefault(); const items = results.querySelectorAll(".palette-item"); items[selected]?.click(); overlay.classList.remove("visible"); input.placeholder = "Type a command..."; input.removeEventListener("keydown", handler); input.removeEventListener("input", inputHandler); }
-        if (e.key === "ArrowDown") { e.preventDefault(); selected++; render(input.value); }
+        if (e.key === "ArrowDown") { e.preventDefault(); selected = Math.min(selected + 1, Math.max(0, results.querySelectorAll(".palette-item").length - 1)); render(input.value); }
         if (e.key === "ArrowUp") { e.preventDefault(); selected = Math.max(0, selected - 1); render(input.value); }
       };
       const inputHandler = () => { selected = 0; render(input.value); };
@@ -1537,6 +1651,7 @@
     // FUZZY FILE FINDER
     // ============================================================
     function openFileFinder() {
+      if (_paletteCleanup) { _paletteCleanup(); _paletteCleanup = null; }
       const overlay = document.getElementById("palette-overlay");
       const input = document.getElementById("palette-input");
       const results = document.getElementById("palette-results");
@@ -1813,7 +1928,7 @@
           if (e.target.closest(".launch-action-btn")) return;
           launchDropdown.classList.remove("visible");
           const id = await addTerminal(proj.path);
-          if (id !== undefined) setTimeout(() => window.terminator.sendInput(id, getClaudeCommand() + "\n"), 150);
+          if (id !== undefined) setTimeout(() => launchClaude(id), 150);
         });
         item.querySelector(".edit").addEventListener("click", (e) => {
           e.stopPropagation();
@@ -1856,7 +1971,7 @@
       const insertAt = commands.findIndex(c => c.category === "System");
       const newCmds = launchProjects.map(p => ({
         label: `Launch: ${p.name} + Claude`, category: "Launch",
-        action: async () => { const id = await addTerminal(p.path); if (id !== undefined) setTimeout(() => window.terminator.sendInput(id, getClaudeCommand() + "\n"), 150); }
+        action: async () => { const id = await addTerminal(p.path); if (id !== undefined) setTimeout(() => launchClaude(id), 150); }
       }));
       commands.splice(insertAt >= 0 ? insertAt : commands.length, 0, ...newCmds);
     }
@@ -2027,10 +2142,8 @@
     }
     setupKeywordWatcher();
 
-    // Patch onData to check for keywords
-    const _origOnData = window.terminator.onData;
+    // Keyword watcher state (checkKeywords is called from the onData handler above)
     let watcherEnabled = false;
-    window.terminator.onData = undefined; // Remove so we can re-register below
 
     function checkKeywords(id, data) {
       if (!watcherEnabled || id === activeId) return;
@@ -2067,11 +2180,12 @@
     }
 
     function openSshManager() {
+      if (_paletteCleanup) { _paletteCleanup(); _paletteCleanup = null; }
       const overlay = document.getElementById("palette-overlay");
       const input = document.getElementById("palette-input");
       const results = document.getElementById("palette-results");
       overlay.classList.add("visible");
-      input.placeholder = "Search SSH bookmarks... (new:name:user@host to add)";
+      input.placeholder = "Search SSH bookmarks... (new name user@host[:port] to add)";
       input.value = ""; input.focus();
       let selected = 0;
 
@@ -2108,17 +2222,33 @@
         if (e.key === "Enter") {
           e.preventDefault();
           const val = input.value;
-          if (val.startsWith("new:")) {
-            const parts = val.slice(4).split(":");
-            if (parts.length >= 2) {
-              const name = parts[0].trim();
-              const hostPart = parts.slice(1).join(":").trim();
+          if (val.startsWith("new ") || val.startsWith("new:")) {
+            // Parse: "new name user@host[:port]" or legacy "new:name:user@host"
+            const raw = val.startsWith("new ") ? val.slice(4) : val.slice(4);
+            // Split on first space to get name and host part
+            const spaceIdx = raw.indexOf(" ");
+            if (spaceIdx > 0) {
+              const name = raw.slice(0, spaceIdx).trim();
+              const hostPart = raw.slice(spaceIdx + 1).trim();
               const portMatch = hostPart.match(/:(\d+)$/);
               const port = portMatch ? parseInt(portMatch[1]) : 22;
               const host = portMatch ? hostPart.replace(/:(\d+)$/, "") : hostPart;
               sshBookmarks.push({ name, host, port });
               window.terminator.saveSsh(sshBookmarks);
               showToast("SSH bookmark saved");
+            } else {
+              // Legacy colon format: new:name:user@host
+              const parts = raw.split(":");
+              if (parts.length >= 2) {
+                const name = parts[0].trim();
+                const hostPart = parts.slice(1).join(":").trim();
+                const portMatch = hostPart.match(/:(\d+)$/);
+                const port = portMatch ? parseInt(portMatch[1]) : 22;
+                const host = portMatch ? hostPart.replace(/:(\d+)$/, "") : hostPart;
+                sshBookmarks.push({ name, host, port });
+                window.terminator.saveSsh(sshBookmarks);
+                showToast("SSH bookmark saved");
+              }
             }
           } else {
             const items = results.querySelectorAll(".palette-item"); items[selected]?.click();
@@ -2126,7 +2256,7 @@
           overlay.classList.remove("visible"); input.placeholder = "Type a command...";
           input.removeEventListener("keydown", handler); input.removeEventListener("input", inputHandler);
         }
-        if (e.key === "ArrowDown") { e.preventDefault(); selected++; render(input.value); }
+        if (e.key === "ArrowDown") { e.preventDefault(); selected = Math.min(selected + 1, Math.max(0, results.querySelectorAll(".palette-item").length - 1)); render(input.value); }
         if (e.key === "ArrowUp") { e.preventDefault(); selected = Math.max(0, selected - 1); render(input.value); }
       };
       const inputHandler = () => { selected = 0; render(input.value); };
@@ -2189,6 +2319,7 @@
       const sessionsCancelBtn = document.getElementById("remote-sessions-cancel");
       const openAllBtn = document.getElementById("remote-open-all");
 
+      let _formKeydownHandler = null;
       const cleanup = () => {
         closeBtn.removeEventListener("click", onClose);
         cancelBtn.removeEventListener("click", onClose);
@@ -2197,6 +2328,10 @@
         sessionsCancelBtn.removeEventListener("click", onClose);
         openAllBtn.removeEventListener("click", onOpenAll);
         overlay.removeEventListener("click", onOverlayClick);
+        // Clean up form input listeners
+        if (_formKeydownHandler) {
+          form.querySelectorAll("input").forEach(inp => inp.removeEventListener("keydown", _formKeydownHandler));
+        }
       };
 
       function onClose() { cleanup(); closeRemote(); }
@@ -2323,11 +2458,11 @@
 
       // Enter key on form submits
       const formInputs = form.querySelectorAll("input");
-      const onKeydown = (e) => {
+      _formKeydownHandler = (e) => {
         if (e.key === "Enter") onConnect();
         if (e.key === "Escape") onClose();
       };
-      formInputs.forEach(inp => inp.addEventListener("keydown", onKeydown));
+      formInputs.forEach(inp => inp.addEventListener("keydown", _formKeydownHandler));
     }
 
     function getRemoteProcessIcon(proc) {
@@ -2345,16 +2480,16 @@
       return "\u{1F4BB}";
     }
 
+    const _escMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
     function escHtml(str) {
-      const div = document.createElement("div");
-      div.textContent = str;
-      return div.innerHTML;
+      return String(str).replace(/[&<>"']/g, c => _escMap[c]);
     }
 
     // ============================================================
     // SPLIT & RUN
     // ============================================================
     function openSplitAndRun() {
+      if (_paletteCleanup) { _paletteCleanup(); _paletteCleanup = null; }
       const overlay = document.getElementById("palette-overlay");
       const input = document.getElementById("palette-input");
       const results = document.getElementById("palette-results");
@@ -2415,7 +2550,8 @@
         document.getElementById("mem-bar").style.background = stats.memUsage > 80 ? "#ff453a" : "#ff9f0a";
       } catch {}
     }
-    setInterval(updateSystemStats, 3000);
+    // System stats at 10s (less frequent — CPU/mem don't need 3s polling)
+    setInterval(updateSystemStats, 10000);
     updateSystemStats();
 
     // ============================================================
@@ -2475,25 +2611,32 @@
     }
 
     function makeDraggable(el, handle) {
-      let startX, startY, startLeft, startTop;
+      // Track active listeners to prevent accumulation
+      if (handle._dragSetup) return;
+      handle._dragSetup = true;
+      let activeMoveHandler = null, activeUpHandler = null;
       handle.addEventListener("mousedown", (e) => {
         if (e.target.closest("button") || e.target.closest(".pane-badge")) return;
         if (!el.classList.contains("floating")) return;
         e.preventDefault();
-        startX = e.clientX; startY = e.clientY;
+        // Clean up any stale listeners from a prior drag (e.g., mouseup lost during blur)
+        if (activeMoveHandler) { document.removeEventListener("mousemove", activeMoveHandler); activeMoveHandler = null; }
+        if (activeUpHandler) { document.removeEventListener("mouseup", activeUpHandler); activeUpHandler = null; }
+        const startX = e.clientX, startY = e.clientY;
         const rect = el.getBoundingClientRect();
-        startLeft = rect.left; startTop = rect.top;
-        const onMove = (ev) => {
+        const startLeft = rect.left, startTop = rect.top;
+        activeMoveHandler = (ev) => {
           el.style.left = (startLeft + ev.clientX - startX) + "px";
           el.style.top = (startTop + ev.clientY - startY) + "px";
           el.style.right = "auto"; el.style.bottom = "auto";
         };
-        const onUp = () => {
-          document.removeEventListener("mousemove", onMove);
-          document.removeEventListener("mouseup", onUp);
+        activeUpHandler = () => {
+          document.removeEventListener("mousemove", activeMoveHandler);
+          document.removeEventListener("mouseup", activeUpHandler);
+          activeMoveHandler = null; activeUpHandler = null;
         };
-        document.addEventListener("mousemove", onMove);
-        document.addEventListener("mouseup", onUp);
+        document.addEventListener("mousemove", activeMoveHandler);
+        document.addEventListener("mouseup", activeUpHandler);
       });
     }
 
@@ -2533,6 +2676,7 @@
 
     function linkPanes() {
       if (panes.size < 2) { showToast("Need at least 2 panes to link"); return; }
+      if (_paletteCleanup) { _paletteCleanup(); _paletteCleanup = null; }
       const overlay = document.getElementById("palette-overlay");
       const input = document.getElementById("palette-input");
       const results = document.getElementById("palette-results");
@@ -2805,11 +2949,15 @@
       historyFiltered.forEach((h, i) => {
         const el = document.createElement("div");
         el.className = "history-item" + (i === historySelectedIdx ? " selected" : "");
-        let display = h.cmd;
+        let display = escHtml(h.cmd);
         if (q) {
-          const idx = display.toLowerCase().indexOf(q);
+          const escaped = escHtml(h.cmd);
+          const idx = h.cmd.toLowerCase().indexOf(q);
           if (idx >= 0) {
-            display = display.slice(0, idx) + '<span class="history-match">' + display.slice(idx, idx + q.length) + '</span>' + display.slice(idx + q.length);
+            const before = escHtml(h.cmd.slice(0, idx));
+            const match = escHtml(h.cmd.slice(idx, idx + q.length));
+            const after = escHtml(h.cmd.slice(idx + q.length));
+            display = before + '<span class="history-match">' + match + '</span>' + after;
           }
         }
         el.innerHTML = display + `<span class="history-pane">T${h.paneId}</span>`;
@@ -2870,7 +3018,7 @@
 
       const toast = document.createElement("div");
       toast.className = "error-toast";
-      toast.innerHTML = `<span class="error-toast-msg">${errorSnippet.replace(/</g, "&lt;")}</span>${_extHooks.errorDetected.length ? '<button class="error-toast-btn">Ask AI</button>' : ''}<button class="error-toast-close">x</button>`;
+      toast.innerHTML = `<span class="error-toast-msg">${escHtml(errorSnippet)}</span>${_extHooks.errorDetected.length ? '<button class="error-toast-btn">Ask AI</button>' : ''}<button class="error-toast-close">x</button>`;
       toast.querySelector(".error-toast-close").addEventListener("click", () => toast.remove());
       const askBtn = toast.querySelector(".error-toast-btn");
       if (askBtn) askBtn.addEventListener("click", () => {
@@ -2924,84 +3072,272 @@
       }
     }
 
-    setInterval(refreshPaneStats, 3000);
+    // Stagger pane stats refresh to avoid thundering herd
+    setTimeout(() => setInterval(refreshPaneStats, 5000), 3500);
 
 
     // ============================================================
     // EXTENSIONS / PLUGINS
     // ============================================================
-    function createPluginCard(manifest, dir, isInstalled) {
+    // ============================================================
+    // MARKETPLACE
+    // ============================================================
+    let _mpRegistry = null;
+    let _mpInstalledNames = new Set();
+
+    const TYPE_ICONS = {
+      theme: "\uD83C\uDFA8", command: "\u26A1", statusbar: "\uD83D\uDCCA", extension: "\uD83E\uDDE9",
+    };
+    const TYPE_LABELS = {
+      theme: "Theme", command: "Command", statusbar: "Status Bar", extension: "Extension",
+    };
+
+    function createMarketplaceCard(entry, isInstalled) {
       const card = document.createElement("div");
-      card.className = "plugin-card";
-
-      const header = document.createElement("div");
-      header.className = "plugin-card-header";
-
-      const info = document.createElement("div");
-      info.className = "plugin-card-info";
-
-      const nameRow = document.createElement("div");
-      nameRow.className = "plugin-card-name";
-      nameRow.textContent = manifest.name;
-      if (manifest.version) {
-        const ver = document.createElement("span");
-        ver.className = "plugin-card-version";
-        ver.textContent = "v" + manifest.version;
-        nameRow.appendChild(ver);
-      }
-
-      const desc = document.createElement("div");
-      desc.className = "plugin-card-desc";
-      desc.textContent = manifest.description || "No description";
-
-      const meta = document.createElement("div");
-      meta.className = "plugin-card-meta";
-      const badge = document.createElement("span");
-      badge.className = "plugin-type-badge " + (manifest.type || "");
-      badge.textContent = manifest.type || "unknown";
-      meta.appendChild(badge);
+      card.className = "mp-card" + (isInstalled ? " installed" : "");
+      card.dataset.type = entry.type || "";
+      card.dataset.name = (entry.name || "").toLowerCase();
+      card.dataset.desc = (entry.description || "").toLowerCase();
+      card.dataset.tags = (entry.tags || []).join(" ").toLowerCase();
+      card.dataset.id = entry.id || "";
+      card.dataset.installed = isInstalled ? "1" : "0";
+      card.dataset.featured = entry.featured ? "1" : "0";
 
       if (isInstalled) {
-        const installedBadge = document.createElement("span");
-        installedBadge.className = "plugin-installed-badge";
-        installedBadge.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Installed';
-        meta.appendChild(installedBadge);
+        const dot = document.createElement("div");
+        dot.className = "mp-card-installed-dot";
+        dot.title = "Installed";
+        card.appendChild(dot);
       }
 
-      info.appendChild(nameRow);
-      info.appendChild(desc);
-      info.appendChild(meta);
+      const top = document.createElement("div");
+      top.className = "mp-card-top";
+
+      const icon = document.createElement("div");
+      icon.className = "mp-card-icon";
+      icon.textContent = entry.icon || TYPE_ICONS[entry.type] || "\uD83D\uDCE6";
+      top.appendChild(icon);
+
+      const info = document.createElement("div");
+      info.className = "mp-card-info";
+      const nameEl = document.createElement("div");
+      nameEl.className = "mp-card-name";
+      nameEl.textContent = entry.name || entry.id;
+      info.appendChild(nameEl);
+      const authorEl = document.createElement("div");
+      authorEl.className = "mp-card-author";
+      authorEl.textContent = (entry.author || "Terminator") + (entry.version ? " \u00B7 v" + entry.version : "");
+      info.appendChild(authorEl);
+      top.appendChild(info);
+
+      const desc = document.createElement("div");
+      desc.className = "mp-card-desc";
+      desc.textContent = entry.description || "";
+
+      const footer = document.createElement("div");
+      footer.className = "mp-card-footer";
+
+      const tagsWrap = document.createElement("div");
+      tagsWrap.className = "mp-card-tags";
+      const typeBadge = document.createElement("span");
+      typeBadge.className = "mp-tag plugin-type-badge " + (entry.type || "");
+      typeBadge.textContent = TYPE_LABELS[entry.type] || entry.type || "";
+      tagsWrap.appendChild(typeBadge);
+      if (entry.tags) {
+        for (const tag of entry.tags.slice(0, 2)) {
+          const t = document.createElement("span");
+          t.className = "mp-tag";
+          t.textContent = tag;
+          tagsWrap.appendChild(t);
+        }
+      }
+      footer.appendChild(tagsWrap);
 
       const btn = document.createElement("button");
-      btn.className = "plugin-install-btn " + (isInstalled ? "uninstall" : "install");
+      btn.className = "mp-card-btn " + (isInstalled ? "uninstall" : "install");
       btn.textContent = isInstalled ? "Uninstall" : "Install";
-      btn.addEventListener("click", async () => {
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
         btn.disabled = true;
-        btn.textContent = isInstalled ? "Removing..." : "Installing...";
+        const wasInstalled = btn.classList.contains("uninstall");
+        btn.textContent = wasInstalled ? "Removing..." : "Installing...";
         try {
-          const result = isInstalled
-            ? await window.terminator.uninstallPlugin(dir)
-            : await window.terminator.installPlugin(dir);
-          if (result.error) {
-            showToast("Error: " + result.error);
-            btn.disabled = false;
-            btn.textContent = isInstalled ? "Uninstall" : "Install";
+          if (wasInstalled) {
+            deactivatePlugin(entry.id);
+            const result = await window.terminator.uninstallPlugin(entry.id);
+            if (result.error) throw new Error(result.error);
+            _mpInstalledNames.delete(entry.id);
           } else {
-            showToast(isInstalled ? "Extension removed — reloading..." : "Extension installed — reloading...");
-            setTimeout(() => location.reload(), 600);
+            // Try marketplace install (remote + local fallback)
+            const result = await window.terminator.installFromRegistry({
+              id: entry.id,
+              files: entry.files || { "plugin.json": "", "index.js": "" },
+              downloadUrl: entry.downloadUrl || "",
+            });
+            if (result.error) throw new Error(result.error);
+            await activateSinglePlugin(entry.id, entry.type);
+            _mpInstalledNames.add(entry.id);
           }
-        } catch (err) {
-          showToast("Error: " + err.message);
+          if (entry.type === "theme") _refreshThemeUIs();
+          // Update card visually
           btn.disabled = false;
-          btn.textContent = isInstalled ? "Uninstall" : "Install";
+          if (wasInstalled) {
+            btn.className = "mp-card-btn install";
+            btn.textContent = "Install";
+            card.classList.remove("installed");
+            card.dataset.installed = "0";
+            const dot = card.querySelector(".mp-card-installed-dot");
+            if (dot) dot.remove();
+          } else {
+            btn.className = "mp-card-btn uninstall";
+            btn.textContent = "Uninstall";
+            card.classList.add("installed");
+            card.dataset.installed = "1";
+            const dot = document.createElement("div");
+            dot.className = "mp-card-installed-dot";
+            dot.title = "Installed";
+            card.insertBefore(dot, card.firstChild);
+          }
+          showToast(wasInstalled ? `${entry.name} removed` : `${entry.name} installed`);
+        } catch (err) {
+          showToast("Error: " + err.message, "error");
+          btn.disabled = false;
+          btn.textContent = wasInstalled ? "Uninstall" : "Install";
         }
       });
+      footer.appendChild(btn);
 
-      header.appendChild(info);
-      header.appendChild(btn);
-      card.appendChild(header);
+      // Theme preview swatches
+      if (entry.type === "theme" && entry.preview) {
+        const preview = document.createElement("div");
+        preview.className = "mp-theme-preview";
+        for (const color of entry.preview) {
+          const swatch = document.createElement("div");
+          swatch.className = "mp-theme-swatch";
+          swatch.style.background = color;
+          preview.appendChild(swatch);
+        }
+        desc.appendChild(preview);
+      }
+
+      card.appendChild(top);
+      card.appendChild(desc);
+      card.appendChild(footer);
       return card;
     }
+
+    async function fetchAndRenderMarketplace() {
+      const grid = document.getElementById("marketplace-grid");
+      const loading = document.getElementById("marketplace-loading");
+      const empty = document.getElementById("marketplace-empty");
+      const countEl = document.getElementById("marketplace-count");
+      if (!grid) return;
+
+      grid.style.display = "none";
+      empty.style.display = "none";
+      loading.style.display = "flex";
+
+      try {
+        const [registry, installed] = await Promise.all([
+          window.terminator.fetchRegistry(),
+          window.terminator.loadPlugins(),
+        ]);
+        _mpRegistry = registry;
+        _mpInstalledNames = new Set(installed.map(p => p.manifest.name));
+
+        const plugins = registry.plugins || [];
+        grid.innerHTML = "";
+
+        // Sort: featured first, then installed, then alphabetical
+        const sorted = [...plugins].sort((a, b) => {
+          if (a.featured && !b.featured) return -1;
+          if (!a.featured && b.featured) return 1;
+          const aInst = _mpInstalledNames.has(a.id);
+          const bInst = _mpInstalledNames.has(b.id);
+          if (aInst && !bInst) return -1;
+          if (!aInst && bInst) return 1;
+          return (a.name || a.id).localeCompare(b.name || b.id);
+        });
+
+        for (const entry of sorted) {
+          const card = createMarketplaceCard(entry, _mpInstalledNames.has(entry.id));
+          grid.appendChild(card);
+        }
+
+        // Also add locally-installed custom plugins not in registry
+        const registryIds = new Set(plugins.map(p => p.id));
+        for (const p of installed) {
+          if (!registryIds.has(p.manifest.name)) {
+            const entry = {
+              id: p.manifest.name, name: p.manifest.name, description: p.manifest.description || "Custom plugin",
+              type: p.manifest.type, version: p.manifest.version, author: p.manifest.author || "Custom",
+              tags: ["custom"], icon: "\uD83D\uDD27",
+            };
+            grid.appendChild(createMarketplaceCard(entry, true));
+          }
+        }
+
+        if (countEl) countEl.textContent = `${sorted.length} extensions`;
+        loading.style.display = "none";
+        grid.style.display = "";
+        if (grid.children.length === 0) empty.style.display = "flex";
+      } catch (err) {
+        console.error("Marketplace fetch error:", err);
+        loading.style.display = "none";
+        empty.style.display = "flex";
+      }
+    }
+
+    function filterMarketplace(filter, query) {
+      const grid = document.getElementById("marketplace-grid");
+      const empty = document.getElementById("marketplace-empty");
+      if (!grid) return;
+      const q = (query || "").toLowerCase().trim();
+      let visible = 0;
+      for (const card of grid.children) {
+        let show = true;
+        if (filter && filter !== "all") {
+          if (filter === "installed") {
+            show = card.dataset.installed === "1";
+          } else if (filter === "featured") {
+            show = card.dataset.featured === "1";
+          } else {
+            show = card.dataset.type === filter;
+          }
+        }
+        if (show && q) {
+          show = card.dataset.name.includes(q) || card.dataset.desc.includes(q) || card.dataset.tags.includes(q) || card.dataset.id.includes(q);
+        }
+        card.style.display = show ? "" : "none";
+        if (show) visible++;
+      }
+      if (empty) empty.style.display = visible === 0 ? "flex" : "none";
+    }
+
+    // Wire up marketplace filter buttons + search
+    (function setupMarketplace() {
+      const filters = document.getElementById("marketplace-filters");
+      const search = document.getElementById("marketplace-search");
+      let activeFilter = "all";
+
+      if (filters) {
+        filters.addEventListener("click", (e) => {
+          const btn = e.target.closest(".mp-filter");
+          if (!btn) return;
+          filters.querySelectorAll(".mp-filter").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          activeFilter = btn.dataset.filter;
+          filterMarketplace(activeFilter, search ? search.value : "");
+        });
+      }
+      if (search) {
+        let debounce = null;
+        search.addEventListener("input", () => {
+          clearTimeout(debounce);
+          debounce = setTimeout(() => filterMarketplace(activeFilter, search.value), 150);
+        });
+      }
+    })();
 
 
     // ============================================================
@@ -3222,7 +3558,8 @@
         // Update position & content
         el.style.left = node.x + "px"; el.style.top = node.y + "px";
         el.className = "pl-node" + (node.status !== "pending" ? " " + node.status : "") + (plSelectedId === node.id ? " selected" : "");
-        const idx = plGetExecutionOrder().indexOf(node.id);
+        const execOrder = plGetExecutionOrder();
+        const idx = execOrder ? execOrder.indexOf(node.id) : -1;
         el.querySelector(".pl-node-idx").textContent = idx >= 0 ? "#" + (idx + 1) : "";
         el.querySelector(".pl-node-status").textContent = node.status === "pending" ? "" : node.status;
         const body = el.querySelector(".pl-node-body");
@@ -3324,7 +3661,7 @@
 
     function plSelectNode(id) { plSelectedId = id; plRender(); }
 
-    // --- Get execution order (topological sort) ---
+    // --- Get execution order (topological sort with cycle detection) ---
     function plGetExecutionOrder() {
       const inDeg = {}; const adj = {};
       for (const n of plNodes) { inDeg[n.id] = 0; adj[n.id] = []; }
@@ -3340,6 +3677,11 @@
           inDeg[next]--;
           if (inDeg[next] === 0) queue.push(next);
         }
+      }
+      // Cycle detection: if not all nodes are in order, there's a cycle
+      if (order.length < plNodes.length) {
+        showToast("Pipeline has a cycle — cannot execute", "error");
+        return null;
       }
       return order;
     }
@@ -3396,6 +3738,7 @@
       plRender();
 
       const order = plGetExecutionOrder();
+      if (!order) return; // Cycle detected
       let failed = false;
       for (const nid of order) {
         const node = plNodes.find(n => n.id === nid);
@@ -3744,8 +4087,8 @@
       return Date.now() - paneCommandStart.get(id);
     }
 
-    // Update durations every 2 seconds
-    setInterval(updateCommandDurations, 2000);
+    // Update durations every 5 seconds (aligned with other polling)
+    setInterval(updateCommandDurations, 5000);
 
     // ============================================================
     // SMART TAB NAMES
@@ -3828,6 +4171,7 @@
     }
 
     function openBookmarks() {
+      if (_paletteCleanup) { _paletteCleanup(); _paletteCleanup = null; }
       const overlay = document.getElementById("palette-overlay");
       const input = document.getElementById("palette-input");
       const results = document.getElementById("palette-results");
@@ -3868,7 +4212,7 @@
       const handler = (e) => {
         if (e.key === "Escape") { overlay.classList.remove("visible"); input.placeholder = "Type a command..."; input.removeEventListener("keydown", handler); input.removeEventListener("input", inputHandler); return; }
         if (e.key === "Enter") { e.preventDefault(); const items = results.querySelectorAll(".palette-item"); items[selected]?.click(); overlay.classList.remove("visible"); input.placeholder = "Type a command..."; input.removeEventListener("keydown", handler); input.removeEventListener("input", inputHandler); }
-        if (e.key === "ArrowDown") { e.preventDefault(); selected++; render(input.value); }
+        if (e.key === "ArrowDown") { e.preventDefault(); selected = Math.min(selected + 1, Math.max(0, results.querySelectorAll(".palette-item").length - 1)); render(input.value); }
         if (e.key === "ArrowUp") { e.preventDefault(); selected = Math.max(0, selected - 1); render(input.value); }
       };
       const inputHandler = () => { selected = 0; render(input.value); };
@@ -3883,6 +4227,7 @@
     const watchTimers = new Map(); // paneId -> { interval, command, timer }
 
     function openWatchMode() {
+      if (_paletteCleanup) { _paletteCleanup(); _paletteCleanup = null; }
       const overlay = document.getElementById("palette-overlay");
       const input = document.getElementById("palette-input");
       const results = document.getElementById("palette-results");
@@ -4005,6 +4350,7 @@
     // CROSS-PANE SEARCH
     // ============================================================
     function openCrossPaneSearch() {
+      if (_paletteCleanup) { _paletteCleanup(); _paletteCleanup = null; }
       const overlay = document.getElementById("palette-overlay");
       const input = document.getElementById("palette-input");
       const results = document.getElementById("palette-results");
@@ -4086,6 +4432,7 @@
     let currentPreviewPath = null;
 
     function openFilePreview() {
+      if (_paletteCleanup) { _paletteCleanup(); _paletteCleanup = null; }
       const overlay = document.getElementById("palette-overlay");
       const input = document.getElementById("palette-input");
       const results = document.getElementById("palette-results");
@@ -4563,13 +4910,13 @@
       // Mount extension settings sections (once)
       for (const sec of _extSettingsSections) {
         if (!sec._mounted) {
-          // Find the appropriate tab to inject into (e.g. create a new tab or inject into existing)
           const extTab = document.querySelector('.settings-tab[data-tab="extensions"] .settings-group');
           if (extTab) {
             const container = document.createElement("div");
             container.innerHTML = sec.html;
             extTab.appendChild(container);
             sec._mounted = true;
+            sec._container = container; // track for cleanup on uninstall
           }
         }
         if (sec.onMount) sec.onMount();
@@ -4671,36 +5018,8 @@
     }
 
     async function refreshSettingsExtensions() {
-      const body = document.getElementById("settings-extensions-body");
-      if (!body) return;
-      // Keep the description paragraph, clear plugin cards
-      const existing = body.querySelectorAll(".plugin-card, .plugins-section-title, .plugin-restart-notice");
-      existing.forEach(el => el.remove());
-
-      try {
-        const [available, installed] = await Promise.all([
-          window.terminator.listAvailablePlugins(),
-          window.terminator.loadPlugins(),
-        ]);
-        const installedNames = new Set(installed.map(p => p.manifest.name));
-
-        for (const plugin of available) {
-          const card = createPluginCard(plugin.manifest, plugin.dir, installedNames.has(plugin.manifest.name));
-          body.appendChild(card);
-        }
-
-        const customInstalled = installed.filter(p => !available.find(a => a.manifest.name === p.manifest.name));
-        if (customInstalled.length > 0) {
-          const title = document.createElement("div");
-          title.className = "plugins-section-title";
-          title.textContent = "Custom Plugins";
-          body.appendChild(title);
-          for (const plugin of customInstalled) {
-            const card = createPluginCard(plugin.manifest, plugin.dir, true);
-            body.appendChild(card);
-          }
-        }
-      } catch {}
+      // Use the new marketplace UI instead
+      await fetchAndRenderMarketplace();
     }
 
     function applySettings() {
@@ -4903,6 +5222,8 @@
     // PLUGIN SYSTEM
     // ============================================================
     const _loadedPlugins = new Set(); // track already-loaded plugin names
+    // Registry: pluginName -> { type, themeIdx, themeName, commands[], domIds[], hooks:{event:[fn]}, intervals[], settingsSections[], widgetEl }
+    const _pluginRegistry = new Map();
 
     async function activateSinglePlugin(pluginName, type) {
       if (_loadedPlugins.has(pluginName)) return;
@@ -4922,20 +5243,23 @@
     }
 
     async function _applyPlugin(pluginExports, pluginName, type) {
+      const reg = { type, commands: [], domIds: [], hooks: {}, intervals: [], settingsSections: [] };
+
       if (type === "theme" && pluginExports.theme) {
         const t = pluginExports.theme;
-        themes.push({
+        const themeObj = {
           name: t.name || pluginName,
           body: t.background || "#1e1e1e",
           ui: t.ui || t.background || "#2d2d2d",
           border: t.border || t.background || "#1a1a1a",
+          _plugin: pluginName,
           term: {
             background: t.background || "#1e1e1e",
             foreground: t.foreground || "#cccccc",
             cursor: t.cursor || t.foreground || "#cccccc",
             cursorAccent: t.background || "#1e1e1e",
             selectionBackground: t.selection || "rgba(255,255,255,0.2)",
-            selectionForeground: "#ffffff",
+            selectionForeground: t.selectionForeground || "#ffffff",
             black: t.black || "#000000", red: t.red || "#c91b00",
             green: t.green || "#00c200", yellow: t.yellow || "#c7c400",
             blue: t.blue || "#0225c7", magenta: t.magenta || "#c930c7",
@@ -4945,13 +5269,14 @@
             brightBlue: t.brightBlue || "#6871ff", brightMagenta: t.brightMagenta || "#ff76ff",
             brightCyan: t.brightCyan || "#60fdff", brightWhite: t.brightWhite || "#ffffff",
           },
-        });
-        const themeIdx = themes.length - 1;
-        commands.push({
-          label: `Theme: ${t.name || pluginName}`,
-          action: () => applyTheme(themeIdx),
-          category: "Appearance",
-        });
+        };
+        themes.push(themeObj);
+        reg.themeIdx = themes.length - 1;
+        reg.themeName = themeObj.name;
+        const cmdLabel = `Theme: ${themeObj.name}`;
+        const cmd = { label: cmdLabel, action: () => applyTheme(themes.indexOf(themeObj)), category: "Appearance" };
+        commands.push(cmd);
+        reg.commands.push(cmd);
       }
 
       if (type === "command" && pluginExports.name && pluginExports.execute) {
@@ -4962,12 +5287,14 @@
           createTerminal: (cwd) => addTerminal(cwd),
           notify: (msg) => showToast(msg),
         };
-        commands.push({
+        const cmd = {
           label: pluginExports.name,
           shortcut: pluginExports.shortcut || undefined,
           action: () => pluginExports.execute(cmdCtx),
           category: "Plugins",
-        });
+        };
+        commands.push(cmd);
+        reg.commands.push(cmd);
       }
 
       if (type === "statusbar" && pluginExports.name && pluginExports.render) {
@@ -4983,17 +5310,147 @@
         const bottombar = document.querySelector(".bottombar");
         const paneCountEl2 = document.getElementById("pane-count");
         if (bottombar && paneCountEl2) bottombar.insertBefore(widget, paneCountEl2);
-        setInterval(() => {
+        const intervalId = setInterval(() => {
           try { widget.innerHTML = pluginExports.render(sbCtx); } catch {}
         }, 5000);
+        reg.widgetEl = widget;
+        reg.intervals.push(intervalId);
       }
 
       if (type === "extension" && pluginExports.activate) {
+        // Create a tracked ctx proxy so we can clean up on uninstall
+        const pluginCtx = {
+          get activeId() { return window._termExt.activeId; },
+          getPane(id) { return window._termExt.getPane(id); },
+          get allPaneIds() { return window._termExt.allPaneIds; },
+          get fontSize() { return window._termExt.fontSize; },
+          get broadcastMode() { return window._termExt.broadcastMode; },
+          get skipPermissions() { return window._termExt.skipPermissions; },
+          set skipPermissions(val) { window._termExt.skipPermissions = val; },
+          toggleSkipPermissions() { window._termExt.toggleSkipPermissions(); },
+          sendInput(id, data) { window._termExt.sendInput(id, data); },
+          broadcast(ids, data) { window._termExt.broadcast(ids, data); },
+          showToast(msg) { window._termExt.showToast(msg); },
+          get settings() { return window._termExt.settings; },
+          saveSettings() { window._termExt.saveSettings(); },
+          get ipc() { return window._termExt.ipc; },
+          on(event, fn) {
+            window._termExt.on(event, fn);
+            if (!reg.hooks[event]) reg.hooks[event] = [];
+            reg.hooks[event].push(fn);
+          },
+          off(event, fn) { window._termExt.off(event, fn); },
+          registerCommand(cmd) {
+            window._termExt.registerCommand(cmd);
+            reg.commands.push(cmd);
+          },
+          addToolbarButton(opts) {
+            window._termExt.addToolbarButton(opts);
+            if (opts.id) reg.domIds.push(opts.id);
+          },
+          addSidePanel(id, html) {
+            const panel = window._termExt.addSidePanel(id, html);
+            reg.domIds.push(id);
+            return panel;
+          },
+          addSettingsSection(html, onMount) {
+            const sec = { html, onMount };
+            _extSettingsSections.push(sec);
+            reg.settingsSections.push(sec);
+          },
+        };
         try {
-          pluginExports.activate(window._termExt);
+          pluginExports.activate(pluginCtx);
         } catch (err) {
           console.error(`Extension ${pluginName} activation error:`, err);
         }
+      }
+
+      _pluginRegistry.set(pluginName, reg);
+    }
+
+    /** Remove all traces of a plugin without reloading */
+    function deactivatePlugin(pluginName) {
+      const reg = _pluginRegistry.get(pluginName);
+      if (!reg) return;
+
+      // Remove commands from palette
+      for (const cmd of reg.commands) {
+        const idx = commands.indexOf(cmd);
+        if (idx >= 0) commands.splice(idx, 1);
+      }
+
+      // Remove DOM elements (toolbar buttons, side panels)
+      for (const domId of reg.domIds) {
+        const el = document.getElementById(domId);
+        if (el) el.remove();
+      }
+
+      // Unhook event listeners
+      for (const [event, fns] of Object.entries(reg.hooks)) {
+        for (const fn of fns) {
+          if (_extHooks[event]) _extHooks[event] = _extHooks[event].filter(f => f !== fn);
+        }
+      }
+
+      // Clear intervals (statusbar widgets)
+      for (const id of reg.intervals) clearInterval(id);
+      if (reg.widgetEl && reg.widgetEl.parentNode) reg.widgetEl.remove();
+
+      // Remove settings sections (from array and from DOM if already mounted)
+      for (const sec of reg.settingsSections) {
+        const idx = _extSettingsSections.indexOf(sec);
+        if (idx >= 0) _extSettingsSections.splice(idx, 1);
+        if (sec._mounted && sec._container) {
+          sec._container.remove();
+        }
+      }
+
+      // Remove theme if this was a theme plugin
+      if (reg.type === "theme" && reg.themeName) {
+        const wasActive = themes[currentThemeIdx] && themes[currentThemeIdx].name === reg.themeName;
+        const tIdx = themes.findIndex(t => t._plugin === pluginName);
+        if (tIdx >= 0) {
+          themes.splice(tIdx, 1);
+          // Fix currentThemeIdx if the removed theme shifted indices
+          if (wasActive) {
+            applyTheme(0);
+          } else if (tIdx < currentThemeIdx) {
+            currentThemeIdx--;
+          }
+        }
+      }
+
+      // Remove injected <style> elements for this plugin
+      document.querySelectorAll(`style[data-plugin="${pluginName}"]`).forEach(el => el.remove());
+
+      _loadedPlugins.delete(pluginName);
+      _pluginRegistry.delete(pluginName);
+    }
+
+    /** Refresh theme dropdowns & command palette after plugin changes */
+    function _refreshThemeUIs() {
+      // Settings theme dropdown
+      const themeSelect = document.getElementById("setting-theme");
+      if (themeSelect) {
+        themeSelect.innerHTML = "";
+        themes.forEach((t, i) => {
+          const opt = document.createElement("option");
+          opt.value = i; opt.textContent = t.name;
+          if (i === currentThemeIdx) opt.selected = true;
+          themeSelect.appendChild(opt);
+        });
+      }
+      // Welcome screen theme dropdown
+      const welcomeThemeSelect = document.getElementById("welcome-theme-select");
+      if (welcomeThemeSelect) {
+        welcomeThemeSelect.innerHTML = "";
+        themes.forEach((t, i) => {
+          const opt = document.createElement("option");
+          opt.value = i; opt.textContent = t.name;
+          if (i === currentThemeIdx) opt.selected = true;
+          welcomeThemeSelect.appendChild(opt);
+        });
       }
     }
 
@@ -5012,6 +5469,648 @@
         console.error("[plugins] Plugin system error:", err);
       }
     }
+
+    // ============================================================
+    // SECRETS MANAGER
+    // ============================================================
+    let secretsVault = []; // { key, value, injected? }
+
+    async function loadSecretsVault() {
+      try { const saved = await window.terminator.loadSecrets(); if (Array.isArray(saved)) secretsVault = saved; } catch {}
+    }
+
+    function openSecretsPanel() {
+      document.getElementById("secrets-panel").classList.add("visible");
+      renderSecretsList();
+    }
+
+    function renderSecretsList() {
+      const body = document.getElementById("secrets-body");
+      body.innerHTML = "";
+      if (secretsVault.length === 0) {
+        body.innerHTML = '<div class="secrets-empty">No secrets stored.<br>Add env vars above to get started.</div>';
+        return;
+      }
+      secretsVault.forEach((s, i) => {
+        const row = document.createElement("div");
+        row.className = "secret-row";
+        const masked = "\u2022".repeat(Math.min(s.value.length, 20));
+        row.innerHTML = `
+          <input type="checkbox" class="secret-check" data-idx="${i}" checked />
+          <span class="secret-key">${escapeHtml(s.key)}</span>
+          <span class="secret-value" title="Click to reveal">${masked}</span>
+          <div class="secret-actions">
+            <button class="reveal" title="Toggle reveal">eye</button>
+            <button class="copy" title="Copy value">copy</button>
+            <button class="danger" title="Delete">&times;</button>
+          </div>
+        `;
+        // Toggle reveal
+        let revealed = false;
+        row.querySelector(".reveal").addEventListener("click", (e) => {
+          e.stopPropagation();
+          revealed = !revealed;
+          row.querySelector(".secret-value").textContent = revealed ? s.value : masked;
+        });
+        // Copy
+        row.querySelector(".copy").addEventListener("click", (e) => {
+          e.stopPropagation();
+          navigator.clipboard.writeText(s.value);
+          showToast(`Copied ${s.key}`);
+        });
+        // Delete
+        row.querySelector(".danger").addEventListener("click", (e) => {
+          e.stopPropagation();
+          secretsVault.splice(i, 1);
+          window.terminator.saveSecrets(secretsVault);
+          renderSecretsList();
+          showToast("Secret deleted");
+        });
+        body.appendChild(row);
+      });
+    }
+
+    document.getElementById("secrets-close").addEventListener("click", () => {
+      document.getElementById("secrets-panel").classList.remove("visible");
+      if (activeId && panes.has(activeId)) panes.get(activeId).term.focus();
+    });
+
+    document.getElementById("secret-add-btn").addEventListener("click", () => {
+      const keyInput = document.getElementById("secret-key-input");
+      const valInput = document.getElementById("secret-value-input");
+      const key = keyInput.value.trim().toUpperCase();
+      const value = valInput.value;
+      if (!key) { keyInput.focus(); return; }
+      if (!value) { valInput.focus(); return; }
+      // Update existing or add new
+      const existing = secretsVault.findIndex(s => s.key === key);
+      if (existing >= 0) secretsVault[existing].value = value;
+      else secretsVault.push({ key, value });
+      window.terminator.saveSecrets(secretsVault);
+      keyInput.value = "";
+      valInput.value = "";
+      renderSecretsList();
+      showToast(existing >= 0 ? `Updated ${key}` : `Added ${key}`);
+    });
+
+    document.getElementById("secret-key-input").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") document.getElementById("secret-value-input").focus();
+    });
+    document.getElementById("secret-value-input").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") document.getElementById("secret-add-btn").click();
+    });
+
+    // Inject all secrets into active pane
+    document.getElementById("secrets-inject-btn").addEventListener("click", async () => {
+      if (!activeId) { showToast("No active terminal"); return; }
+      if (secretsVault.length === 0) { showToast("No secrets to inject"); return; }
+      const result = await window.terminator.injectSecrets({ id: activeId, secrets: secretsVault });
+      if (result.ok) showToast(`Injected ${result.count} secret${result.count > 1 ? "s" : ""} into terminal`);
+      else showToast("Failed to inject secrets", "error");
+    });
+
+    // Inject selected secrets
+    document.getElementById("secrets-inject-select-btn").addEventListener("click", async () => {
+      if (!activeId) { showToast("No active terminal"); return; }
+      const checks = document.querySelectorAll("#secrets-body .secret-check:checked");
+      const selected = [];
+      checks.forEach(cb => {
+        const idx = parseInt(cb.dataset.idx);
+        if (secretsVault[idx]) selected.push(secretsVault[idx]);
+      });
+      if (selected.length === 0) { showToast("No secrets selected"); return; }
+      const result = await window.terminator.injectSecrets({ id: activeId, secrets: selected });
+      if (result.ok) showToast(`Injected ${result.count} selected secret${result.count > 1 ? "s" : ""}`);
+      else showToast("Failed to inject secrets", "error");
+    });
+
+    // ============================================================
+    // STATUS BAR WIDGETS (clock, k8s, AWS, node)
+    // ============================================================
+    const widgetClock = document.getElementById("widget-clock");
+    const widgetK8s = document.getElementById("widget-k8s");
+    const widgetAws = document.getElementById("widget-aws");
+    const widgetNode = document.getElementById("widget-node");
+
+    function updateClockWidget() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, "0");
+      const m = String(now.getMinutes()).padStart(2, "0");
+      const s = String(now.getSeconds()).padStart(2, "0");
+      widgetClock.innerHTML = `<span class="widget-icon">\u23F0</span> ${h}:${m}:${s}`;
+      widgetClock.classList.add("visible");
+    }
+    setInterval(updateClockWidget, 1000);
+    updateClockWidget();
+
+    async function updateK8sWidget() {
+      try {
+        const ctx = await window.terminator.getK8sContext();
+        if (ctx) {
+          widgetK8s.innerHTML = `<span class="widget-icon">\u2638</span> <span class="widget-label">${escapeHtml(ctx)}</span>`;
+          widgetK8s.classList.add("visible");
+        } else {
+          widgetK8s.classList.remove("visible");
+        }
+      } catch { widgetK8s.classList.remove("visible"); }
+    }
+
+    async function updateAwsWidget() {
+      try {
+        const profile = await window.terminator.getAwsProfile();
+        if (profile) {
+          widgetAws.innerHTML = `<span class="widget-icon">\u2601</span> <span class="widget-label">${escapeHtml(profile)}</span>`;
+          widgetAws.classList.add("visible");
+        } else {
+          widgetAws.classList.remove("visible");
+        }
+      } catch { widgetAws.classList.remove("visible"); }
+    }
+
+    async function updateNodeWidget() {
+      try {
+        const ver = await window.terminator.getNodeVersion();
+        if (ver) {
+          widgetNode.innerHTML = `<span class="widget-icon">\u25CF</span> ${escapeHtml(ver)}`;
+          widgetNode.classList.add("visible");
+        } else {
+          widgetNode.classList.remove("visible");
+        }
+      } catch { widgetNode.classList.remove("visible"); }
+    }
+
+    // Refresh context-sensitive widgets periodically
+    setInterval(() => { updateK8sWidget(); updateAwsWidget(); }, 30000);
+    updateNodeWidget(); // once on startup
+
+    // ============================================================
+    // ENHANCED PIP (Picture-in-Picture)
+    // ============================================================
+    const _origToggleFloating = toggleFloating;
+    toggleFloating = function(id) {
+      const targetId = id || activeId;
+      if (!targetId) return;
+      const pane = panes.get(targetId);
+      if (!pane) return;
+
+      if (floatingPanes.has(targetId)) {
+        // Restore — remove PiP controls
+        const controls = pane.el.querySelector(".pip-controls");
+        if (controls) controls.remove();
+        const slider = pane.el.querySelector(".pip-opacity-slider");
+        if (slider) slider.remove();
+        pane.el.style.opacity = "";
+        pane.el.classList.remove("pip-compact");
+        pane.el.classList.remove("floating");
+        pane.el.style.width = "";
+        pane.el.style.height = "";
+        pane.el.style.left = "";
+        pane.el.style.top = "";
+        pane.el.style.right = "";
+        pane.el.style.bottom = "";
+        floatingPanes.delete(targetId);
+        renderLayout();
+        showToast("Pane restored");
+      } else {
+        // Float with enhanced PiP
+        floatingPanes.add(targetId);
+        pane.el.classList.add("floating");
+        pane.el.style.width = "480px";
+        pane.el.style.height = "320px";
+        pane.el.style.right = "20px";
+        pane.el.style.bottom = "50px";
+        pane.el.style.left = "auto";
+        pane.el.style.top = "auto";
+        document.body.appendChild(pane.el);
+
+        // Add PiP control bar
+        const controls = document.createElement("div");
+        controls.className = "pip-controls";
+        controls.innerHTML = `
+          <button class="pip-compact-btn" title="Compact mode">\u25A1</button>
+          <button class="pip-snap-tl" title="Snap top-left">\u2196</button>
+          <button class="pip-snap-tr" title="Snap top-right">\u2197</button>
+          <button class="pip-snap-bl" title="Snap bottom-left">\u2199</button>
+          <button class="pip-snap-br" title="Snap bottom-right">\u2198</button>
+          <button class="pip-restore" title="Restore">\u21A9</button>
+        `;
+        controls.querySelector(".pip-compact-btn").addEventListener("click", (e) => {
+          e.stopPropagation();
+          pane.el.classList.toggle("pip-compact");
+          if (pane.el.classList.contains("pip-compact")) {
+            pane.el.style.width = "320px";
+            pane.el.style.height = "200px";
+          } else {
+            pane.el.style.width = "480px";
+            pane.el.style.height = "320px";
+          }
+          pane.fitAddon.fit();
+        });
+        const snapPositions = {
+          "pip-snap-tl": { top: "50px", left: "20px", right: "auto", bottom: "auto" },
+          "pip-snap-tr": { top: "50px", right: "20px", left: "auto", bottom: "auto" },
+          "pip-snap-bl": { bottom: "50px", left: "20px", right: "auto", top: "auto" },
+          "pip-snap-br": { bottom: "50px", right: "20px", left: "auto", top: "auto" },
+        };
+        for (const [cls, pos] of Object.entries(snapPositions)) {
+          controls.querySelector(`.${cls}`).addEventListener("click", (e) => {
+            e.stopPropagation();
+            Object.assign(pane.el.style, pos);
+          });
+        }
+        controls.querySelector(".pip-restore").addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleFloating(targetId);
+        });
+        pane.el.querySelector(".pane-header").after(controls);
+
+        // Opacity slider
+        const slider = document.createElement("input");
+        slider.type = "range";
+        slider.className = "pip-opacity-slider";
+        slider.min = "30";
+        slider.max = "100";
+        slider.value = "100";
+        slider.addEventListener("input", () => {
+          pane.el.style.opacity = parseInt(slider.value) / 100;
+        });
+        pane.el.appendChild(slider);
+
+        makeDraggable(pane.el, pane.el.querySelector(".pane-header"));
+        pane.fitAddon.fit();
+        showToast("PiP mode — drag to move, use controls to snap");
+      }
+    };
+
+    // ============================================================
+    // QUICK ACTIONS ON TERMINAL OUTPUT
+    // ============================================================
+    const quickActionMenuEl = document.createElement("div");
+    quickActionMenuEl.className = "quick-action-menu";
+    quickActionMenuEl.id = "quick-action-menu";
+    document.body.appendChild(quickActionMenuEl);
+
+    // Patterns for detection
+    const QA_PATTERNS = {
+      ipv4: /\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\b/,
+      port: /(?:localhost|127\.0\.0\.1|0\.0\.0\.0):(\d{2,5})\b/,
+      filepath: /(?:^|\s)((?:\/[\w.\-]+)+(?:\.[\w]+)?)/,
+      dockerId: /\b([0-9a-f]{12,64})\b/,
+      url: /https?:\/\/[^\s'">\]]+/,
+      pid: /\bPID[:\s]+(\d{2,7})\b/i,
+    };
+
+    function detectQuickActions(text) {
+      const actions = [];
+      const trimmed = text.trim();
+      if (!trimmed) return actions;
+
+      // URL detection
+      const urlMatch = trimmed.match(QA_PATTERNS.url);
+      if (urlMatch) {
+        actions.push({ type: "url", value: urlMatch[0], label: "Open URL", icon: "\uD83C\uDF10",
+          action: () => window.open(urlMatch[0], "_blank") });
+        actions.push({ type: "url", value: urlMatch[0], label: "Copy URL", icon: "\uD83D\uDCCB",
+          action: () => { navigator.clipboard.writeText(urlMatch[0]); showToast("Copied URL"); } });
+      }
+
+      // IP address
+      const ipMatch = trimmed.match(QA_PATTERNS.ipv4);
+      if (ipMatch && !urlMatch) {
+        const ip = ipMatch[1];
+        actions.push({ type: "ip", value: ip, label: `Ping ${ip}`, icon: "\uD83C\uDFD3",
+          action: async () => { const id = await addTerminal(); setTimeout(() => window.terminator.sendInput(id, `ping -c 4 ${ip}\n`), 200); } });
+        actions.push({ type: "ip", value: ip, label: `SSH to ${ip}`, icon: "\uD83D\uDD12",
+          action: async () => { const id = await addTerminal(); setTimeout(() => window.terminator.sendInput(id, `ssh ${ip}\n`), 200); } });
+        actions.push({ type: "ip", value: ip, label: "Copy IP", icon: "\uD83D\uDCCB",
+          action: () => { navigator.clipboard.writeText(ip); showToast("Copied IP"); } });
+      }
+
+      // Port (localhost:PORT pattern)
+      const portMatch = trimmed.match(QA_PATTERNS.port);
+      if (portMatch) {
+        const port = portMatch[1];
+        actions.push({ type: "port", value: `:${port}`, label: `Open localhost:${port}`, icon: "\uD83C\uDF10",
+          action: () => window.open(`http://localhost:${port}`, "_blank") });
+        actions.push({ type: "port", value: `:${port}`, label: `Kill process on :${port}`, icon: "\u274C",
+          action: async () => {
+            const ports = await window.terminator.listPorts();
+            const match = ports.find(p => p.port === port);
+            if (match) { await window.terminator.killPort(match.pid); showToast(`Killed PID ${match.pid}`); }
+            else showToast("Process not found on this port");
+          }});
+      }
+
+      // File path
+      const pathMatch = trimmed.match(QA_PATTERNS.filepath);
+      if (pathMatch && pathMatch[1].length > 3) {
+        const fp = pathMatch[1];
+        actions.push({ type: "path", value: fp, label: "Open in editor", icon: "\uD83D\uDCDD",
+          action: () => window.terminator.openInEditor(fp) });
+        actions.push({ type: "path", value: fp, label: "Preview file", icon: "\uD83D\uDC41",
+          action: () => showFilePreview(fp) });
+        actions.push({ type: "path", value: fp, label: "cd to directory", icon: "\uD83D\uDCC2",
+          action: () => {
+            const dir = fp.replace(/\/[^/]+$/, "") || fp;
+            if (activeId) window.terminator.sendInput(activeId, `cd ${dir}\n`);
+          }});
+        actions.push({ type: "path", value: fp, label: "Copy path", icon: "\uD83D\uDCCB",
+          action: () => { navigator.clipboard.writeText(fp); showToast("Copied path"); } });
+      }
+
+      // Docker container ID (12+ hex chars)
+      const dockerMatch = trimmed.match(QA_PATTERNS.dockerId);
+      if (dockerMatch && dockerMatch[1].length >= 12 && /^[0-9a-f]+$/.test(dockerMatch[1])) {
+        const cid = dockerMatch[1].slice(0, 12);
+        actions.push({ type: "container", value: cid, label: `Exec into ${cid}`, icon: "\uD83D\uDC33",
+          action: async () => { const id = await addTerminal(); setTimeout(() => window.terminator.sendInput(id, `docker exec -it ${cid} sh\n`), 200); } });
+        actions.push({ type: "container", value: cid, label: `Logs ${cid}`, icon: "\uD83D\uDCDC",
+          action: async () => { const id = await addTerminal(); setTimeout(() => window.terminator.sendInput(id, `docker logs -f ${cid}\n`), 200); } });
+        actions.push({ type: "container", value: cid, label: `Stop ${cid}`, icon: "\u23F9",
+          action: async () => { const id = await addTerminal(); setTimeout(() => window.terminator.sendInput(id, `docker stop ${cid}\n`), 200); } });
+      }
+
+      // PID
+      const pidMatch = trimmed.match(QA_PATTERNS.pid);
+      if (pidMatch) {
+        const pid = pidMatch[1];
+        actions.push({ type: "pid", value: `PID ${pid}`, label: `Kill PID ${pid}`, icon: "\u274C",
+          action: async () => { await window.terminator.killPort(pid); showToast(`Killed PID ${pid}`); } });
+      }
+
+      return actions;
+    }
+
+    function showQuickActionMenu(x, y, paneId) {
+      const pane = panes.get(paneId);
+      if (!pane) return;
+
+      // Get selected text or try to get the line under cursor
+      const selection = pane.term.getSelection();
+      const text = selection || "";
+
+      if (!text) return null; // No text selected, fall through to normal context menu
+
+      const actions = detectQuickActions(text);
+      if (actions.length === 0) return null; // No patterns detected
+
+      quickActionMenuEl.innerHTML = "";
+
+      // Header with detected type
+      const typeLabel = actions[0].type.toUpperCase();
+      const header = document.createElement("div");
+      header.className = "quick-action-header";
+      header.textContent = `DETECTED: ${typeLabel}`;
+      quickActionMenuEl.appendChild(header);
+
+      // Show the value
+      const valueEl = document.createElement("div");
+      valueEl.className = "quick-action-value";
+      valueEl.textContent = actions[0].value;
+      quickActionMenuEl.appendChild(valueEl);
+
+      // Action items
+      for (const act of actions) {
+        const item = document.createElement("div");
+        item.className = "quick-action-item";
+        item.innerHTML = `<span class="qa-icon">${act.icon}</span><span>${act.label}</span>`;
+        item.addEventListener("click", () => {
+          quickActionMenuEl.classList.remove("visible");
+          act.action();
+        });
+        quickActionMenuEl.appendChild(item);
+      }
+
+      quickActionMenuEl.classList.add("visible");
+      // Position
+      const menuRect = quickActionMenuEl.getBoundingClientRect();
+      const viewW = window.innerWidth, viewH = window.innerHeight;
+      const finalX = (x + menuRect.width > viewW) ? Math.max(0, viewW - menuRect.width - 4) : x;
+      const finalY = (y + menuRect.height > viewH) ? Math.max(0, viewH - menuRect.height - 4) : y;
+      quickActionMenuEl.style.left = finalX + "px";
+      quickActionMenuEl.style.top = finalY + "px";
+      return true; // Signal that we showed the quick action menu
+    }
+
+    // Close quick action menu on click
+    document.addEventListener("click", () => quickActionMenuEl.classList.remove("visible"));
+
+    // Hook into the existing context menu to add quick actions
+    const _origShowContextMenu = showContextMenu;
+    showContextMenu = function(x, y, paneId) {
+      // Try quick actions first if there's a selection
+      const pane = panes.get(paneId);
+      if (pane) {
+        const selection = pane.term.getSelection();
+        if (selection && selection.trim().length > 2) {
+          const actions = detectQuickActions(selection);
+          if (actions.length > 0) {
+            // Show combined menu: quick actions + regular items
+            if (showQuickActionMenu(x, y, paneId)) return;
+          }
+        }
+      }
+      // Fall back to normal context menu
+      _origShowContextMenu(x, y, paneId);
+    };
+
+    // ============================================================
+    // STARTUP TASKS
+    // ============================================================
+    let startupTasks = []; // { name, autoRun, steps: [{ cwd, command, delay }] }
+
+    async function loadStartupTasks() {
+      try { const saved = await window.terminator.loadStartupTasks(); if (Array.isArray(saved)) startupTasks = saved; } catch {}
+    }
+
+    function openStartupTasks() {
+      document.getElementById("startup-tasks-overlay").classList.add("visible");
+      renderStartupTasksList();
+    }
+
+    function closeStartupTasks() {
+      document.getElementById("startup-tasks-overlay").classList.remove("visible");
+      if (activeId && panes.has(activeId)) panes.get(activeId).term.focus();
+    }
+
+    function renderStartupTasksList() {
+      const body = document.getElementById("startup-tasks-body");
+      body.innerHTML = "";
+      if (startupTasks.length === 0) {
+        body.innerHTML = '<div class="startup-tasks-empty">No startup tasks defined.<br>Create one to auto-open panes and run commands on launch.</div>';
+        return;
+      }
+      startupTasks.forEach((task, i) => {
+        const stepDesc = task.steps.map(s => {
+          const parts = [];
+          if (s.cwd) parts.push(s.cwd.replace(/^\/Users\/[^/]+/, "~"));
+          if (s.command) parts.push(s.command);
+          return parts.join(": ") || "empty pane";
+        }).join(" \u2192 ");
+
+        const item = document.createElement("div");
+        item.className = "startup-task-item";
+        item.innerHTML = `
+          <div class="startup-task-info">
+            <div class="startup-task-name">${escapeHtml(task.name)}</div>
+            <div class="startup-task-desc">${task.steps.length} pane${task.steps.length !== 1 ? "s" : ""}: ${escapeHtml(stepDesc)}</div>
+          </div>
+          ${task.autoRun ? '<span class="startup-task-auto">AUTO</span>' : ''}
+          <div class="startup-task-actions">
+            <button class="run" title="Run now">\u25B6</button>
+            <button class="auto" title="Toggle auto-run">${task.autoRun ? "\u2713 Auto" : "Auto"}</button>
+            <button class="edit" title="Edit">\u270E</button>
+            <button class="danger" title="Delete">&times;</button>
+          </div>
+        `;
+        item.querySelector(".run").addEventListener("click", (e) => { e.stopPropagation(); runStartupTask(task); });
+        item.querySelector(".auto").addEventListener("click", (e) => {
+          e.stopPropagation();
+          task.autoRun = !task.autoRun;
+          window.terminator.saveStartupTasks(startupTasks);
+          renderStartupTasksList();
+          showToast(task.autoRun ? `"${task.name}" will auto-run on launch` : `"${task.name}" auto-run disabled`);
+        });
+        item.querySelector(".edit").addEventListener("click", (e) => { e.stopPropagation(); editStartupTask(i); });
+        item.querySelector(".danger").addEventListener("click", (e) => {
+          e.stopPropagation();
+          startupTasks.splice(i, 1);
+          window.terminator.saveStartupTasks(startupTasks);
+          renderStartupTasksList();
+          showToast("Startup task deleted");
+        });
+        item.addEventListener("click", () => runStartupTask(task));
+        body.appendChild(item);
+      });
+    }
+
+    async function runStartupTask(task) {
+      closeStartupTasks();
+      showToast(`Running "${task.name}"...`);
+      for (let si = 0; si < task.steps.length; si++) {
+        const step = task.steps[si];
+        const id = await addTerminal(step.cwd || null);
+        if (step.command) {
+          const delay = step.delay || 300;
+          setTimeout(() => {
+            if (panes.has(id)) window.terminator.sendInput(id, step.command + "\n");
+          }, delay);
+        }
+        // Small delay between panes to let them initialize
+        if (si < task.steps.length - 1) await new Promise(r => setTimeout(r, 200));
+      }
+      showToast(`"${task.name}" started (${task.steps.length} panes)`);
+    }
+
+    function editStartupTask(index) {
+      const isNew = index < 0;
+      const task = isNew ? { name: "", autoRun: false, steps: [{ cwd: "", command: "", delay: 300 }] } : JSON.parse(JSON.stringify(startupTasks[index]));
+
+      if (_paletteCleanup) { _paletteCleanup(); _paletteCleanup = null; }
+      const overlay = document.getElementById("palette-overlay");
+      const input = document.getElementById("palette-input");
+      const results = document.getElementById("palette-results");
+      overlay.classList.add("visible");
+      input.placeholder = isNew ? "Task name (e.g., 'Dev Environment')..." : `Editing: ${task.name}`;
+      input.value = task.name;
+      input.focus();
+
+      function renderEditor() {
+        results.innerHTML = "";
+        // Steps
+        task.steps.forEach((step, si) => {
+          const el = document.createElement("div");
+          el.className = "palette-item";
+          el.style.cssText = "flex-direction:column;align-items:stretch;padding:10px 18px;gap:6px";
+          el.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:10px;color:var(--t-fg);opacity:0.4;font-weight:600">PANE ${si + 1}</span>
+              <button style="background:none;border:none;color:#ff453a;cursor:pointer;font-size:12px;padding:2px 6px" class="step-del">&times;</button>
+            </div>
+            <div style="display:flex;gap:6px">
+              <input class="step-cwd" value="${escapeHtml(step.cwd || "")}" placeholder="Working directory (optional)" style="flex:1;background:var(--t-bg);border:1px solid var(--t-border);border-radius:4px;color:var(--t-fg);font-size:11px;padding:5px 8px;outline:none;font-family:'SF Mono',monospace" />
+              <input class="step-cmd" value="${escapeHtml(step.command || "")}" placeholder="Command to run (optional)" style="flex:1;background:var(--t-bg);border:1px solid var(--t-border);border-radius:4px;color:var(--t-fg);font-size:11px;padding:5px 8px;outline:none;font-family:'SF Mono',monospace" />
+            </div>
+          `;
+          el.querySelector(".step-cwd").addEventListener("change", (e) => { step.cwd = e.target.value.trim(); });
+          el.querySelector(".step-cmd").addEventListener("change", (e) => { step.command = e.target.value.trim(); });
+          el.querySelector(".step-del").addEventListener("click", () => {
+            if (task.steps.length > 1) { task.steps.splice(si, 1); renderEditor(); }
+          });
+          results.appendChild(el);
+        });
+
+        // Add step button
+        const addEl = document.createElement("div");
+        addEl.className = "palette-item";
+        addEl.style.cssText = "justify-content:center;color:var(--t-accent);font-size:12px";
+        addEl.innerHTML = `<span>+ Add Pane</span>`;
+        addEl.addEventListener("click", () => {
+          task.steps.push({ cwd: "", command: "", delay: 300 });
+          renderEditor();
+        });
+        results.appendChild(addEl);
+
+        // Save button
+        const saveEl = document.createElement("div");
+        saveEl.className = "palette-item";
+        saveEl.style.cssText = "justify-content:center;margin-top:8px;border-top:1px solid var(--t-border);padding-top:12px";
+        saveEl.innerHTML = `<button style="background:var(--t-accent);border:none;color:#fff;padding:8px 24px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500">${isNew ? "Create Task" : "Save Changes"}</button>`;
+        saveEl.querySelector("button").addEventListener("click", () => {
+          // Read all step inputs
+          const cwdInputs = results.querySelectorAll(".step-cwd");
+          const cmdInputs = results.querySelectorAll(".step-cmd");
+          cwdInputs.forEach((inp, i) => { if (task.steps[i]) task.steps[i].cwd = inp.value.trim(); });
+          cmdInputs.forEach((inp, i) => { if (task.steps[i]) task.steps[i].command = inp.value.trim(); });
+
+          task.name = input.value.trim() || `Task ${startupTasks.length + 1}`;
+          if (isNew) startupTasks.push(task);
+          else startupTasks[index] = task;
+          window.terminator.saveStartupTasks(startupTasks);
+          overlay.classList.remove("visible");
+          input.placeholder = "Type a command...";
+          renderStartupTasksList();
+          showToast(isNew ? `Created "${task.name}"` : `Updated "${task.name}"`);
+        });
+        results.appendChild(saveEl);
+      }
+      renderEditor();
+
+      const handler = (e) => {
+        if (e.key === "Escape") {
+          overlay.classList.remove("visible");
+          input.placeholder = "Type a command...";
+          input.removeEventListener("keydown", handler);
+        }
+      };
+      input.addEventListener("keydown", handler);
+      _paletteCleanup = () => { input.removeEventListener("keydown", handler); };
+    }
+
+    document.getElementById("startup-add-btn").addEventListener("click", () => editStartupTask(-1));
+    document.getElementById("startup-close-btn").addEventListener("click", closeStartupTasks);
+    document.getElementById("startup-tasks-overlay").addEventListener("click", (e) => {
+      if (e.target === document.getElementById("startup-tasks-overlay")) closeStartupTasks();
+    });
+
+    // Auto-run startup tasks on launch (called from INIT)
+    async function runAutoStartupTasks() {
+      const autoTasks = startupTasks.filter(t => t.autoRun);
+      if (autoTasks.length === 0) return false;
+      for (const task of autoTasks) {
+        await runStartupTask(task);
+      }
+      return true;
+    }
+
+    // ============================================================
+    // REGISTER NEW COMMANDS IN PALETTE
+    // ============================================================
+    commands.push(
+      { label: "Secrets Vault", action: () => openSecretsPanel(), category: "Tools" },
+      { label: "Startup Tasks", action: () => openStartupTasks(), category: "Tools" },
+      { label: "Float Pane (Enhanced PiP)", action: () => toggleFloating(), category: "Tools" },
+    );
 
     // ============================================================
     // INIT
@@ -5035,7 +6134,7 @@
           window.terminator.loadSession(),
           window.terminator.loadSettings(),
         ]);
-        await Promise.all([loadRecentDirs(), loadSshBookmarks(), loadNotes(), loadBookmarks(), loadPipelinesData(), loadCmdBookmarksData()]);
+        await Promise.all([loadRecentDirs(), loadSshBookmarks(), loadNotes(), loadBookmarks(), loadPipelinesData(), loadCmdBookmarksData(), loadSecretsVault(), loadStartupTasks()]);
 
         // Apply settings
         if (savedSettings) {
@@ -5119,7 +6218,11 @@
           const first = [...panes.keys()][0];
           if (first) setActive(first);
         } else {
-          const id = await addTerminal();
+          // Try auto-startup tasks before creating a default terminal
+          const didAutoStart = await runAutoStartupTasks();
+          if (!didAutoStart) {
+            const id = await addTerminal();
+          }
         }
         applyTheme(currentThemeIdx);
         updateWelcomeScreen();
@@ -5133,24 +6236,14 @@
         // Load plugins
         await loadPlugins();
 
-        // Refresh welcome theme dropdown with plugin themes
-        const welcomeThemeSelect = document.getElementById("welcome-theme-select");
-        if (welcomeThemeSelect) {
-          welcomeThemeSelect.innerHTML = "";
-          themes.forEach((t, i) => {
-            const opt = document.createElement("option");
-            opt.value = i; opt.textContent = t.name;
-            if (i === currentThemeIdx) opt.selected = true;
-            welcomeThemeSelect.appendChild(opt);
-          });
-        }
+        // Refresh all theme dropdowns with plugin themes
+        _refreshThemeUIs();
 
         // Re-apply saved theme by name (plugins may have added it after init)
         if (_savedThemeName) {
           const savedIdx = themes.findIndex(t => t.name === _savedThemeName);
           if (savedIdx >= 0 && savedIdx !== currentThemeIdx) {
             applyTheme(savedIdx);
-          } else {
           }
         }
 
@@ -5158,11 +6251,27 @@
         if (ideMode) setTimeout(() => updateIdeSidebar(), 200);
         // Initial bottom bar update
         setTimeout(() => updateBottomBar(), 500);
+        // Initial status bar widget update
+        setTimeout(() => { updateK8sWidget(); updateAwsWidget(); }, 1000);
       } catch (err) {
         console.error("Init error:", err);
         try { await addTerminal(); updateWelcomeScreen(); } catch {}
       }
     })();
+
+    // ============================================================
+    // CLEANUP ON UNLOAD (prevent interval leaks on renderer reload)
+    // ============================================================
+    const _globalIntervals = [];
+    const _origSetInterval = window.setInterval;
+    // No need to override globally — just track on unload
+    window.addEventListener("beforeunload", () => {
+      // Clear all watch timers
+      for (const [, w] of watchTimers) clearInterval(w.timer);
+      watchTimers.clear();
+      // Clear auto-save timer
+      if (autoSaveTimer) clearInterval(autoSaveTimer);
+    });
 
     // ============================================================
     // EXPOSE INTERNALS FOR CLI MULTIPLEXER SOCKET

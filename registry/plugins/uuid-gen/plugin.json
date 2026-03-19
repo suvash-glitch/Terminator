@@ -1,0 +1,1 @@
+{"name":"uuid-gen","version":"1.0.0","description":"Generate a UUID using uuidgen","type":"command","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}

@@ -1,0 +1,9 @@
+{
+  "name": "synthwave-84",
+  "version": "1.0.0",
+  "description": "Retro neon synthwave theme inspired by the '80s aesthetic",
+  "type": "theme",
+  "main": "index.js",
+  "author": "Terminator",
+  "homepage": "https://github.com/suvash-glitch/Terminator"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "gruvbox-dark",
+  "version": "1.0.0",
+  "description": "Warm retro groove color scheme with earthy tones",
+  "type": "theme",
+  "main": "index.js",
+  "author": "Terminator",
+  "homepage": "https://github.com/suvash-glitch/Terminator"
+}
