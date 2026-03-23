@@ -3900,6 +3900,50 @@
       });
     });
 
+    // --- Import .sh ---
+    document.getElementById("pipeline-import-sh").addEventListener("click", async () => {
+      const result = await window.terminator.pickShFile();
+      if (!result || result.canceled) return;
+
+      // Parse shell script into commands
+      const lines = result.content.split("\n");
+      const commands = [];
+      let multiLine = "";
+      for (const raw of lines) {
+        const trimmed = raw.trim();
+        // Skip empty lines, comments, and shebang
+        if (!trimmed || trimmed.startsWith("#")) continue;
+        // Handle line continuations (trailing backslash)
+        if (trimmed.endsWith("\\")) {
+          multiLine += trimmed.slice(0, -1).trim() + " ";
+          continue;
+        }
+        if (multiLine) {
+          commands.push(multiLine + trimmed);
+          multiLine = "";
+        } else {
+          commands.push(trimmed);
+        }
+      }
+      if (multiLine) commands.push(multiLine.trim());
+      if (commands.length === 0) { showToast("No commands found in script"); return; }
+
+      // Create pipeline nodes laid out vertically
+      plNodes = []; plEdges = []; plSelectedId = null;
+      plNextId = 1;
+      plName = result.name || "Imported Script";
+      for (let i = 0; i < commands.length; i++) {
+        plNodes.push({ id: plNextId++, command: commands[i], status: "pending", output: "", x: 0, y: i * 120 });
+      }
+      // Chain nodes sequentially
+      for (let i = 1; i < plNodes.length; i++) {
+        plEdges.push({ from: plNodes[i - 1].id, to: plNodes[i].id });
+      }
+      plCenterView();
+      plRender();
+      showToast(`Imported ${commands.length} steps from "${result.name}.sh"`);
+    });
+
     // --- Clear ---
     document.getElementById("pipeline-clear").addEventListener("click", () => {
       plNodes = []; plEdges = []; plSelectedId = null; plNextId = 1; plName = "Untitled";

@@ -43,6 +43,7 @@ contextBridge.exposeInMainWorld("terminator", {
   dockerPsAll: () => ipcRenderer.invoke("docker-ps-all"),
   getTerminalEnv: (id) => ipcRenderer.invoke("get-terminal-env", id),
   readFile: (filePath, maxBytes) => ipcRenderer.invoke("read-file", filePath, maxBytes),
+  pickShFile: () => ipcRenderer.invoke("pick-sh-file"),
   saveBookmarks: (data) => ipcRenderer.send("save-bookmarks", data),
   loadBookmarks: () => ipcRenderer.invoke("load-bookmarks"),
   saveProjects: (data) => ipcRenderer.send("save-projects", data),

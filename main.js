@@ -1829,6 +1829,20 @@ ipcMain.handle("download-and-install-termext", async (_, { url, id }) => {
   }
 });
 
+// Open file dialog to pick a shell script
+ipcMain.handle("pick-sh-file", async () => {
+  const { dialog } = require("electron");
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: "Import Shell Script",
+    filters: [{ name: "Shell Scripts", extensions: ["sh", "bash", "zsh"] }],
+    properties: ["openFile"],
+  });
+  if (result.canceled || !result.filePaths.length) return { canceled: true };
+  const content = fs.readFileSync(result.filePaths[0], "utf-8");
+  const name = path.basename(result.filePaths[0], path.extname(result.filePaths[0]));
+  return { content, name };
+});
+
 // Open file dialog to pick a .termext package
 ipcMain.handle("pick-termext-file", async () => {
   const { dialog } = require("electron");
