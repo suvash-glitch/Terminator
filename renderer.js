@@ -249,17 +249,16 @@
       if (fitRAF) cancelAnimationFrame(fitRAF);
       fitRAF = requestAnimationFrame(() => {
         fitRAF = null;
-        // Use pre-saved positions if available, otherwise capture current state
+        // Capture line-based scroll state (stable across resize, unlike pixel scrollTop)
         const scrollState = pendingSavedScroll || new Map();
         if (!pendingSavedScroll) {
           for (const [id, pane] of panes) {
+            const buf = pane.term.buffer.active;
             const viewport = pane.el.querySelector(".xterm-viewport");
-            if (viewport) {
-              scrollState.set(id, {
-                scrollTop: viewport.scrollTop,
-                atBottom: viewport.scrollTop >= viewport.scrollHeight - viewport.clientHeight - 10
-              });
-            }
+            const atBottom = viewport
+              ? viewport.scrollTop >= viewport.scrollHeight - viewport.clientHeight - 10
+              : true;
+            scrollState.set(id, { viewportY: buf.viewportY, atBottom });
           }
         }
         pendingSavedScroll = null;
@@ -271,35 +270,32 @@
           } catch {}
         }
 
-        // Restore scroll positions after all fits are done
-        // Use a second rAF to ensure xterm has finished rendering
-        requestAnimationFrame(() => {
-          for (const [id, pos] of scrollState) {
-            const pane = panes.get(id);
-            if (!pane) continue;
-            const viewport = pane.el.querySelector(".xterm-viewport");
-            if (!viewport) continue;
-            if (pos.atBottom) {
-              pane.term.scrollToBottom();
-            } else {
-              viewport.scrollTop = pos.scrollTop;
-            }
+        // Restore scroll positions after fit using line offsets
+        for (const [id, pos] of scrollState) {
+          const pane = panes.get(id);
+          if (!pane) continue;
+          if (pos.atBottom) {
+            pane.term.scrollToBottom();
+          } else {
+            // scrollToLine uses the buffer line index — stable across row changes
+            pane.term.scrollToLine(pos.viewportY);
           }
-        });
+        }
       });
     }
 
     function renderLayout() {
-      // Save scroll positions before DOM manipulation (prevents scroll-to-top bug)
+      // Save line-based scroll positions before DOM manipulation (prevents scroll-to-top bug)
+      // Using buffer.viewportY (line offset) instead of pixel scrollTop because pixel
+      // values become invalid after DOM detach/reattach and terminal resize
       const scrollPositions = new Map();
       for (const [id, pane] of panes) {
+        const buf = pane.term.buffer.active;
         const viewport = pane.el.querySelector(".xterm-viewport");
-        if (viewport) {
-          scrollPositions.set(id, {
-            scrollTop: viewport.scrollTop,
-            atBottom: viewport.scrollTop >= viewport.scrollHeight - viewport.clientHeight - 10
-          });
-        }
+        const atBottom = viewport
+          ? viewport.scrollTop >= viewport.scrollHeight - viewport.clientHeight - 10
+          : true;
+        scrollPositions.set(id, { viewportY: buf.viewportY, atBottom });
       }
       // Detach pane elements before clearing to preserve xterm state
       for (const [, pane] of panes) {
