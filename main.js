@@ -504,7 +504,7 @@ ipcMain.handle("check-for-updates", async () => {
 });
 
 // Create terminal with optional cwd
-ipcMain.handle("create-terminal", (_, cwd) => {
+ipcMain.handle("create-terminal", (_, cwd, restoreCmd) => {
   const shellPath = process.platform === "win32"
     ? process.env.COMSPEC || "powershell.exe"
     : process.env.SHELL || "/bin/zsh";
@@ -532,6 +532,14 @@ ipcMain.handle("create-terminal", (_, cwd) => {
       mainWindow.webContents.send("terminal-exit", id, exitCode);
     }
   });
+
+  // Re-launch a saved command after shell initializes (session restore)
+  if (restoreCmd && typeof restoreCmd === "string") {
+    setTimeout(() => {
+      const p2 = ptys.get(id);
+      if (p2) p2.write(restoreCmd + "\n");
+    }, 500);
+  }
 
   return id;
 });

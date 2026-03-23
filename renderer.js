@@ -670,8 +670,8 @@
       if (pane.color) ind.classList.add(`color-${pane.color}`);
     }
 
-    async function createPaneObj(cwd) {
-      const id = await window.terminator.createTerminal(cwd);
+    async function createPaneObj(cwd, restoreCmd) {
+      const id = await window.terminator.createTerminal(cwd, restoreCmd);
       const el = document.createElement("div"); el.className = "pane";
 
       const header = document.createElement("div"); header.className = "pane-header";
@@ -1231,6 +1231,19 @@
       for (const [id] of panes) {
         const pane = panes.get(id);
         const cwd = await window.terminator.getCwd(id);
+        // Capture the running foreground process (e.g. claude, vim, python)
+        let restoreCmd = null;
+        try {
+          const proc = await window.terminator.getProcessTree(id);
+          if (proc && proc.args) {
+            const shell = (process.env?.SHELL || "").split("/").pop() || "zsh";
+            const comm = (proc.comm || "").split("/").pop();
+            // Save command if it's not just the shell itself
+            if (comm && comm !== shell && comm !== "bash" && comm !== "zsh" && comm !== "fish" && comm !== "sh") {
+              restoreCmd = proc.args;
+            }
+          }
+        } catch {}
         // Compact raw chunks into rawBuffer for serialization
         if (pane._rawChunks && pane._rawChunks.length > 0) {
           pane.rawBuffer = pane._rawChunks.join("").slice(-bufferLimit);
@@ -1242,6 +1255,7 @@
           color: pane.color || "",
           locked: pane.locked || false,
           rawBuffer: pane.rawBuffer || "",
+          restoreCmd: restoreCmd,
         });
       }
       window.terminator.saveSession({
@@ -1273,7 +1287,7 @@
           let failedCount = 0;
           for (const ps of session.paneStates) {
             let id;
-            try { id = await createPaneObj(ps.cwd); } catch (e) {
+            try { id = await createPaneObj(ps.cwd, ps.restoreCmd || null); } catch (e) {
               console.error("Failed to restore pane:", e);
               failedCount++;
               continue;
@@ -6234,7 +6248,7 @@
 
           if (savedSession.version === 2 && savedSession.paneStates?.length > 0) {
             for (const ps of savedSession.paneStates) {
-              const id = await createPaneObj(ps.cwd);
+              const id = await createPaneObj(ps.cwd, ps.restoreCmd || null);
               const pane = panes.get(id);
               if (pane) {
                 // Replay saved scrollback

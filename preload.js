@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("terminator", {
-  createTerminal: (cwd) => ipcRenderer.invoke("create-terminal", cwd),
+  createTerminal: (cwd, restoreCmd) => ipcRenderer.invoke("create-terminal", cwd, restoreCmd),
   sendInput: (id, data) => ipcRenderer.send("terminal-input", id, data),
   resize: (id, cols, rows) => ipcRenderer.send("terminal-resize", id, cols, rows),
   kill: (id) => ipcRenderer.send("terminal-kill", id),
