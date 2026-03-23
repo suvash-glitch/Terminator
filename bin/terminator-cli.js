@@ -7,7 +7,20 @@ const os = require("os");
 const fs = require("fs");
 
 const SOCKET_DIR = path.join(os.homedir(), ".terminator");
-const SOCKET_PATH = path.join(SOCKET_DIR, "terminator.sock");
+
+// Find the most recent active socket (supports multi-instance)
+function findSocketPath() {
+  if (!fs.existsSync(SOCKET_DIR)) return null;
+  const socks = fs.readdirSync(SOCKET_DIR)
+    .filter(f => f.startsWith("terminator-") && f.endsWith(".sock"))
+    .map(f => ({ name: f, path: path.join(SOCKET_DIR, f), mtime: fs.statSync(path.join(SOCKET_DIR, f)).mtimeMs }))
+    .sort((a, b) => b.mtime - a.mtime);
+  // Also check legacy path
+  const legacy = path.join(SOCKET_DIR, "terminator.sock");
+  if (fs.existsSync(legacy)) socks.push({ name: "terminator.sock", path: legacy, mtime: 0 });
+  return socks.length > 0 ? socks[0].path : null;
+}
+const SOCKET_PATH = findSocketPath();
 
 const usage = `
   terminator - Terminal multiplexer CLI
@@ -80,7 +93,7 @@ function parseArgs(argv) {
 
 function sendCommand(cmd) {
   return new Promise((resolve, reject) => {
-    if (!fs.existsSync(SOCKET_PATH)) {
+    if (!SOCKET_PATH || !fs.existsSync(SOCKET_PATH)) {
       reject(new Error("Terminator is not running. Start the app first."));
       return;
     }
@@ -144,7 +157,7 @@ function formatTable(sessions) {
 
 function attachSession(target) {
   return new Promise((resolve, reject) => {
-    if (!fs.existsSync(SOCKET_PATH)) {
+    if (!SOCKET_PATH || !fs.existsSync(SOCKET_PATH)) {
       reject(new Error("Terminator is not running. Start the app first."));
       return;
     }
@@ -436,8 +449,11 @@ async function main() {
 
         const probe = `node -e '
           const net=require("net"),path=require("path"),os=require("os"),fs=require("fs");
-          const SOCK=path.join(os.homedir(),".terminator","terminator.sock");
-          if(!fs.existsSync(SOCK)){console.log(JSON.stringify({error:"Terminator is not running on this host"}));process.exit(0)}
+          const DIR=path.join(os.homedir(),".terminator");
+          let SOCK=null;
+          try{const ss=fs.readdirSync(DIR).filter(f=>f.startsWith("terminator-")&&f.endsWith(".sock")).map(f=>({p:path.join(DIR,f),m:fs.statSync(path.join(DIR,f)).mtimeMs})).sort((a,b)=>b.m-a.m);if(ss.length)SOCK=ss[0].p;}catch{}
+          if(!SOCK){const leg=path.join(DIR,"terminator.sock");if(fs.existsSync(leg))SOCK=leg;}
+          if(!SOCK){console.log(JSON.stringify({error:"Terminator is not running on this host"}));process.exit(0)}
           const c=net.createConnection(SOCK,()=>{c.write(JSON.stringify({action:"list"})+"\\n")});
           let d="";c.on("data",ch=>d+=ch.toString());c.on("end",()=>console.log(d));
           c.on("error",e=>{console.log(JSON.stringify({error:e.message}))});

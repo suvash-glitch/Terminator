@@ -70,21 +70,6 @@ function writeJSON(p, data) {
 }
 
 // ============================================================
-// SINGLE INSTANCE LOCK
-// ============================================================
-const gotTheLock = app.requestSingleInstanceLock();
-if (!gotTheLock) {
-  app.quit();
-} else {
-  app.on("second-instance", () => {
-    if (mainWindow) {
-      if (mainWindow.isMinimized()) mainWindow.restore();
-      mainWindow.show();
-      mainWindow.focus();
-    }
-  });
-}
-
 function createWindow() {
   const windowOpts = {
     width: 1200,
@@ -190,7 +175,7 @@ app.whenReady().then(() => {
 // MULTIPLEXER SOCKET SERVER
 // ============================================================
 const SOCKET_DIR = path.join(os.homedir(), ".terminator");
-const SOCKET_PATH = path.join(SOCKET_DIR, "terminator.sock");
+const SOCKET_PATH = path.join(SOCKET_DIR, `terminator-${process.pid}.sock`);
 let socketServer = null;
 
 function startSocketServer() {
@@ -1104,8 +1089,11 @@ ipcMain.handle("ssh-remote-list", async (_, { host, user, port, password, remote
   // Exits immediately after receiving data to avoid timeout
   const probe = `node -e '
     const net=require("net"),path=require("path"),os=require("os"),fs=require("fs");
-    const SOCK=path.join(os.homedir(),".terminator","terminator.sock");
-    if(!fs.existsSync(SOCK)){console.log(JSON.stringify({error:"Terminator is not running on this host"}));process.exit(0)}
+    const DIR=path.join(os.homedir(),".terminator");
+    let SOCK=null;
+    try{const ss=fs.readdirSync(DIR).filter(f=>f.startsWith("terminator-")&&f.endsWith(".sock")).map(f=>({p:path.join(DIR,f),m:fs.statSync(path.join(DIR,f)).mtimeMs})).sort((a,b)=>b.m-a.m);if(ss.length)SOCK=ss[0].p;}catch{}
+    if(!SOCK){const leg=path.join(DIR,"terminator.sock");if(fs.existsSync(leg))SOCK=leg;}
+    if(!SOCK){console.log(JSON.stringify({error:"Terminator is not running on this host"}));process.exit(0)}
     const c=net.createConnection(SOCK,()=>{c.write(JSON.stringify({action:"list"})+"\\n")});
     let d="";
     c.on("data",ch=>{d+=ch.toString();try{JSON.parse(d);console.log(d);process.exit(0)}catch{}});
