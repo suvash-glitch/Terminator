@@ -1,1 +1,1 @@
-{"name":"decode-base64","version":"1.0.0","description":"Decode base64 from clipboard","type":"command","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}
+{"name":"decode-base64","version":"1.0.0","description":"Decode base64 from clipboard","type":"command","main":"index.js","author":"Shellfire","homepage":"https://github.com/suvash-glitch/Shellfire"}

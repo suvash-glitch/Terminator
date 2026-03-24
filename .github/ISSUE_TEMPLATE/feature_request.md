@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest a new feature or improvement for Terminator
+about: Suggest a new feature or improvement for Shellfire
 title: "[Feature] "
 labels: enhancement
 assignees: ''

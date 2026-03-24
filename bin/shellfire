@@ -1,10 +1,10 @@
 #!/bin/bash
-# Terminator — smart launcher
+# Shellfire — smart launcher
 # If called with a subcommand (list, attach, new, send, kill, rename), run CLI.
 # Otherwise, launch the Electron app.
 
 DIR="$(cd "$(dirname "$0")/.." && pwd)"
-CLI="$DIR/bin/terminator-cli.js"
+CLI="$DIR/bin/shellfire-cli.js"
 
 case "${1:-}" in
   list|ls|attach|new|send|kill|rename|remote|-h|--help|-v|--version)
@@ -12,24 +12,24 @@ case "${1:-}" in
     ;;
   *)
     # Launch Electron app (or focus existing instance)
-    if [ -S "$HOME/.terminator/terminator.sock" ]; then
+    if [ -S "$HOME/.shellfire/shellfire.sock" ]; then
       # App might already be running — try to talk to it
       if node "$CLI" list &>/dev/null; then
         # Already running, bring to front
         if [ $# -eq 0 ]; then
           # Try packaged app name first, then fall back to Electron (dev mode)
-          osascript -e 'tell application "Terminator" to activate' 2>/dev/null \
+          osascript -e 'tell application "Shellfire" to activate' 2>/dev/null \
             || osascript -e 'tell application "Electron" to activate' 2>/dev/null \
             || osascript -e '
               tell application "System Events"
                 set frontmost of (first process whose name contains "Electron") to true
               end tell' 2>/dev/null \
-            || echo "Terminator is running (use 'terminator list' to see sessions)"
+            || echo "Shellfire is running (use 'shellfire list' to see sessions)"
         fi
         exit 0
       fi
     fi
-    echo "Starting Terminator..."
+    echo "Starting Shellfire..."
     cd "$DIR" && npx electron . &>/dev/null &
     disown
     ;;

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Terminator - A terminal multiplexer with grid layout.
+Shellfire - A terminal multiplexer with grid layout.
 
 Keybindings:
   Ctrl+A, c       - Create new terminal pane
@@ -494,4 +494,4 @@ if __name__ == "__main__":
         curses.wrapper(main)
     except KeyboardInterrupt:
         pass
-    print("Terminator exited.")
+    print("Shellfire exited.")

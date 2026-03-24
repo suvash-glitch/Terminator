@@ -1,1 +1,1 @@
-{"name":"auto-rename","version":"1.0.0","description":"Auto-rename pane tabs based on cd/ssh commands","type":"extension","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}
+{"name":"auto-rename","version":"1.0.0","description":"Auto-rename pane tabs based on cd/ssh commands","type":"extension","main":"index.js","author":"Shellfire","homepage":"https://github.com/suvash-glitch/Shellfire"}

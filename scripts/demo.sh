@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 #
-# Terminator Demo Script
+# Shellfire Demo Script
 # ======================
-# Run this script while Terminator is open, then screen-record the app
-# to create a demo GIF or video showcasing Terminator's features.
+# Run this script while Shellfire is open, then screen-record the app
+# to create a demo GIF or video showcasing Shellfire's features.
 #
 # Prerequisites:
-#   - Terminator must be running (the app, not just this script)
-#   - The `terminator` CLI must be in your PATH
-#     (or use the full path: ./bin/terminator)
+#   - Shellfire must be running (the app, not just this script)
+#   - The `shellfire` CLI must be in your PATH
+#     (or use the full path: ./bin/shellfire)
 #
 # Usage:
 #   chmod +x scripts/demo.sh
 #   ./scripts/demo.sh
 #
 # Tip: Use a tool like `kap`, `licecap`, or `asciinema` to record
-# the Terminator window while this script runs.
+# the Shellfire window while this script runs.
 
 set -euo pipefail
 
@@ -42,16 +42,16 @@ info() {
 # Pre-flight check
 # ---------------------------------------------------------------------------
 
-if ! command -v terminator &>/dev/null; then
-  echo "Error: 'terminator' CLI not found in PATH."
-  echo "Make sure Terminator is installed and the CLI is linked."
-  echo "You can also run: node bin/terminator-cli.js"
+if ! command -v shellfire &>/dev/null; then
+  echo "Error: 'shellfire' CLI not found in PATH."
+  echo "Make sure Shellfire is installed and the CLI is linked."
+  echo "You can also run: node bin/shellfire-cli.js"
   exit 1
 fi
 
 echo ""
 echo "  ╔══════════════════════════════════════════╗"
-echo "  ║       Terminator Feature Demo            ║"
+echo "  ║       Shellfire Feature Demo             ║"
 echo "  ║  Start screen-recording now!             ║"
 echo "  ╚══════════════════════════════════════════╝"
 echo ""
@@ -62,8 +62,8 @@ sleep 3
 # ---------------------------------------------------------------------------
 
 step "List current sessions"
-info "Running: terminator list"
-terminator list
+info "Running: shellfire list"
+shellfire list
 sleep "$PAUSE"
 
 # ---------------------------------------------------------------------------
@@ -71,8 +71,8 @@ sleep "$PAUSE"
 # ---------------------------------------------------------------------------
 
 step "Create a named terminal session"
-info "Running: terminator new -t 'frontend'"
-terminator new -t "frontend"
+info "Running: shellfire new -t 'frontend'"
+shellfire new -t "frontend"
 sleep "$PAUSE"
 
 # ---------------------------------------------------------------------------
@@ -80,8 +80,8 @@ sleep "$PAUSE"
 # ---------------------------------------------------------------------------
 
 step "Create another session with a specific working directory"
-info "Running: terminator new -t 'backend' -d ~/Desktop"
-terminator new -t "backend" -d ~/Desktop
+info "Running: shellfire new -t 'backend' -d ~/Desktop"
+shellfire new -t "backend" -d ~/Desktop
 sleep "$PAUSE"
 
 # ---------------------------------------------------------------------------
@@ -89,8 +89,8 @@ sleep "$PAUSE"
 # ---------------------------------------------------------------------------
 
 step "Create a monitoring session"
-info "Running: terminator new -t 'monitor'"
-terminator new -t "monitor"
+info "Running: shellfire new -t 'monitor'"
+shellfire new -t "monitor"
 sleep "$PAUSE"
 
 # ---------------------------------------------------------------------------
@@ -98,8 +98,8 @@ sleep "$PAUSE"
 # ---------------------------------------------------------------------------
 
 step "List all sessions (should show 3 new ones)"
-info "Running: terminator list"
-terminator list
+info "Running: shellfire list"
+shellfire list
 sleep "$PAUSE"
 
 # ---------------------------------------------------------------------------
@@ -109,15 +109,15 @@ sleep "$PAUSE"
 step "Send commands to sessions"
 
 info "Sending 'echo Hello from the frontend!' to 'frontend'"
-terminator send -t "frontend" "echo 'Hello from the frontend!'"
+shellfire send -t "frontend" "echo 'Hello from the frontend!'"
 sleep 1
 
 info "Sending 'ls -la' to 'backend'"
-terminator send -t "backend" "ls -la"
+shellfire send -t "backend" "ls -la"
 sleep 1
 
 info "Sending a system info command to 'monitor'"
-terminator send -t "monitor" "uname -a && echo '---' && uptime"
+shellfire send -t "monitor" "uname -a && echo '---' && uptime"
 sleep "$PAUSE"
 
 # ---------------------------------------------------------------------------
@@ -125,8 +125,8 @@ sleep "$PAUSE"
 # ---------------------------------------------------------------------------
 
 step "Rename a session"
-info "Running: terminator rename -t 'frontend' 'React App'"
-terminator rename -t "frontend" "React App"
+info "Running: shellfire rename -t 'frontend' 'React App'"
+shellfire rename -t "frontend" "React App"
 sleep "$PAUSE"
 
 # ---------------------------------------------------------------------------
@@ -134,8 +134,8 @@ sleep "$PAUSE"
 # ---------------------------------------------------------------------------
 
 step "List sessions to confirm the rename"
-info "Running: terminator list"
-terminator list
+info "Running: shellfire list"
+shellfire list
 sleep "$PAUSE"
 
 # ---------------------------------------------------------------------------
@@ -145,13 +145,13 @@ sleep "$PAUSE"
 step "Simulate a dev workflow in the backend session"
 info "Sending a series of commands to 'backend'"
 
-terminator send -t "backend" "echo '=== Starting backend workflow ==='"
+shellfire send -t "backend" "echo '=== Starting backend workflow ==='"
 sleep 1
-terminator send -t "backend" "echo 'Checking Node version...' && node --version"
+shellfire send -t "backend" "echo 'Checking Node version...' && node --version"
 sleep 1
-terminator send -t "backend" "echo 'Checking npm version...' && npm --version"
+shellfire send -t "backend" "echo 'Checking npm version...' && npm --version"
 sleep 1
-terminator send -t "backend" "echo '=== Workflow complete ==='"
+shellfire send -t "backend" "echo '=== Workflow complete ==='"
 sleep "$PAUSE"
 
 # ---------------------------------------------------------------------------
@@ -162,9 +162,9 @@ step "Start a live process in the monitor session"
 info "Sending 'top -l 1 | head -20' to 'monitor' (macOS) or 'top -bn1 | head -20' (Linux)"
 
 if [[ "$(uname)" == "Darwin" ]]; then
-  terminator send -t "monitor" "top -l 1 | head -20"
+  shellfire send -t "monitor" "top -l 1 | head -20"
 else
-  terminator send -t "monitor" "top -bn1 | head -20"
+  shellfire send -t "monitor" "top -bn1 | head -20"
 fi
 sleep "$PAUSE"
 
@@ -173,9 +173,9 @@ sleep "$PAUSE"
 # ---------------------------------------------------------------------------
 
 step "Focus/attach to the 'React App' session"
-info "Running: terminator attach -t 'React App'"
-info "(This brings that pane into focus in the Terminator UI)"
-terminator attach -t "React App"
+info "Running: shellfire attach -t 'React App'"
+info "(This brings that pane into focus in the Shellfire UI)"
+shellfire attach -t "React App"
 sleep "$PAUSE"
 
 # ---------------------------------------------------------------------------
@@ -184,16 +184,16 @@ sleep "$PAUSE"
 
 step "Clean up: kill demo sessions"
 
-info "Running: terminator kill -t 'React App'"
-terminator kill -t "React App"
+info "Running: shellfire kill -t 'React App'"
+shellfire kill -t "React App"
 sleep 1
 
-info "Running: terminator kill -t 'backend'"
-terminator kill -t "backend"
+info "Running: shellfire kill -t 'backend'"
+shellfire kill -t "backend"
 sleep 1
 
-info "Running: terminator kill -t 'monitor'"
-terminator kill -t "monitor"
+info "Running: shellfire kill -t 'monitor'"
+shellfire kill -t "monitor"
 sleep "$PAUSE"
 
 # ---------------------------------------------------------------------------
@@ -201,7 +201,7 @@ sleep "$PAUSE"
 # ---------------------------------------------------------------------------
 
 step "Final session list (demo sessions removed)"
-terminator list
+shellfire list
 
 # ---------------------------------------------------------------------------
 # Done

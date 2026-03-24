@@ -1,1 +1,1 @@
-{"name":"terminal-recorder","version":"1.0.0","description":"Record and replay terminal sessions","type":"extension","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}
+{"name":"terminal-recorder","version":"1.0.0","description":"Record and replay terminal sessions","type":"extension","main":"index.js","author":"Shellfire","homepage":"https://github.com/suvash-glitch/Shellfire"}

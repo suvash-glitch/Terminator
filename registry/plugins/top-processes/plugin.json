@@ -1,1 +1,1 @@
-{"name":"top-processes","version":"1.0.0","description":"Show top processes by CPU usage","type":"command","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}
+{"name":"top-processes","version":"1.0.0","description":"Show top processes by CPU usage","type":"command","main":"index.js","author":"Shellfire","homepage":"https://github.com/suvash-glitch/Shellfire"}

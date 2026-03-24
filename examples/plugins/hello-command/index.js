@@ -4,7 +4,7 @@ exports.shortcut = "";
 exports.execute = function (context) {
   var pane = context.activePane;
   if (pane) {
-    context.sendInput(pane.id, "echo 'Hello from Terminator plugin!'\n");
+    context.sendInput(pane.id, "echo 'Hello from Shellfire plugin!'\n");
     context.notify("Hello plugin executed!");
   } else {
     context.notify("No active terminal");

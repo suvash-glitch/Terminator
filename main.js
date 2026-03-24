@@ -174,8 +174,8 @@ app.whenReady().then(() => {
 // ============================================================
 // MULTIPLEXER SOCKET SERVER
 // ============================================================
-const SOCKET_DIR = path.join(os.homedir(), ".terminator");
-const SOCKET_PATH = path.join(SOCKET_DIR, `terminator-${process.pid}.sock`);
+const SOCKET_DIR = path.join(os.homedir(), ".shellfire");
+const SOCKET_PATH = path.join(SOCKET_DIR, `shellfire-${process.pid}.sock`);
 let socketServer = null;
 
 function startSocketServer() {
@@ -743,7 +743,7 @@ async function getCrontab() {
 }
 
 function setCrontab(content) {
-  const tmpFile = path.join(app.getPath("temp"), "terminator-crontab.tmp");
+  const tmpFile = path.join(app.getPath("temp"), "shellfire-crontab.tmp");
   fs.writeFileSync(tmpFile, content);
   try {
     execFileSync("crontab", [tmpFile], { timeout: 3000, stdio: ["pipe", "pipe", "pipe"] });
@@ -1041,7 +1041,7 @@ ipcMain.handle("get-process-tree", async (_, id) => {
 // Uses a file descriptor approach to avoid password on disk longer than necessary
 function createAskpassScript(password) {
   const tmpDir = app.getPath("temp");
-  const scriptPath = path.join(tmpDir, `terminator-askpass-${process.pid}-${Date.now()}.sh`);
+  const scriptPath = path.join(tmpDir, `shellfire-askpass-${process.pid}-${Date.now()}.sh`);
   // Escape single quotes in password for the shell script
   const escaped = password.replace(/'/g, "'\\''");
   fs.writeFileSync(scriptPath, `#!/bin/sh\necho '${escaped}'\n`, { mode: 0o700 });
@@ -1064,7 +1064,7 @@ function buildSshEnv(password) {
     ...process.env,
     SSH_ASKPASS: askpassScript,
     SSH_ASKPASS_REQUIRE: "force",
-    DISPLAY: "terminator:0",
+    DISPLAY: "shellfire:0",
   };
   return { env, askpassScript };
 }
@@ -1085,15 +1085,15 @@ ipcMain.handle("ssh-remote-list", async (_, { host, user, port, password, remote
   if (port && port !== 22) sshArgs.push("-p", String(port));
   sshArgs.push(`${user}@${host}`);
 
-  // Node one-liner that queries the remote Terminator socket
+  // Node one-liner that queries the remote Shellfire socket
   // Exits immediately after receiving data to avoid timeout
   const probe = `node -e '
     const net=require("net"),path=require("path"),os=require("os"),fs=require("fs");
-    const DIR=path.join(os.homedir(),".terminator");
+    const DIR=path.join(os.homedir(),".shellfire");
     let SOCK=null;
-    try{const ss=fs.readdirSync(DIR).filter(f=>f.startsWith("terminator-")&&f.endsWith(".sock")).map(f=>({p:path.join(DIR,f),m:fs.statSync(path.join(DIR,f)).mtimeMs})).sort((a,b)=>b.m-a.m);if(ss.length)SOCK=ss[0].p;}catch{}
-    if(!SOCK){const leg=path.join(DIR,"terminator.sock");if(fs.existsSync(leg))SOCK=leg;}
-    if(!SOCK){console.log(JSON.stringify({error:"Terminator is not running on this host"}));process.exit(0)}
+    try{const ss=fs.readdirSync(DIR).filter(f=>f.startsWith("shellfire-")&&f.endsWith(".sock")).map(f=>({p:path.join(DIR,f),m:fs.statSync(path.join(DIR,f)).mtimeMs})).sort((a,b)=>b.m-a.m);if(ss.length)SOCK=ss[0].p;}catch{}
+    if(!SOCK){const leg=path.join(DIR,"shellfire.sock");if(fs.existsSync(leg))SOCK=leg;}
+    if(!SOCK){console.log(JSON.stringify({error:"Shellfire is not running on this host"}));process.exit(0)}
     const c=net.createConnection(SOCK,()=>{c.write(JSON.stringify({action:"list"})+"\\n")});
     let d="";
     c.on("data",ch=>{d+=ch.toString();try{JSON.parse(d);console.log(d);process.exit(0)}catch{}});
@@ -1201,7 +1201,7 @@ ipcMain.handle("ssh-remote-open-all", async (_, { host, user, port, password, se
 ipcMain.handle("ai-chat", async (_, params) => {
   const { messages, apiKey, provider, model } = params;
   if (!apiKey && provider !== "ollama") return { error: "No API key configured" };
-  const systemMsg = "You are a helpful terminal assistant in Terminator. Help with commands, errors, debugging. Be concise. Use code blocks for commands.";
+  const systemMsg = "You are a helpful terminal assistant in Shellfire. Help with commands, errors, debugging. Be concise. Use code blocks for commands.";
   try {
     if (provider === "openai" || provider === "openai-compatible") {
       const baseUrl = params.baseUrl || "https://api.openai.com/v1";
@@ -1345,7 +1345,7 @@ ipcMain.handle("load-cmd-bookmarks", () => readJSON(CMD_BOOKMARKS_PATH, []));
 // ============================================================
 const crypto = require("crypto");
 const SECRETS_PATH = path.join(app.getPath("userData"), "secrets.json");
-const SECRETS_KEY_SEED = os.hostname() + os.userInfo().username + "terminator-vault";
+const SECRETS_KEY_SEED = os.hostname() + os.userInfo().username + "shellfire-vault";
 function getSecretsKey() {
   return crypto.createHash("sha256").update(SECRETS_KEY_SEED).digest();
 }
@@ -1603,7 +1603,7 @@ ipcMain.on("win-close", () => { if (mainWindow) mainWindow.close(); });
 // ============================================================
 // PLUGIN SYSTEM
 // ============================================================
-const PLUGINS_DIR = path.join(os.homedir(), ".terminator", "plugins");
+const PLUGINS_DIR = path.join(os.homedir(), ".shellfire", "plugins");
 
 // Ensure plugins directory exists on startup
 try {
@@ -1655,7 +1655,7 @@ ipcMain.handle("get-plugin-code", (_, pluginName) => {
 // ============================================================
 // MARKETPLACE / PLUGIN REGISTRY
 // ============================================================
-const REGISTRY_URL = "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins.json";
+const REGISTRY_URL = "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins.json";
 let _registryCache = null;
 let _registryCacheTime = 0;
 const REGISTRY_TTL = 5 * 60 * 1000; // 5 minutes
@@ -1878,7 +1878,7 @@ ipcMain.handle("pick-termext-file", async () => {
   const { dialog } = require("electron");
   const result = await dialog.showOpenDialog(mainWindow, {
     title: "Install Extension Package",
-    filters: [{ name: "Terminator Extension", extensions: ["termext", "zip"] }],
+    filters: [{ name: "Shellfire Extension", extensions: ["termext", "zip"] }],
     properties: ["openFile"],
   });
   if (result.canceled || !result.filePaths.length) return { canceled: true };

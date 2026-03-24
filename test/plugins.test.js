@@ -3,7 +3,7 @@ const assert = require('node:assert');
 
 // ============================================================
 // Plugin manifest validation logic
-// (Terminator supports theme and command plugins via plugin.json)
+// (Shellfire supports theme and command plugins via plugin.json)
 // ============================================================
 
 const VALID_PLUGIN_TYPES = ['theme', 'command', 'keybinding'];

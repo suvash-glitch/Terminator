@@ -1,1 +1,1 @@
-{"name":"ip-info","version":"1.0.0","description":"Show IP addresses via ifconfig","type":"command","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}
+{"name":"ip-info","version":"1.0.0","description":"Show IP addresses via ifconfig","type":"command","main":"index.js","author":"Shellfire","homepage":"https://github.com/suvash-glitch/Shellfire"}

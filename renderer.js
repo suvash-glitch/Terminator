@@ -51,13 +51,13 @@
       get skipPermissions() { return skipPermissions; },
       set skipPermissions(val) { skipPermissions = !!val; },
       toggleSkipPermissions() { toggleSkipPermissions(); },
-      sendInput(id, data) { window.terminator.sendInput(id, data); },
-      broadcast(ids, data) { window.terminator.broadcast(ids, data); },
+      sendInput(id, data) { window.shellfire.sendInput(id, data); },
+      broadcast(ids, data) { window.shellfire.broadcast(ids, data); },
       showToast(msg) { showToast(msg); },
       registerCommand(cmd) { commands.push(cmd); },
       get settings() { return settings; },
-      saveSettings() { window.terminator.saveSettings(settings); },
-      ipc: window.terminator,
+      saveSettings() { window.shellfire.saveSettings(settings); },
+      ipc: window.shellfire,
       addSettingsSection(html, onMount) { _extSettingsSections.push({ html, onMount }); },
       addToolbarButton({ id, title, icon, onClick, style }) {
         const btn = document.createElement("button");
@@ -146,6 +146,16 @@
     ];
 
     const paneColors = ["", "red", "green", "yellow", "blue", "purple", "orange"];
+    const paneColorPresets = {
+      "": { label: "Default", bg: null, fg: null, indicator: null },
+      red: { label: "Red", bg: "#2a1215", fg: "#f8c4c4", indicator: "#ff453a" },
+      green: { label: "Green", bg: "#122a15", fg: "#c4f8c8", indicator: "#30d158" },
+      yellow: { label: "Yellow", bg: "#2a2512", fg: "#f8f0c4", indicator: "#ffd60a" },
+      blue: { label: "Blue", bg: "#121a2a", fg: "#c4d4f8", indicator: "#5a9df8" },
+      purple: { label: "Purple", bg: "#1f122a", fg: "#dcc4f8", indicator: "#bf5af2" },
+      orange: { label: "Orange", bg: "#2a1e12", fg: "#f8dcc4", indicator: "#ff9f0a" },
+      cyan: { label: "Cyan", bg: "#122a28", fg: "#c4f8f0", indicator: "#00b8d4" },
+    };
 
     // ============================================================
     // UTILS
@@ -165,10 +175,10 @@
     }
 
     function launchClaude(id) {
-      window.terminator.sendInput(id, getClaudeCommand() + "\n");
+      window.shellfire.sendInput(id, getClaudeCommand() + "\n");
       if (skipPermissions) {
         // Claude Code runs in raw mode — use \r (carriage return) for Enter
-        setTimeout(() => window.terminator.sendInput(id, "/effort max\r"), 3000);
+        setTimeout(() => window.shellfire.sendInput(id, "/effort max\r"), 3000);
       }
     }
 
@@ -213,10 +223,18 @@
         el.style.background = t.ui; el.style.borderColor = t.border;
       });
       document.querySelectorAll(".resize-handle-h, .resize-handle-v").forEach(el => { el.style.background = t.border; });
-      // Terminal themes
-      for (const [, pane] of panes) pane.term.options.theme = t.term;
+      // Terminal themes (preserve per-pane color overrides)
+      for (const [, pane] of panes) {
+        if (pane.termBg && pane.termFg) {
+          pane.term.options.theme = { ...t.term, background: pane.termBg, foreground: pane.termFg };
+          pane.el.querySelector(".pane-body").style.background = pane.termBg;
+        } else {
+          pane.term.options.theme = t.term;
+          pane.el.querySelector(".pane-body").style.background = "";
+        }
+      }
       showToast(`Theme: ${t.name}`);
-      window.terminator.saveConfig({ theme: idx, fontSize: currentFontSize, themeName: t.name });
+      window.shellfire.saveConfig({ theme: idx, fontSize: currentFontSize, themeName: t.name });
       // Also persist in settings for cross-session reliability
       settings.theme = idx;
       settings.themeName = t.name;
@@ -232,7 +250,7 @@
       for (const [, pane] of panes) pane.term.options.fontSize = currentFontSize;
       fitAllTerminals();
       showToast(`Font size: ${currentFontSize}px`);
-      window.terminator.saveConfig({ theme: currentThemeIdx, fontSize: currentFontSize });
+      window.shellfire.saveConfig({ theme: currentThemeIdx, fontSize: currentFontSize });
     }
 
     // ============================================================
@@ -266,7 +284,7 @@
         for (const [id, pane] of panes) {
           try {
             pane.fitAddon.fit();
-            window.terminator.resize(id, pane.term.cols, pane.term.rows);
+            window.shellfire.resize(id, pane.term.cols, pane.term.rows);
           } catch {}
         }
 
@@ -446,7 +464,7 @@
       // IDE mode: split adds the new pane alongside the current one
       if (ideMode) {
         let cwd = null;
-        try { cwd = await window.terminator.getCwd(activeId); } catch {}
+        try { cwd = await window.shellfire.getCwd(activeId); } catch {}
         const newId = await createPaneObj(cwd);
         // Also add to the normal layout for when IDE mode is turned off
         const pos = findPaneInLayout(activeId);
@@ -466,7 +484,7 @@
       const pos = findPaneInLayout(activeId);
       if (!pos) { await addTerminal(); return; }
       let cwd = null;
-      try { cwd = await window.terminator.getCwd(activeId); } catch {}
+      try { cwd = await window.shellfire.getCwd(activeId); } catch {}
       const newId = await createPaneObj(cwd);
       if (direction === "horizontal") {
         layout[pos.ri].cols.splice(pos.ci + 1, 0, { flex: 1, paneId: newId });
@@ -535,13 +553,13 @@
     async function updatePaneTitle(id) {
       const pane = panes.get(id); if (!pane || !pane.titleEl) return;
       try {
-        const cwd = await window.terminator.getCwd(id);
+        const cwd = await window.shellfire.getCwd(id);
 
         // Title: use customName if set, otherwise build from cwd/process
         if (pane.customName) {
           pane.titleEl.textContent = pane.customName;
         } else {
-          const proc = await window.terminator.getProcess(id);
+          const proc = await window.shellfire.getProcess(id);
           let title = `Terminal ${id}`;
           if (cwd) { let short = cwd.replace(/^\/Users\/[^/]+/, "~"); title = short; }
           if (proc && proc !== "zsh" && proc !== "bash") title += ` — ${proc}`;
@@ -560,8 +578,8 @@
         if (pane.gitBadge && pane.gitBranchName && cwd) {
           try {
             const [branch, status] = await Promise.all([
-              window.terminator.getGitBranch(cwd),
-              window.terminator.getGitStatus(cwd),
+              window.shellfire.getGitBranch(cwd),
+              window.shellfire.getGitStatus(cwd),
             ]);
             if (branch) {
               pane.gitBranchName.textContent = branch;
@@ -660,18 +678,131 @@
       showToast(pane.locked ? "Pane locked" : "Pane unlocked");
     }
 
-    function cyclePaneColor(id) {
+    function applyPaneColor(id, colorName, customBg, customFg) {
       const pane = panes.get(id); if (!pane) return;
-      const curIdx = paneColors.indexOf(pane.color || "");
-      const nextIdx = (curIdx + 1) % paneColors.length;
-      pane.color = paneColors[nextIdx];
+      const t = themes[currentThemeIdx] || themes[0];
+
+      // Update indicator
       const ind = pane.indicatorEl;
       paneColors.forEach(c => { if (c) ind.classList.remove(`color-${c}`); });
-      if (pane.color) ind.classList.add(`color-${pane.color}`);
+      // Also remove any extra preset names and custom
+      Object.keys(paneColorPresets).forEach(c => { if (c) ind.classList.remove(`color-${c}`); });
+      ind.classList.remove("color-custom");
+
+      if (colorName && colorName !== "custom") {
+        // Preset color
+        const preset = paneColorPresets[colorName];
+        pane.color = colorName;
+        pane.termBg = preset?.bg || null;
+        pane.termFg = preset?.fg || null;
+        if (colorName) ind.classList.add(`color-${colorName}`);
+
+        if (preset && preset.bg) {
+          pane.term.options.theme = { ...t.term, background: preset.bg, foreground: preset.fg };
+          pane.el.querySelector(".pane-body").style.background = preset.bg;
+        } else {
+          pane.term.options.theme = t.term;
+          pane.el.querySelector(".pane-body").style.background = "";
+        }
+      } else if (colorName === "custom" && customBg && customFg) {
+        // Custom color
+        pane.color = "custom";
+        pane.termBg = customBg;
+        pane.termFg = customFg;
+        pane.term.options.theme = { ...t.term, background: customBg, foreground: customFg };
+        pane.el.querySelector(".pane-body").style.background = customBg;
+        ind.classList.add("color-custom");
+      } else {
+        // Reset to default
+        pane.color = "";
+        pane.termBg = null;
+        pane.termFg = null;
+        pane.term.options.theme = t.term;
+        pane.el.querySelector(".pane-body").style.background = "";
+      }
     }
 
+    function openPaneColorPicker(paneId, anchorX, anchorY) {
+      const picker = document.getElementById("pane-color-picker");
+      const pane = panes.get(paneId);
+      if (!pane) return;
+
+      const currentColor = pane.color || "";
+      const presetNames = Object.keys(paneColorPresets);
+
+      picker.innerHTML = `
+        <div class="pane-color-picker-label">Terminal Color</div>
+        <div class="pane-color-picker-grid">
+          ${presetNames.map(name => {
+            const p = paneColorPresets[name];
+            const bg = p.bg || (themes[currentThemeIdx] || themes[0]).term.background;
+            const fg = p.fg || (themes[currentThemeIdx] || themes[0]).term.foreground;
+            const isActive = currentColor === name;
+            return `<div class="pane-color-swatch${isActive ? " active" : ""}" data-color="${name}" style="background:${bg};color:${fg}" title="${p.label}">${p.label}</div>`;
+          }).join("")}
+        </div>
+        <div class="pane-color-picker-sep"></div>
+        <div class="pane-color-picker-label">Custom</div>
+        <div class="pane-color-picker-custom">
+          <label>BG</label>
+          <input type="color" id="pane-custom-bg" value="${pane.termBg || (themes[currentThemeIdx] || themes[0]).term.background}">
+          <label>Text</label>
+          <input type="color" id="pane-custom-fg" value="${pane.termFg || (themes[currentThemeIdx] || themes[0]).term.foreground}">
+        </div>
+        <div class="pane-color-picker-actions">
+          <button id="pane-color-apply-custom" class="primary">Apply Custom</button>
+          <button id="pane-color-reset">Reset</button>
+        </div>
+      `;
+
+      // Preset click handlers
+      picker.querySelectorAll(".pane-color-swatch").forEach(swatch => {
+        swatch.addEventListener("click", () => {
+          applyPaneColor(paneId, swatch.dataset.color);
+          picker.classList.remove("visible");
+          showToast(swatch.dataset.color ? `Color: ${paneColorPresets[swatch.dataset.color]?.label}` : "Color reset");
+        });
+      });
+
+      // Custom apply
+      picker.querySelector("#pane-color-apply-custom").addEventListener("click", () => {
+        const bg = picker.querySelector("#pane-custom-bg").value;
+        const fg = picker.querySelector("#pane-custom-fg").value;
+        applyPaneColor(paneId, "custom", bg, fg);
+        picker.classList.remove("visible");
+        showToast("Custom color applied");
+      });
+
+      // Reset
+      picker.querySelector("#pane-color-reset").addEventListener("click", () => {
+        applyPaneColor(paneId, "");
+        picker.classList.remove("visible");
+        showToast("Color reset");
+      });
+
+      picker.classList.add("visible");
+
+      // Position with viewport bounds checking
+      requestAnimationFrame(() => {
+        const rect = picker.getBoundingClientRect();
+        const viewW = window.innerWidth, viewH = window.innerHeight;
+        const finalX = (anchorX + rect.width > viewW) ? Math.max(0, viewW - rect.width - 4) : anchorX;
+        const finalY = (anchorY + rect.height > viewH) ? Math.max(0, viewH - rect.height - 4) : anchorY;
+        picker.style.left = finalX + "px";
+        picker.style.top = finalY + "px";
+      });
+    }
+
+    // Close color picker on outside click
+    document.addEventListener("click", (e) => {
+      const picker = document.getElementById("pane-color-picker");
+      if (picker && picker.classList.contains("visible") && !picker.contains(e.target)) {
+        picker.classList.remove("visible");
+      }
+    });
+
     async function createPaneObj(cwd, restoreCmd) {
-      const id = await window.terminator.createTerminal(cwd, restoreCmd);
+      const id = await window.shellfire.createTerminal(cwd, restoreCmd);
       const el = document.createElement("div"); el.className = "pane";
 
       const header = document.createElement("div"); header.className = "pane-header";
@@ -759,14 +890,14 @@
         // Track command history
         if (typeof trackCommandInput === "function") trackCommandInput(id, data);
 
-        if (broadcastMode) { window.terminator.broadcast([...panes.keys()], data); }
+        if (broadcastMode) { window.shellfire.broadcast([...panes.keys()], data); }
         else {
-          window.terminator.sendInput(id, data);
+          window.shellfire.sendInput(id, data);
           // Forward to linked panes
           for (const group of linkedGroups) {
             if (group.includes(id)) {
               for (const gid of group) {
-                if (gid !== id && panes.has(gid)) window.terminator.sendInput(gid, data);
+                if (gid !== id && panes.has(gid)) window.shellfire.sendInput(gid, data);
               }
             }
           }
@@ -777,7 +908,7 @@
       // Bell notification
       term.onBell(() => {
         if (activeId !== id && !document.hasFocus()) {
-          window.terminator.notify("Terminal Bell", `Terminal ${id} triggered a bell`);
+          window.shellfire.notify("Terminal Bell", `Terminal ${id} triggered a bell`);
         }
       });
 
@@ -796,7 +927,7 @@
       const activityDot = header.querySelector(".activity-dot");
       const gitBadge = header.querySelector(".git-badge");
       const gitBranchName = header.querySelector(".git-branch-name");
-      panes.set(id, { el, term, fitAddon, searchAddon, titleEl, indicatorEl, envBadgeEl, paneNumberEl, activityDot, gitBadge, gitBranchName, customName: null, locked: false, color: "", createdAt: Date.now(), rawBuffer: "" });
+      panes.set(id, { el, term, fitAddon, searchAddon, titleEl, indicatorEl, envBadgeEl, paneNumberEl, activityDot, gitBadge, gitBranchName, customName: null, locked: false, color: "", termBg: null, termFg: null, createdAt: Date.now(), rawBuffer: "" });
       return id;
     }
 
@@ -844,7 +975,7 @@
       paneStatsHistory.delete(id);
       paneLineBufs.delete(id);
       paneErrorDebounce.delete(id);
-      window.terminator.kill(id); pane.term.dispose(); panes.delete(id);
+      window.shellfire.kill(id); pane.term.dispose(); panes.delete(id);
       if (activeId === id) { const r = [...panes.keys()]; activeId = r.length > 0 ? r[r.length - 1] : null; }
       for (let ri = layout.length - 1; ri >= 0; ri--) { layout[ri].cols = layout[ri].cols.filter(c => c.paneId !== id); if (layout[ri].cols.length === 0) layout.splice(ri, 1); }
       // IDE mode: remove from visible panes, show next terminal fullscreen
@@ -864,7 +995,7 @@
     // IPC
     // ============================================================
 
-    window.terminator.onData((id, data) => {
+    window.shellfire.onData((id, data) => {
       const pane = panes.get(id);
       if (!pane) return;
       pane.term.write(data);
@@ -887,15 +1018,15 @@
       if (typeof detectErrors === "function") detectErrors(id, data);
       // Terminal logging
       if (loggingPanes.has(id)) {
-        window.terminator.logAppend(id, data.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, "")); // strip ANSI
+        window.shellfire.logAppend(id, data.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, "")); // strip ANSI
       }
     });
-    window.terminator.onExit((id, exitCode) => {
+    window.shellfire.onExit((id, exitCode) => {
       const pane = panes.get(id); if (!pane) return;
       pane.term.write("\r\n\x1b[90m[Process exited]\x1b[0m\r\n");
       const name = pane.customName || `Terminal ${id}`;
       if (id !== activeId || !document.hasFocus()) {
-        window.terminator.notify("Process Finished", `${name} exited (code ${exitCode || 0})`);
+        window.shellfire.notify("Process Finished", `${name} exited (code ${exitCode || 0})`);
         showToast(`${name} exited`);
       }
       setTimeout(() => removeTerminal(id), 1500);
@@ -973,11 +1104,11 @@
       const pane = panes.get(paneId);
       const items = [
         { label: "Copy", shortcut: "Cmd+C", action: () => { if (pane) { const s = pane.term.getSelection(); if (s) navigator.clipboard.writeText(s); } }},
-        { label: "Paste", shortcut: "Cmd+V", action: async () => { const t = await navigator.clipboard.readText(); if (t) window.terminator.sendInput(paneId, t); }},
+        { label: "Paste", shortcut: "Cmd+V", action: async () => { const t = await navigator.clipboard.readText(); if (t) window.shellfire.sendInput(paneId, t); }},
         { sep: true },
         { label: "Clear", shortcut: "Cmd+K", action: () => { if (pane) { pane.term.clear(); pane.term.focus(); } }},
         { label: "Rename Pane", action: () => renamePaneUI(paneId) },
-        { label: "Color: " + (pane?.color || "none"), action: () => cyclePaneColor(paneId) },
+        { label: "Color: " + (pane?.color || "none"), action: () => openPaneColorPicker(paneId, x, y) },
         { label: pane?.locked ? "Unlock Pane" : "Lock Pane", action: () => togglePaneLock(paneId) },
         { label: "Save Output", action: () => captureOutput(paneId) },
         { label: floatingPanes.has(paneId) ? "Restore from PiP" : "Float Pane (PiP)", action: () => toggleFloating(paneId) },
@@ -1034,8 +1165,8 @@
         filtered.forEach((s, i) => {
           const el = document.createElement("div"); el.className = "palette-item" + (i === selected ? " selected" : "");
           el.innerHTML = `<span class="palette-item-label">${s.name}<span class="palette-item-sub">${s.command}</span></span><span class="palette-item-shortcut" style="cursor:pointer" data-del="${i}">&#x2716;</span>`;
-          el.addEventListener("click", () => { overlay.classList.remove("visible"); input.placeholder = "Type a command..."; if (activeId) window.terminator.sendInput(activeId, s.command + "\n"); });
-          el.querySelector("[data-del]").addEventListener("click", (ev) => { ev.stopPropagation(); snippets.splice(snippets.indexOf(s), 1); window.terminator.saveSnippets(snippets); render(input.value); showToast("Snippet deleted"); });
+          el.addEventListener("click", () => { overlay.classList.remove("visible"); input.placeholder = "Type a command..."; if (activeId) window.shellfire.sendInput(activeId, s.command + "\n"); });
+          el.querySelector("[data-del]").addEventListener("click", (ev) => { ev.stopPropagation(); snippets.splice(snippets.indexOf(s), 1); window.shellfire.saveSnippets(snippets); render(input.value); showToast("Snippet deleted"); });
           results.appendChild(el);
         });
       }
@@ -1047,7 +1178,7 @@
           e.preventDefault();
           const val = input.value;
           if (val.startsWith("new:")) {
-            const parts = val.slice(4).split(":"); if (parts.length >= 2) { snippets.push({ name: parts[0].trim(), command: parts.slice(1).join(":").trim() }); window.terminator.saveSnippets(snippets); showToast("Snippet saved"); }
+            const parts = val.slice(4).split(":"); if (parts.length >= 2) { snippets.push({ name: parts[0].trim(), command: parts.slice(1).join(":").trim() }); window.shellfire.saveSnippets(snippets); showToast("Snippet saved"); }
           } else {
             const items = results.querySelectorAll(".palette-item"); items[selected]?.click();
           }
@@ -1088,7 +1219,7 @@
           const el = document.createElement("div"); el.className = "palette-item" + (i === selected ? " selected" : "");
           el.innerHTML = `<span class="palette-item-label">${p.name}<span class="palette-item-sub">${p.panes.length} panes</span></span><span class="palette-item-shortcut" style="cursor:pointer" data-del="${i}">&#x2716;</span>`;
           el.addEventListener("click", () => { overlay.classList.remove("visible"); input.placeholder = "Type a command..."; loadProfile(p); });
-          el.querySelector("[data-del]").addEventListener("click", (ev) => { ev.stopPropagation(); profiles.splice(profiles.indexOf(p), 1); window.terminator.saveProfiles(profiles); render(input.value); showToast("Profile deleted"); });
+          el.querySelector("[data-del]").addEventListener("click", (ev) => { ev.stopPropagation(); profiles.splice(profiles.indexOf(p), 1); window.shellfire.saveProfiles(profiles); render(input.value); showToast("Profile deleted"); });
           results.appendChild(el);
         });
       }
@@ -1115,12 +1246,12 @@
       if (!name) return;
       const paneDefs = [];
       for (const [id] of panes) {
-        const cwd = await window.terminator.getCwd(id);
-        const proc = await window.terminator.getProcess(id);
+        const cwd = await window.shellfire.getCwd(id);
+        const proc = await window.shellfire.getProcess(id);
         paneDefs.push({ cwd: cwd || null, command: proc && proc !== "zsh" && proc !== "bash" ? proc : null });
       }
       profiles.push({ name, panes: paneDefs });
-      window.terminator.saveProfiles(profiles);
+      window.shellfire.saveProfiles(profiles);
       showToast(`Profile "${name}" saved (${paneDefs.length} panes)`);
     }
 
@@ -1130,7 +1261,7 @@
       // Create panes from profile
       for (const p of profile.panes) {
         const id = await createPaneObj(p.cwd);
-        if (p.command) setTimeout(() => window.terminator.sendInput(id, p.command + "\n"), 200);
+        if (p.command) setTimeout(() => window.shellfire.sendInput(id, p.command + "\n"), 200);
       }
       const first = [...panes.keys()][0]; if (first) setActive(first);
       rebuildLayout();
@@ -1163,7 +1294,7 @@
       { label: "Zoom Pane", shortcut: "Cmd+Shift+Enter", action: () => toggleZoom(), category: "Layout" },
       { label: "Reset Layout", action: () => resetLayout(), category: "Layout" },
       { label: "Toggle Broadcast", shortcut: "Cmd+Shift+B", action: () => toggleBroadcast(), category: "Layout" },
-      { label: "Toggle Fullscreen", action: () => window.terminator.toggleFullscreen(), category: "Layout" },
+      { label: "Toggle Fullscreen", action: () => window.shellfire.toggleFullscreen(), category: "Layout" },
       { label: "Zen Mode (All Monitors)", shortcut: "Cmd+Shift+Z", action: () => toggleZenMode(), category: "View" },
       // Pane
       { label: "Rename Pane", action: () => { if (activeId) renamePaneUI(activeId); }, category: "Pane" },
@@ -1201,7 +1332,7 @@
       { label: "Cron Manager", action: () => openCronManager(), category: "Tools" },
       { label: "Toggle Skip Permissions", action: () => toggleSkipPermissions(), category: "Tools" },
       { label: "Toggle Copy on Select", action: () => { copyOnSelect = !copyOnSelect; showToast(copyOnSelect ? "Copy on select ON" : "Copy on select OFF"); }, category: "Tools" },
-      { label: "Toggle AI Suggestions", action: () => { aiSuggestions = !aiSuggestions; settings.aiSuggestions = aiSuggestions; window.terminator.saveSettings(settings); showToast(aiSuggestions ? "AI suggestions ON" : "AI suggestions OFF"); }, category: "Tools" },
+      { label: "Toggle AI Suggestions", action: () => { aiSuggestions = !aiSuggestions; settings.aiSuggestions = aiSuggestions; window.shellfire.saveSettings(settings); showToast(aiSuggestions ? "AI suggestions ON" : "AI suggestions OFF"); }, category: "Tools" },
       // Session
       { label: "Save Session", shortcut: "Cmd+Shift+S", action: () => saveCurrentSession(), category: "Session" },
       { label: "Restore Session", action: () => restoreSession(), category: "Session" },
@@ -1224,7 +1355,7 @@
       // View
       { label: "Toggle IDE Mode", shortcut: "Cmd+Shift+I", action: () => toggleIdeMode(), category: "View" },
       // System
-      { label: "Quit", shortcut: "Cmd+Q", action: () => window.terminator.quit(), category: "System" },
+      { label: "Quit", shortcut: "Cmd+Q", action: () => window.shellfire.quit(), category: "System" },
     ];
 
     function openPalette() {
@@ -1283,11 +1414,11 @@
       const paneStates = [];
       for (const [id] of panes) {
         const pane = panes.get(id);
-        const cwd = await window.terminator.getCwd(id);
+        const cwd = await window.shellfire.getCwd(id);
         // Capture the running foreground process (e.g. claude, vim, python)
         let restoreCmd = null;
         try {
-          const proc = await window.terminator.getProcessTree(id);
+          const proc = await window.shellfire.getProcessTree(id);
           if (proc && proc.args) {
             const shell = (process.env?.SHELL || "").split("/").pop() || "zsh";
             const comm = (proc.comm || "").split("/").pop();
@@ -1306,12 +1437,14 @@
           customName: pane.customName || null,
           userRenamed: pane._userRenamed || false,
           color: pane.color || "",
+          termBg: pane.termBg || null,
+          termFg: pane.termFg || null,
           locked: pane.locked || false,
           rawBuffer: pane.rawBuffer || "",
           restoreCmd: restoreCmd,
         });
       }
-      window.terminator.saveSession({
+      window.shellfire.saveSession({
         version: 2,
         layout: JSON.parse(JSON.stringify(layout)),
         paneStates,
@@ -1325,7 +1458,7 @@
 
     async function restoreSession() {
       try {
-        const session = await window.terminator.loadSession();
+        const session = await window.shellfire.loadSession();
         if (!session) {
           showToast("No saved session found");
           if (panes.size === 0) await addTerminal();
@@ -1358,9 +1491,7 @@
                 pane.titleEl.textContent = ps.customName;
               }
               if (ps.color) {
-                pane.color = ps.color;
-                paneColors.forEach(c => { if (c) pane.indicatorEl.classList.remove(`color-${c}`); });
-                pane.indicatorEl.classList.add(`color-${ps.color}`);
+                applyPaneColor(id, ps.color, ps.termBg || null, ps.termFg || null);
               }
               if (ps.locked) {
                 pane.locked = true;
@@ -1436,7 +1567,7 @@
     // New terminal in same directory
     async function addTerminalSameDir() {
       let cwd = null;
-      if (activeId) { try { cwd = await window.terminator.getCwd(activeId); } catch {} }
+      if (activeId) { try { cwd = await window.shellfire.getCwd(activeId); } catch {} }
       await addTerminal(cwd);
     }
 
@@ -1511,8 +1642,8 @@
           if (!pane) return;
           try {
             const [proc, cwd] = await Promise.all([
-              window.terminator.getProcess(id),
-              window.terminator.getCwd(id),
+              window.shellfire.getProcess(id),
+              window.shellfire.getCwd(id),
             ]);
             const oldProc = pane._lastProcess;
             pane._lastProcess = proc || null;
@@ -1527,8 +1658,8 @@
             // Git info
             if (cwd) {
               const [branch, status] = await Promise.all([
-                window.terminator.getGitBranch(cwd),
-                window.terminator.getGitStatus(cwd),
+                window.shellfire.getGitBranch(cwd),
+                window.shellfire.getGitStatus(cwd),
               ]);
               pane._lastGitBranch = branch || null;
               pane._lastGitDirty = status === "dirty";
@@ -1629,7 +1760,7 @@
     function closeCronManager() { cronOverlay.classList.remove("visible"); if (activeId && panes.has(activeId)) panes.get(activeId).term.focus(); }
 
     async function refreshCronList() {
-      const jobs = await window.terminator.cronList();
+      const jobs = await window.shellfire.cronList();
       cronBody.innerHTML = "";
       if (!jobs || jobs.length === 0) {
         cronBody.innerHTML = '<div class="cron-empty">No cron jobs found</div>';
@@ -1639,7 +1770,7 @@
         const el = document.createElement("div"); el.className = "cron-item";
         el.innerHTML = `<span class="cron-item-line" title="${job.line}">${job.line}</span><button class="cron-item-del" data-idx="${i}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
         el.querySelector(".cron-item-del").addEventListener("click", async () => {
-          await window.terminator.cronRemove(i);
+          await window.shellfire.cronRemove(i);
           showToast("Cron job removed");
           await refreshCronList();
         });
@@ -1652,7 +1783,7 @@
     document.getElementById("cron-add-btn").addEventListener("click", async () => {
       const line = cronInput.value.trim();
       if (!line) return;
-      const ok = await window.terminator.cronAdd(line);
+      const ok = await window.shellfire.cronAdd(line);
       if (ok) { showToast("Cron job added"); cronInput.value = ""; await refreshCronList(); }
       else showToast("Failed to add cron job", "error");
     });
@@ -1668,17 +1799,17 @@
     const MAX_RECENTS = 20;
 
     async function loadRecentDirs() {
-      try { const saved = await window.terminator.loadRecents(); if (Array.isArray(saved)) recentDirs = saved; } catch {}
+      try { const saved = await window.shellfire.loadRecents(); if (Array.isArray(saved)) recentDirs = saved; } catch {}
     }
 
     async function trackRecentDir(id) {
       try {
-        const cwd = await window.terminator.getCwd(id);
+        const cwd = await window.shellfire.getCwd(id);
         if (!cwd) return;
         recentDirs = recentDirs.filter(d => d !== cwd);
         recentDirs.unshift(cwd);
         if (recentDirs.length > MAX_RECENTS) recentDirs = recentDirs.slice(0, MAX_RECENTS);
-        window.terminator.saveRecents(recentDirs);
+        window.shellfire.saveRecents(recentDirs);
       } catch {}
     }
 
@@ -1747,7 +1878,7 @@
         if (!q || q.length < 2) { results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">Type at least 2 characters to search...</span></div>'; return; }
         results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">Searching...</span></div>';
         try {
-          const files = await window.terminator.findFiles(q, searchDirs);
+          const files = await window.shellfire.findFiles(q, searchDirs);
           selected = 0;
           results.innerHTML = "";
           if (!files || files.length === 0) { results.innerHTML = '<div class="palette-item"><span class="palette-item-label" style="color:color-mix(in srgb, var(--t-fg) 50%, transparent)">No files found</span></div>'; return; }
@@ -1802,7 +1933,7 @@
       const content = lines.join("\n");
       if (!content) { showToast("No output to save"); return; }
       const name = `terminal-${id || activeId}-output.txt`;
-      const savedPath = await window.terminator.saveOutput(content, name);
+      const savedPath = await window.shellfire.saveOutput(content, name);
       if (savedPath) showToast(`Saved to ${savedPath.split("/").pop()}`);
       else showToast("Save cancelled");
     }
@@ -1819,7 +1950,7 @@
       const lines = text.split("\n");
       if (lines.length < 5) {
         // Small paste — just send it
-        window.terminator.sendInput(targetId, text);
+        window.shellfire.sendInput(targetId, text);
         return;
       }
       pendingPaste = { text, targetId };
@@ -1829,7 +1960,7 @@
     }
 
     document.getElementById("paste-ok").addEventListener("click", () => {
-      if (pendingPaste) window.terminator.sendInput(pendingPaste.targetId, pendingPaste.text);
+      if (pendingPaste) window.shellfire.sendInput(pendingPaste.targetId, pendingPaste.text);
       pendingPaste = null;
       pasteConfirmEl.classList.remove("visible");
       if (activeId && panes.has(activeId)) panes.get(activeId).term.focus();
@@ -1926,7 +2057,7 @@
         } else {
           // Run in active pane
           if (activeId && panes.has(activeId)) {
-            window.terminator.sendInput(activeId, cmd + "\n");
+            window.shellfire.sendInput(activeId, cmd + "\n");
           }
         }
         closeQuickCmd();
@@ -2034,7 +2165,7 @@
     }
 
     function saveProjects() {
-      window.terminator.saveProjects(launchProjects);
+      window.shellfire.saveProjects(launchProjects);
     }
 
     function rebuildLaunchCommands() {
@@ -2102,7 +2233,7 @@
 
     // Load saved projects
     (async () => {
-      const saved = await window.terminator.loadProjects();
+      const saved = await window.shellfire.loadProjects();
       if (saved && Array.isArray(saved) && saved.length > 0) {
         launchProjects = saved;
         rebuildLaunchCommands();
@@ -2159,7 +2290,7 @@
     }
 
     // Welcome version
-    window.terminator.getAppVersion().then(v => {
+    window.shellfire.getAppVersion().then(v => {
       const el = document.getElementById("welcome-version");
       if (el) el.textContent = `v${v}`;
     }).catch(() => {});
@@ -2174,7 +2305,7 @@
       else if (meta && e.shiftKey && (e.key === "D" || e.key === "d")) { e.preventDefault(); splitPane("vertical"); }
       else if (meta && e.key === "d") { e.preventDefault(); splitPane("horizontal"); }
       else if (meta && e.key === "w") { e.preventDefault(); if (activeId !== null) removeTerminal(activeId); }
-      else if (meta && e.key === "q") { e.preventDefault(); window.terminator.quit(); }
+      else if (meta && e.key === "q") { e.preventDefault(); window.shellfire.quit(); }
       else if (meta && e.shiftKey && (e.key === "P" || e.key === "p")) { e.preventDefault(); openPortPanel(); }
       else if (meta && e.shiftKey && (e.key === "F" || e.key === "f")) { e.preventDefault(); openFileFinder(); }
       else if (meta && e.key === "f") { e.preventDefault(); openSearch(); }
@@ -2235,7 +2366,7 @@
             if (badge) { badge.textContent = kw.pattern.toUpperCase(); badge.classList.add("visible"); }
             if (kw.notify) {
               const name = pane.customName || `Terminal ${id}`;
-              window.terminator.notify("Keyword Alert", `"${kw.pattern}" detected in ${name}`);
+              window.shellfire.notify("Keyword Alert", `"${kw.pattern}" detected in ${name}`);
             }
           }
           break;
@@ -2254,7 +2385,7 @@
     let sshBookmarks = [];
 
     async function loadSshBookmarks() {
-      try { const saved = await window.terminator.loadSsh(); if (Array.isArray(saved)) sshBookmarks = saved; } catch {}
+      try { const saved = await window.shellfire.loadSsh(); if (Array.isArray(saved)) sshBookmarks = saved; } catch {}
     }
 
     function openSshManager() {
@@ -2286,7 +2417,7 @@
           el.querySelector("[data-del]").addEventListener("click", (ev) => {
             ev.stopPropagation();
             sshBookmarks.splice(sshBookmarks.indexOf(s), 1);
-            window.terminator.saveSsh(sshBookmarks);
+            window.shellfire.saveSsh(sshBookmarks);
             render(input.value);
             showToast("SSH bookmark deleted");
           });
@@ -2312,7 +2443,7 @@
               const port = portMatch ? parseInt(portMatch[1]) : 22;
               const host = portMatch ? hostPart.replace(/:(\d+)$/, "") : hostPart;
               sshBookmarks.push({ name, host, port });
-              window.terminator.saveSsh(sshBookmarks);
+              window.shellfire.saveSsh(sshBookmarks);
               showToast("SSH bookmark saved");
             } else {
               // Legacy colon format: new:name:user@host
@@ -2324,7 +2455,7 @@
                 const port = portMatch ? parseInt(portMatch[1]) : 22;
                 const host = portMatch ? hostPart.replace(/:(\d+)$/, "") : hostPart;
                 sshBookmarks.push({ name, host, port });
-                window.terminator.saveSsh(sshBookmarks);
+                window.shellfire.saveSsh(sshBookmarks);
                 showToast("SSH bookmark saved");
               }
             }
@@ -2348,7 +2479,7 @@
       const cmd = bookmark.port && bookmark.port !== 22
         ? `ssh -p ${bookmark.port} ${bookmark.host}`
         : `ssh ${bookmark.host}`;
-      setTimeout(() => window.terminator.sendInput(id, cmd + "\n"), 200);
+      setTimeout(() => window.shellfire.sendInput(id, cmd + "\n"), 200);
       showToast(`Connecting to ${bookmark.name}...`);
     }
 
@@ -2373,7 +2504,7 @@
       const userInput = document.getElementById("remote-user");
       const portInput = document.getElementById("remote-port");
       const passwordInput = document.getElementById("remote-password");
-      const remotePathInput = document.getElementById("remote-terminator-path");
+      const remotePathInput = document.getElementById("remote-shellfire-path");
 
       // Focus host input
       setTimeout(() => hostInput.focus(), 100);
@@ -2437,7 +2568,7 @@
         statusText.textContent = `Connecting to ${user}@${host}...`;
 
         try {
-          const result = await window.terminator.sshRemoteList({ host, user, port, password, remotePath });
+          const result = await window.shellfire.sshRemoteList({ host, user, port, password, remotePath });
           statusView.style.display = "none";
 
           if (result.error) {
@@ -2474,7 +2605,7 @@
         list.innerHTML = "";
 
         if (sessions.length === 0) {
-          list.innerHTML = '<div class="remote-no-sessions">No active Terminator sessions found on this host.</div>';
+          list.innerHTML = '<div class="remote-no-sessions">No active Shellfire sessions found on this host.</div>';
           openAllBtn.disabled = true;
           return;
         }
@@ -2513,7 +2644,7 @@
         showToast(`Opening ${sessions.length} remote session${sessions.length > 1 ? 's' : ''}...`);
 
         try {
-          const result = await window.terminator.sshRemoteOpenAll({
+          const result = await window.shellfire.sshRemoteOpenAll({
             host: _connInfo.host,
             user: _connInfo.user,
             port: _connInfo.port,
@@ -2605,10 +2736,10 @@
 
     async function doSplitAndRun(command) {
       let cwd = null;
-      if (activeId) { try { cwd = await window.terminator.getCwd(activeId); } catch {} }
+      if (activeId) { try { cwd = await window.shellfire.getCwd(activeId); } catch {} }
       await splitPane("horizontal");
       // activeId is now the new pane
-      if (activeId) setTimeout(() => window.terminator.sendInput(activeId, command + "\n"), 150);
+      if (activeId) setTimeout(() => window.shellfire.sendInput(activeId, command + "\n"), 150);
       showToast(`Running: ${command}`);
     }
 
@@ -2617,7 +2748,7 @@
     // ============================================================
     async function updateSystemStats() {
       try {
-        const stats = await window.terminator.systemStats();
+        const stats = await window.shellfire.systemStats();
         if (!stats) return;
         document.getElementById("cpu-pct").textContent = stats.cpuUsage;
         document.getElementById("cpu-bar").style.width = stats.cpuUsage + "%";
@@ -2727,7 +2858,7 @@
     let notesSaveTimer = null;
 
     async function loadNotes() {
-      try { const saved = await window.terminator.loadNotes(); if (saved) { notesData = saved; notesText.value = saved.text || ""; } } catch {}
+      try { const saved = await window.shellfire.loadNotes(); if (saved) { notesData = saved; notesText.value = saved.text || ""; } } catch {}
     }
 
     function openNotes() {
@@ -2743,7 +2874,7 @@
     notesText.addEventListener("input", () => {
       notesData.text = notesText.value;
       clearTimeout(notesSaveTimer);
-      notesSaveTimer = setTimeout(() => window.terminator.saveNotes(notesData), 500);
+      notesSaveTimer = setTimeout(() => window.shellfire.saveNotes(notesData), 500);
     });
     notesText.addEventListener("keydown", (e) => { if (e.key === "Escape") closeNotes(); });
 
@@ -2823,7 +2954,7 @@
       envBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Loading...</div>';
       envSearch.value = "";
       try {
-        const envVars = await window.terminator.getTerminalEnv(activeId);
+        const envVars = await window.shellfire.getTerminalEnv(activeId);
         renderEnvVars(envVars, "");
       } catch {
         envBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Failed to load</div>';
@@ -2859,7 +2990,7 @@
       envBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Loading...</div>';
       envSearch.value = ""; envSearch.focus();
       try {
-        envVarsCache = await window.terminator.getTerminalEnv(activeId);
+        envVarsCache = await window.shellfire.getTerminalEnv(activeId);
         renderEnvVars(envVarsCache, "");
       } catch {
         envBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Failed to load</div>';
@@ -2882,7 +3013,7 @@
     async function refreshDocker() {
       dockerBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Loading...</div>';
       try {
-        const containers = await window.terminator.dockerPsAll();
+        const containers = await window.shellfire.dockerPsAll();
         dockerBody.innerHTML = "";
         if (!containers || containers.length === 0) {
           dockerBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">No containers found (is Docker running?)</div>';
@@ -2896,7 +3027,7 @@
             dockerPanel.classList.remove("visible");
             const id = await addTerminal();
             const cmd = isUp ? `docker exec -it ${c.name} sh` : `docker start -i ${c.name}`;
-            setTimeout(() => window.terminator.sendInput(id, cmd + "\n"), 200);
+            setTimeout(() => window.shellfire.sendInput(id, cmd + "\n"), 200);
             showToast(`Attaching to ${c.name}...`);
           });
           dockerBody.appendChild(row);
@@ -2924,7 +3055,7 @@
     async function refreshPorts() {
       portBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">Loading...</div>';
       try {
-        const ports = await window.terminator.listPorts();
+        const ports = await window.shellfire.listPorts();
         portBody.innerHTML = "";
         if (!ports || ports.length === 0) {
           portBody.innerHTML = '<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent);font-size:12px">No listening ports found</div>';
@@ -2941,7 +3072,7 @@
           });
           row.querySelector(".port-kill").addEventListener("click", async (e) => {
             e.stopPropagation();
-            const ok = await window.terminator.killPort(p.pid);
+            const ok = await window.shellfire.killPort(p.pid);
             if (ok) { showToast(`Killed PID ${p.pid}`); await refreshPorts(); }
             else showToast("Failed to kill process");
           });
@@ -3048,7 +3179,7 @@
 
     function selectHistoryItem(idx) {
       if (historyFiltered[idx] && activeId && panes.has(activeId)) {
-        window.terminator.sendInput(activeId, historyFiltered[idx].cmd);
+        window.shellfire.sendInput(activeId, historyFiltered[idx].cmd);
         closeHistorySearch();
       }
     }
@@ -3108,7 +3239,7 @@
       toast.querySelector(".no-suggest-btn").addEventListener("click", () => {
         aiSuggestions = false;
         settings.aiSuggestions = false;
-        window.terminator.saveSettings(settings);
+        window.shellfire.saveSettings(settings);
         toast.remove();
         showToast("AI suggestions disabled");
       });
@@ -3144,7 +3275,7 @@
     async function refreshPaneStats() {
       for (const [id] of panes) {
         try {
-          const stats = await window.terminator.getPaneStats(id);
+          const stats = await window.shellfire.getPaneStats(id);
           if (stats && stats.cpu !== undefined) {
             if (!paneStatsHistory.has(id)) {
               paneStatsHistory.set(id, { cpuHistory: [], lastMemory: 0, lastCpu: 0 });
@@ -3213,7 +3344,7 @@
       info.appendChild(nameEl);
       const authorEl = document.createElement("div");
       authorEl.className = "mp-card-author";
-      authorEl.textContent = (entry.author || "Terminator") + (entry.version ? " \u00B7 v" + entry.version : "");
+      authorEl.textContent = (entry.author || "Shellfire") + (entry.version ? " \u00B7 v" + entry.version : "");
       info.appendChild(authorEl);
       top.appendChild(info);
 
@@ -3251,18 +3382,18 @@
         try {
           if (wasInstalled) {
             deactivatePlugin(entry.id);
-            const result = await window.terminator.uninstallPlugin(entry.id);
+            const result = await window.shellfire.uninstallPlugin(entry.id);
             if (result.error) throw new Error(result.error);
             _mpInstalledNames.delete(entry.id);
           } else {
             // Try .termext package download first, then file-based fallback
             let installed = false;
             if (entry.packageUrl) {
-              const pkgResult = await window.terminator.downloadAndInstallTermext({ url: entry.packageUrl, id: entry.id });
+              const pkgResult = await window.shellfire.downloadAndInstallTermext({ url: entry.packageUrl, id: entry.id });
               if (pkgResult.ok) installed = true;
             }
             if (!installed) {
-              const result = await window.terminator.installFromRegistry({
+              const result = await window.shellfire.installFromRegistry({
                 id: entry.id,
                 files: entry.files || { "plugin.json": "", "index.js": "" },
                 downloadUrl: entry.downloadUrl || "",
@@ -3333,8 +3464,8 @@
 
       try {
         const [registry, installed] = await Promise.all([
-          window.terminator.fetchRegistry(),
-          window.terminator.loadPlugins(),
+          window.shellfire.fetchRegistry(),
+          window.shellfire.loadPlugins(),
         ]);
         _mpRegistry = registry;
         _mpInstalledNames = new Set(installed.map(p => p.manifest.name));
@@ -3435,12 +3566,12 @@
       // Install from .termext file
       if (installFileBtn) {
         installFileBtn.addEventListener("click", async () => {
-          const pick = await window.terminator.pickTermextFile();
+          const pick = await window.shellfire.pickTermextFile();
           if (pick.canceled) return;
           installFileBtn.textContent = "Installing...";
           installFileBtn.disabled = true;
           try {
-            const result = await window.terminator.installTermext(pick.filePath);
+            const result = await window.shellfire.installTermext(pick.filePath);
             if (result.error) throw new Error(result.error);
             await activateSinglePlugin(result.id, result.manifest.type);
             if (result.manifest.type === "theme") _refreshThemeUIs();
@@ -3862,7 +3993,7 @@
         if (failed) { node.status = "skipped"; plRender(); continue; }
         node.status = "running"; plRender();
         try {
-          const result = await window.terminator.execPipelineStep({ command: node.command });
+          const result = await window.shellfire.execPipelineStep({ command: node.command });
           node.output = (result.stdout || "") + (result.stderr ? "\n--- stderr ---\n" + result.stderr : "");
           node.status = result.code === 0 ? "passed" : "failed";
           if (result.code !== 0) failed = true;
@@ -3897,14 +4028,14 @@
       const existing = pipelines.findIndex(p => p.name === name);
       if (existing >= 0) pipelines[existing] = toSave;
       else pipelines.push(toSave);
-      await window.terminator.savePipelines(pipelines);
+      await window.shellfire.savePipelines(pipelines);
       plRender();
       showToast(`Pipeline "${name}" saved`);
     });
 
     // --- Load ---
     document.getElementById("pipeline-load").addEventListener("click", async () => {
-      pipelines = await window.terminator.loadPipelines() || [];
+      pipelines = await window.shellfire.loadPipelines() || [];
       if (pipelines.length === 0) { showToast("No saved pipelines"); return; }
       // Show load modal
       let existing = plWrap.querySelector(".pl-load-modal");
@@ -3931,7 +4062,7 @@
           e.stopPropagation();
           const di = parseInt(delBtn.dataset.delidx);
           pipelines.splice(di, 1);
-          await window.terminator.savePipelines(pipelines);
+          await window.shellfire.savePipelines(pipelines);
           modal.remove();
           document.getElementById("pipeline-load").click(); // re-open
           return;
@@ -3966,7 +4097,7 @@
 
     // --- Import .sh ---
     document.getElementById("pipeline-import-sh").addEventListener("click", async () => {
-      const result = await window.terminator.pickShFile();
+      const result = await window.shellfire.pickShFile();
       if (!result || result.canceled) return;
 
       // Parse shell script into commands
@@ -4020,7 +4151,7 @@
       lines.push("");
       const content = lines.join("\n");
       const fileName = (plName || "pipeline").replace(/[^a-zA-Z0-9_-]/g, "_") + ".sh";
-      const saved = await window.terminator.exportSh(content, fileName);
+      const saved = await window.shellfire.exportSh(content, fileName);
       if (saved) showToast(`Exported to ${saved}`);
     });
 
@@ -4060,7 +4191,7 @@
     });
 
     async function loadPipelinesData() {
-      pipelines = await window.terminator.loadPipelines() || [];
+      pipelines = await window.shellfire.loadPipelines() || [];
     }
 
     // ============================================================
@@ -4139,7 +4270,7 @@
         item.addEventListener("click", (e) => {
           if (e.target.closest("[data-edit]") || e.target.closest("[data-del]")) return;
           if (activeId && panes.has(activeId)) {
-            window.terminator.sendInput(activeId, bm.command);
+            window.shellfire.sendInput(activeId, bm.command);
             cmdBookmarksPanel.classList.remove("visible");
             panes.get(activeId).term.focus();
             showToast("Pasted bookmark");
@@ -4195,11 +4326,11 @@
     });
 
     function saveCmdBookmarks() {
-      window.terminator.saveCmdBookmarks(cmdBookmarks);
+      window.shellfire.saveCmdBookmarks(cmdBookmarks);
     }
 
     async function loadCmdBookmarksData() {
-      cmdBookmarks = await window.terminator.loadCmdBookmarks() || [];
+      cmdBookmarks = await window.shellfire.loadCmdBookmarks() || [];
     }
 
     function bookmarkLastCommand() {
@@ -4228,7 +4359,7 @@
     async function updateCommandDurations() {
       for (const [id] of panes) {
         try {
-          const proc = await window.terminator.getProcess(id);
+          const proc = await window.shellfire.getProcess(id);
           const isShell = !proc || proc === "zsh" || proc === "bash" || proc === "fish";
           if (!isShell) {
             if (!paneCommandStart.has(id)) paneCommandStart.set(id, Date.now());
@@ -4239,7 +4370,7 @@
               if (duration > LONG_CMD_THRESHOLD && id !== activeId) {
                 const pane = panes.get(id);
                 const name = pane?.customName || `Terminal ${id}`;
-                window.terminator.notify("Command Finished", `${name}: completed after ${formatDuration(duration)}`);
+                window.shellfire.notify("Command Finished", `${name}: completed after ${formatDuration(duration)}`);
                 showToast(`${name} finished (${formatDuration(duration)})`);
               }
               paneCommandStart.delete(id);
@@ -4276,8 +4407,8 @@
 
       try {
         const [tree, cwd] = await Promise.all([
-          window.terminator.getProcessTree(id),
-          window.terminator.getCwd(id),
+          window.shellfire.getProcessTree(id),
+          window.shellfire.getCwd(id),
         ]);
 
         let name = "";
@@ -4328,12 +4459,12 @@
     let dirBookmarks = []; // string paths
 
     async function loadBookmarks() {
-      try { const saved = await window.terminator.loadBookmarks(); if (Array.isArray(saved)) dirBookmarks = saved; } catch {}
+      try { const saved = await window.shellfire.loadBookmarks(); if (Array.isArray(saved)) dirBookmarks = saved; } catch {}
     }
 
     async function toggleBookmark() {
       if (!activeId) return;
-      const cwd = await window.terminator.getCwd(activeId);
+      const cwd = await window.shellfire.getCwd(activeId);
       if (!cwd) return;
       const idx = dirBookmarks.indexOf(cwd);
       if (idx >= 0) {
@@ -4343,7 +4474,7 @@
         dirBookmarks.push(cwd);
         showToast("Directory bookmarked");
       }
-      window.terminator.saveBookmarks(dirBookmarks);
+      window.shellfire.saveBookmarks(dirBookmarks);
     }
 
     function openBookmarks() {
@@ -4376,7 +4507,7 @@
           el.querySelector("[data-del]").addEventListener("click", (ev) => {
             ev.stopPropagation();
             dirBookmarks.splice(dirBookmarks.indexOf(dir), 1);
-            window.terminator.saveBookmarks(dirBookmarks);
+            window.shellfire.saveBookmarks(dirBookmarks);
             render(input.value);
             showToast("Bookmark removed");
           });
@@ -4473,7 +4604,7 @@
 
       // Create a new split pane for the watch
       let cwd = null;
-      if (activeId) { try { cwd = await window.terminator.getCwd(activeId); } catch {} }
+      if (activeId) { try { cwd = await window.shellfire.getCwd(activeId); } catch {} }
       await splitPane("horizontal");
       const watchId = activeId;
       const pane = panes.get(watchId);
@@ -4492,12 +4623,12 @@
       }
 
       // Send initial command
-      window.terminator.sendInput(watchId, command + "\n");
+      window.shellfire.sendInput(watchId, command + "\n");
 
       // Set up interval
       const timer = setInterval(() => {
         if (!panes.has(watchId)) { clearInterval(timer); watchTimers.delete(watchId); return; }
-        window.terminator.sendInput(watchId, `clear && ${command}\n`);
+        window.shellfire.sendInput(watchId, `clear && ${command}\n`);
       }, interval * 1000);
 
       watchTimers.set(watchId, { interval, command, timer });
@@ -4624,7 +4755,7 @@
       results.querySelectorAll("[data-hint]").forEach(el => {
         el.addEventListener("click", async () => {
           overlay.classList.remove("visible"); input.placeholder = "Type a command...";
-          const cwd = activeId ? await window.terminator.getCwd(activeId) : null;
+          const cwd = activeId ? await window.shellfire.getCwd(activeId) : null;
           const full = cwd ? cwd + "/" + el.dataset.hint : el.dataset.hint;
           showFilePreview(full);
         });
@@ -4639,7 +4770,7 @@
             (async () => {
               let fullPath = val;
               if (!val.startsWith("/")) {
-                const cwd = activeId ? await window.terminator.getCwd(activeId) : null;
+                const cwd = activeId ? await window.shellfire.getCwd(activeId) : null;
                 fullPath = cwd ? cwd + "/" + val : val;
               }
               showFilePreview(fullPath);
@@ -4661,7 +4792,7 @@
       filePreviewContent.innerHTML = "";
 
       try {
-        const result = await window.terminator.readFile(filePath);
+        const result = await window.shellfire.readFile(filePath);
         if (result.error) {
           filePreviewMeta.textContent = result.error;
           filePreviewContent.innerHTML = `<div style="padding:24px;text-align:center;color:color-mix(in srgb, var(--t-fg) 40%, transparent)">${result.error}</div>`;
@@ -4693,7 +4824,7 @@
       if (activeId && panes.has(activeId)) panes.get(activeId).term.focus();
     });
     document.getElementById("file-preview-open").addEventListener("click", () => {
-      if (currentPreviewPath) window.terminator.openInEditor(currentPreviewPath);
+      if (currentPreviewPath) window.shellfire.openInEditor(currentPreviewPath);
     });
 
     // ============================================================
@@ -4799,7 +4930,7 @@
         rebuildLayout();
       }
       settings.ideMode = ideMode;
-      window.terminator.saveSettings(settings);
+      window.shellfire.saveSettings(settings);
       showToast(ideMode ? "IDE Mode ON" : "IDE Mode OFF");
       setTimeout(() => fitAllTerminals(), 50);
     }
@@ -4812,7 +4943,7 @@
     let zenHintTimer = null;
 
     async function toggleZenMode() {
-      const active = await window.terminator.toggleZenMode();
+      const active = await window.shellfire.toggleZenMode();
       zenMode = active;
       document.body.classList.toggle("zen-mode", zenMode);
       zenModeBtn.classList.toggle("active-toggle", zenMode);
@@ -4832,7 +4963,7 @@
     zenModeBtn.addEventListener("click", () => toggleZenMode());
 
     // Listen for zen mode changes from main process (e.g. if exited via OS)
-    window.terminator.onZenModeChanged((active) => {
+    window.shellfire.onZenModeChanged((active) => {
       zenMode = active;
       document.body.classList.toggle("zen-mode", zenMode);
       zenModeBtn.classList.toggle("active-toggle", zenMode);
@@ -5049,7 +5180,7 @@
       const pane = panes.get(activeId);
       // CWD
       try {
-        const cwd = await window.terminator.getCwd(activeId);
+        const cwd = await window.shellfire.getCwd(activeId);
         if (cwd) {
           const home = cwd.replace(/^\/Users\/[^/]+/, "~").replace(/^\/home\/[^/]+/, "~");
           bottombarCwd.textContent = home;
@@ -5061,8 +5192,8 @@
         // Git
         if (cwd) {
           const [branch, status] = await Promise.all([
-            window.terminator.getGitBranch(cwd),
-            window.terminator.getGitStatus(cwd),
+            window.shellfire.getGitBranch(cwd),
+            window.shellfire.getGitStatus(cwd),
           ]);
           if (branch) {
             bottombarBranch.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><line x1="12" y1="8" x2="12" y2="16"/></svg> ${escapeHtml(branch)}`;
@@ -5081,7 +5212,7 @@
     // Show shell name in bottombar
     (async () => {
       try {
-        const shell = await window.terminator.getDefaultShell();
+        const shell = await window.shellfire.getDefaultShell();
         if (shell) bottombarShell.textContent = shell.split("/").pop();
       } catch {}
     })();
@@ -5120,8 +5251,8 @@
       document.getElementById("setting-ide-mode").checked = ideMode;
 
       // Version info
-      window.terminator.getAppVersion().then(v => { document.getElementById("setting-version").textContent = v; }).catch(() => {});
-      window.terminator.getDefaultShell().then(s => { document.getElementById("setting-detected-shell").textContent = s; }).catch(() => {});
+      window.shellfire.getAppVersion().then(v => { document.getElementById("setting-version").textContent = v; }).catch(() => {});
+      window.shellfire.getDefaultShell().then(s => { document.getElementById("setting-detected-shell").textContent = s; }).catch(() => {});
 
       // Keybindings — auto-populate
       populateKeybindingList();
@@ -5227,7 +5358,7 @@
               keyEl.classList.remove("recording");
               document.removeEventListener("keydown", handler, true);
               settings.keybindings = customKeybindings;
-              window.terminator.saveSettings(settings);
+              window.shellfire.saveSettings(settings);
             }
           };
           document.addEventListener("keydown", handler, true);
@@ -5291,7 +5422,7 @@
         shell: document.getElementById("setting-shell").value.trim(),
         defaultCwd: document.getElementById("setting-cwd").value.trim(),
       };
-      window.terminator.saveSettings(settings);
+      window.shellfire.saveSettings(settings);
       showToast("Settings saved");
     }
 
@@ -5359,7 +5490,7 @@
       { label: "Extensions", action: () => openSettings("extensions"), category: "System" },
       { label: "Check for Updates", action: async () => {
         try {
-          const result = await window.terminator.checkForUpdates();
+          const result = await window.shellfire.checkForUpdates();
           if (result.available) showToast(`Update available: v${result.version}`);
           else showToast(result.reason === "not-packaged" ? "Updates available in packaged builds" : "You're up to date");
         } catch { showToast("Could not check for updates", "error"); }
@@ -5371,7 +5502,7 @@
     // ============================================================
     async function checkOnboarding() {
       try {
-        const s = await window.terminator.loadSettings();
+        const s = await window.shellfire.loadSettings();
         if (s && s._onboardingDone) return false;
         return true;
       } catch { return false; }
@@ -5413,10 +5544,10 @@
         settings._onboardingDone = true;
         settings.theme = themeIdx;
         settings.fontSize = fontSize;
-        window.terminator.saveSettings(settings);
+        window.shellfire.saveSettings(settings);
 
         overlay.classList.remove("visible");
-        showToast("Welcome to Terminator!");
+        showToast("Welcome to Shellfire!");
       });
     }
 
@@ -5434,7 +5565,7 @@
       resizeDebounce = setTimeout(() => fitAllTerminals(), 50);
     }).observe(grid);
     window.addEventListener("beforeunload", () => {
-      window.terminator.saveConfig({ theme: currentThemeIdx, fontSize: currentFontSize });
+      window.shellfire.saveConfig({ theme: currentThemeIdx, fontSize: currentFontSize });
       saveCurrentSession(true);
     });
     setupAutoSave();
@@ -5452,7 +5583,7 @@
 
     async function activateSinglePlugin(pluginName, type) {
       if (_loadedPlugins.has(pluginName)) return;
-      const result = await window.terminator.getPluginCode(pluginName);
+      const result = await window.shellfire.getPluginCode(pluginName);
       if (result.error) { showToast(`Plugin error: ${pluginName} — ${result.error}`, "error"); return; }
 
       const pluginExports = {};
@@ -5508,7 +5639,7 @@
         const cmdCtx = {
           get activePane() { return activeId ? { id: activeId, ...panes.get(activeId) } : null; },
           get allPanes() { return [...panes.entries()].map(([id, p]) => ({ id, ...p })); },
-          sendInput: (id, data) => window.terminator.sendInput(id, data),
+          sendInput: (id, data) => window.shellfire.sendInput(id, data),
           createTerminal: (cwd) => addTerminal(cwd),
           notify: (msg) => showToast(msg),
         };
@@ -5681,7 +5812,7 @@
 
     async function loadPlugins() {
       try {
-        const plugins = await window.terminator.loadPlugins();
+        const plugins = await window.shellfire.loadPlugins();
         if (!Array.isArray(plugins) || plugins.length === 0) return;
         for (const plugin of plugins) {
           try {
@@ -5701,7 +5832,7 @@
     let secretsVault = []; // { key, value, injected? }
 
     async function loadSecretsVault() {
-      try { const saved = await window.terminator.loadSecrets(); if (Array.isArray(saved)) secretsVault = saved; } catch {}
+      try { const saved = await window.shellfire.loadSecrets(); if (Array.isArray(saved)) secretsVault = saved; } catch {}
     }
 
     function openSecretsPanel() {
@@ -5747,7 +5878,7 @@
         row.querySelector(".danger").addEventListener("click", (e) => {
           e.stopPropagation();
           secretsVault.splice(i, 1);
-          window.terminator.saveSecrets(secretsVault);
+          window.shellfire.saveSecrets(secretsVault);
           renderSecretsList();
           showToast("Secret deleted");
         });
@@ -5771,7 +5902,7 @@
       const existing = secretsVault.findIndex(s => s.key === key);
       if (existing >= 0) secretsVault[existing].value = value;
       else secretsVault.push({ key, value });
-      window.terminator.saveSecrets(secretsVault);
+      window.shellfire.saveSecrets(secretsVault);
       keyInput.value = "";
       valInput.value = "";
       renderSecretsList();
@@ -5789,7 +5920,7 @@
     document.getElementById("secrets-inject-btn").addEventListener("click", async () => {
       if (!activeId) { showToast("No active terminal"); return; }
       if (secretsVault.length === 0) { showToast("No secrets to inject"); return; }
-      const result = await window.terminator.injectSecrets({ id: activeId, secrets: secretsVault });
+      const result = await window.shellfire.injectSecrets({ id: activeId, secrets: secretsVault });
       if (result.ok) showToast(`Injected ${result.count} secret${result.count > 1 ? "s" : ""} into terminal`);
       else showToast("Failed to inject secrets", "error");
     });
@@ -5804,7 +5935,7 @@
         if (secretsVault[idx]) selected.push(secretsVault[idx]);
       });
       if (selected.length === 0) { showToast("No secrets selected"); return; }
-      const result = await window.terminator.injectSecrets({ id: activeId, secrets: selected });
+      const result = await window.shellfire.injectSecrets({ id: activeId, secrets: selected });
       if (result.ok) showToast(`Injected ${result.count} selected secret${result.count > 1 ? "s" : ""}`);
       else showToast("Failed to inject secrets", "error");
     });
@@ -5830,7 +5961,7 @@
 
     async function updateK8sWidget() {
       try {
-        const ctx = await window.terminator.getK8sContext();
+        const ctx = await window.shellfire.getK8sContext();
         if (ctx) {
           widgetK8s.innerHTML = `<span class="widget-icon">\u2638</span> <span class="widget-label">${escapeHtml(ctx)}</span>`;
           widgetK8s.classList.add("visible");
@@ -5842,7 +5973,7 @@
 
     async function updateAwsWidget() {
       try {
-        const profile = await window.terminator.getAwsProfile();
+        const profile = await window.shellfire.getAwsProfile();
         if (profile) {
           widgetAws.innerHTML = `<span class="widget-icon">\u2601</span> <span class="widget-label">${escapeHtml(profile)}</span>`;
           widgetAws.classList.add("visible");
@@ -5854,7 +5985,7 @@
 
     async function updateNodeWidget() {
       try {
-        const ver = await window.terminator.getNodeVersion();
+        const ver = await window.shellfire.getNodeVersion();
         if (ver) {
           widgetNode.innerHTML = `<span class="widget-icon">\u25CF</span> ${escapeHtml(ver)}`;
           widgetNode.classList.add("visible");
@@ -6004,9 +6135,9 @@
       if (ipMatch && !urlMatch) {
         const ip = ipMatch[1];
         actions.push({ type: "ip", value: ip, label: `Ping ${ip}`, icon: "\uD83C\uDFD3",
-          action: async () => { const id = await addTerminal(); setTimeout(() => window.terminator.sendInput(id, `ping -c 4 ${ip}\n`), 200); } });
+          action: async () => { const id = await addTerminal(); setTimeout(() => window.shellfire.sendInput(id, `ping -c 4 ${ip}\n`), 200); } });
         actions.push({ type: "ip", value: ip, label: `SSH to ${ip}`, icon: "\uD83D\uDD12",
-          action: async () => { const id = await addTerminal(); setTimeout(() => window.terminator.sendInput(id, `ssh ${ip}\n`), 200); } });
+          action: async () => { const id = await addTerminal(); setTimeout(() => window.shellfire.sendInput(id, `ssh ${ip}\n`), 200); } });
         actions.push({ type: "ip", value: ip, label: "Copy IP", icon: "\uD83D\uDCCB",
           action: () => { navigator.clipboard.writeText(ip); showToast("Copied IP"); } });
       }
@@ -6019,9 +6150,9 @@
           action: () => window.open(`http://localhost:${port}`, "_blank") });
         actions.push({ type: "port", value: `:${port}`, label: `Kill process on :${port}`, icon: "\u274C",
           action: async () => {
-            const ports = await window.terminator.listPorts();
+            const ports = await window.shellfire.listPorts();
             const match = ports.find(p => p.port === port);
-            if (match) { await window.terminator.killPort(match.pid); showToast(`Killed PID ${match.pid}`); }
+            if (match) { await window.shellfire.killPort(match.pid); showToast(`Killed PID ${match.pid}`); }
             else showToast("Process not found on this port");
           }});
       }
@@ -6031,13 +6162,13 @@
       if (pathMatch && pathMatch[1].length > 3) {
         const fp = pathMatch[1];
         actions.push({ type: "path", value: fp, label: "Open in editor", icon: "\uD83D\uDCDD",
-          action: () => window.terminator.openInEditor(fp) });
+          action: () => window.shellfire.openInEditor(fp) });
         actions.push({ type: "path", value: fp, label: "Preview file", icon: "\uD83D\uDC41",
           action: () => showFilePreview(fp) });
         actions.push({ type: "path", value: fp, label: "cd to directory", icon: "\uD83D\uDCC2",
           action: () => {
             const dir = fp.replace(/\/[^/]+$/, "") || fp;
-            if (activeId) window.terminator.sendInput(activeId, `cd ${dir}\n`);
+            if (activeId) window.shellfire.sendInput(activeId, `cd ${dir}\n`);
           }});
         actions.push({ type: "path", value: fp, label: "Copy path", icon: "\uD83D\uDCCB",
           action: () => { navigator.clipboard.writeText(fp); showToast("Copied path"); } });
@@ -6048,11 +6179,11 @@
       if (dockerMatch && dockerMatch[1].length >= 12 && /^[0-9a-f]+$/.test(dockerMatch[1])) {
         const cid = dockerMatch[1].slice(0, 12);
         actions.push({ type: "container", value: cid, label: `Exec into ${cid}`, icon: "\uD83D\uDC33",
-          action: async () => { const id = await addTerminal(); setTimeout(() => window.terminator.sendInput(id, `docker exec -it ${cid} sh\n`), 200); } });
+          action: async () => { const id = await addTerminal(); setTimeout(() => window.shellfire.sendInput(id, `docker exec -it ${cid} sh\n`), 200); } });
         actions.push({ type: "container", value: cid, label: `Logs ${cid}`, icon: "\uD83D\uDCDC",
-          action: async () => { const id = await addTerminal(); setTimeout(() => window.terminator.sendInput(id, `docker logs -f ${cid}\n`), 200); } });
+          action: async () => { const id = await addTerminal(); setTimeout(() => window.shellfire.sendInput(id, `docker logs -f ${cid}\n`), 200); } });
         actions.push({ type: "container", value: cid, label: `Stop ${cid}`, icon: "\u23F9",
-          action: async () => { const id = await addTerminal(); setTimeout(() => window.terminator.sendInput(id, `docker stop ${cid}\n`), 200); } });
+          action: async () => { const id = await addTerminal(); setTimeout(() => window.shellfire.sendInput(id, `docker stop ${cid}\n`), 200); } });
       }
 
       // PID
@@ -6060,7 +6191,7 @@
       if (pidMatch) {
         const pid = pidMatch[1];
         actions.push({ type: "pid", value: `PID ${pid}`, label: `Kill PID ${pid}`, icon: "\u274C",
-          action: async () => { await window.terminator.killPort(pid); showToast(`Killed PID ${pid}`); } });
+          action: async () => { await window.shellfire.killPort(pid); showToast(`Killed PID ${pid}`); } });
       }
 
       return actions;
@@ -6145,7 +6276,7 @@
     let startupTasks = []; // { name, autoRun, steps: [{ cwd, command, delay }] }
 
     async function loadStartupTasks() {
-      try { const saved = await window.terminator.loadStartupTasks(); if (Array.isArray(saved)) startupTasks = saved; } catch {}
+      try { const saved = await window.shellfire.loadStartupTasks(); if (Array.isArray(saved)) startupTasks = saved; } catch {}
     }
 
     function openStartupTasks() {
@@ -6192,7 +6323,7 @@
         item.querySelector(".auto").addEventListener("click", (e) => {
           e.stopPropagation();
           task.autoRun = !task.autoRun;
-          window.terminator.saveStartupTasks(startupTasks);
+          window.shellfire.saveStartupTasks(startupTasks);
           renderStartupTasksList();
           showToast(task.autoRun ? `"${task.name}" will auto-run on launch` : `"${task.name}" auto-run disabled`);
         });
@@ -6200,7 +6331,7 @@
         item.querySelector(".danger").addEventListener("click", (e) => {
           e.stopPropagation();
           startupTasks.splice(i, 1);
-          window.terminator.saveStartupTasks(startupTasks);
+          window.shellfire.saveStartupTasks(startupTasks);
           renderStartupTasksList();
           showToast("Startup task deleted");
         });
@@ -6218,7 +6349,7 @@
         if (step.command) {
           const delay = step.delay || 300;
           setTimeout(() => {
-            if (panes.has(id)) window.terminator.sendInput(id, step.command + "\n");
+            if (panes.has(id)) window.shellfire.sendInput(id, step.command + "\n");
           }, delay);
         }
         // Small delay between panes to let them initialize
@@ -6291,7 +6422,7 @@
           task.name = input.value.trim() || `Task ${startupTasks.length + 1}`;
           if (isNew) startupTasks.push(task);
           else startupTasks[index] = task;
-          window.terminator.saveStartupTasks(startupTasks);
+          window.shellfire.saveStartupTasks(startupTasks);
           overlay.classList.remove("visible");
           input.placeholder = "Type a command...";
           renderStartupTasksList();
@@ -6342,22 +6473,22 @@
     // ============================================================
 
     // Window controls for Windows/Linux (frameless window)
-    if (window.terminator.platform !== "darwin") {
+    if (window.shellfire.platform !== "darwin") {
       document.body.classList.add("show-win-controls");
-      document.getElementById("win-minimize").addEventListener("click", () => window.terminator.winMinimize());
-      document.getElementById("win-maximize").addEventListener("click", () => window.terminator.winMaximize());
-      document.getElementById("win-close").addEventListener("click", () => window.terminator.winClose());
+      document.getElementById("win-minimize").addEventListener("click", () => window.shellfire.winMinimize());
+      document.getElementById("win-maximize").addEventListener("click", () => window.shellfire.winMaximize());
+      document.getElementById("win-close").addEventListener("click", () => window.shellfire.winClose());
     }
 
     (async () => {
       let _savedThemeName = null; // preserve across applyTheme overwrites
       try {
         const [config, savedSnippets, savedProfiles, savedSession, savedSettings] = await Promise.all([
-          window.terminator.loadConfig(),
-          window.terminator.loadSnippets(),
-          window.terminator.loadProfiles(),
-          window.terminator.loadSession(),
-          window.terminator.loadSettings(),
+          window.shellfire.loadConfig(),
+          window.shellfire.loadSnippets(),
+          window.shellfire.loadProfiles(),
+          window.shellfire.loadSession(),
+          window.shellfire.loadSettings(),
         ]);
         await Promise.all([loadRecentDirs(), loadSshBookmarks(), loadNotes(), loadBookmarks(), loadPipelinesData(), loadCmdBookmarksData(), loadSecretsVault(), loadStartupTasks()]);
 
@@ -6408,9 +6539,7 @@
                 if (ps.customName) { pane.customName = ps.customName; pane.titleEl.textContent = ps.customName; }
                 if (ps.userRenamed) pane._userRenamed = true;
                 if (ps.color) {
-                  pane.color = ps.color;
-                  paneColors.forEach(c => { if (c) pane.indicatorEl.classList.remove(`color-${c}`); });
-                  pane.indicatorEl.classList.add(`color-${ps.color}`);
+                  applyPaneColor(id, ps.color, ps.termBg || null, ps.termFg || null);
                 }
                 if (ps.locked) { pane.locked = true; pane.el.classList.add("locked"); pane.el.querySelector(".lock-badge")?.classList.add("locked"); }
               }
@@ -6545,20 +6674,20 @@
         showUpdateBanner(
           `v${_updateVersion} available`,
           "Download",
-          () => { window.terminator.downloadUpdate(); }
+          () => { window.shellfire.downloadUpdate(); }
         );
       } else if (_updateState === "downloaded") {
         showUpdateBanner(
           `v${_updateVersion} ready`,
           "Restart to Update",
-          () => { window.terminator.installUpdate(); }
+          () => { window.shellfire.installUpdate(); }
         );
       } else if (_updateState === "downloading") {
         showToast("Downloading update...");
       }
     });
 
-    window.terminator.onUpdateStatus((data) => {
+    window.shellfire.onUpdateStatus((data) => {
       switch (data.status) {
         case "available":
           _updateVersion = data.version;
@@ -6567,7 +6696,7 @@
           showUpdateBanner(
             `Update v${data.version} is available`,
             "Download",
-            () => { window.terminator.downloadUpdate(); }
+            () => { window.shellfire.downloadUpdate(); }
           );
           showToast(`Update available: v${data.version}`);
           break;
@@ -6585,7 +6714,7 @@
           showUpdateBanner(
             `v${_updateVersion || "new"} downloaded`,
             "Restart to Update",
-            () => { window.terminator.installUpdate(); }
+            () => { window.shellfire.installUpdate(); }
           );
           updateBannerBtn.disabled = false;
           showToast("Update downloaded — restart to apply");

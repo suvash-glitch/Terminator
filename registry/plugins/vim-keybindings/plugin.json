@@ -1,1 +1,1 @@
-{"name":"vim-keybindings","version":"1.0.0","description":"Vim-style navigation hints and key binding reference","type":"extension","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}
+{"name":"vim-keybindings","version":"1.0.0","description":"Vim-style navigation hints and key binding reference","type":"extension","main":"index.js","author":"Shellfire","homepage":"https://github.com/suvash-glitch/Shellfire"}

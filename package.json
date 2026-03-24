@@ -1,20 +1,20 @@
 {
-  "name": "terminator",
+  "name": "shellfire",
   "version": "2.0.0",
   "description": "AI-powered terminal multiplexer with split panes, pipelines, extensions, and remote sessions",
   "main": "main.js",
   "author": {
     "name": "Suvash Bhusal",
-    "email": "suvash@terminator.dev"
+    "email": "suvash@shellfire.dev"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/suvash-glitch/Terminator.git"
+    "url": "https://github.com/suvash-glitch/Shellfire.git"
   },
-  "homepage": "https://github.com/suvash-glitch/Terminator#readme",
+  "homepage": "https://github.com/suvash-glitch/Shellfire#readme",
   "bin": {
-    "terminator": "./bin/terminator-cli.js"
+    "shellfire": "./bin/shellfire-cli.js"
   },
   "scripts": {
     "start": "electron .",
@@ -42,13 +42,13 @@
     "eslint": "^9.0.0"
   },
   "build": {
-    "appId": "com.terminator.app",
-    "productName": "Terminator",
+    "appId": "com.shellfire.app",
+    "productName": "Shellfire",
     "icon": "assets/icon.png",
     "publish": {
       "provider": "github",
       "owner": "suvash-glitch",
-      "repo": "Terminator"
+      "repo": "Shellfire"
     },
     "directories": {
       "output": "dist"

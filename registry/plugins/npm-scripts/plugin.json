@@ -1,1 +1,1 @@
-{"name":"npm-scripts","version":"1.0.0","description":"List npm scripts from package.json","type":"command","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}
+{"name":"npm-scripts","version":"1.0.0","description":"List npm scripts from package.json","type":"command","main":"index.js","author":"Shellfire","homepage":"https://github.com/suvash-glitch/Shellfire"}

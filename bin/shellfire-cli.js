@@ -6,33 +6,33 @@ const path = require("path");
 const os = require("os");
 const fs = require("fs");
 
-const SOCKET_DIR = path.join(os.homedir(), ".terminator");
+const SOCKET_DIR = path.join(os.homedir(), ".shellfire");
 
 // Find the most recent active socket (supports multi-instance)
 function findSocketPath() {
   if (!fs.existsSync(SOCKET_DIR)) return null;
   const socks = fs.readdirSync(SOCKET_DIR)
-    .filter(f => f.startsWith("terminator-") && f.endsWith(".sock"))
+    .filter(f => f.startsWith("shellfire-") && f.endsWith(".sock"))
     .map(f => ({ name: f, path: path.join(SOCKET_DIR, f), mtime: fs.statSync(path.join(SOCKET_DIR, f)).mtimeMs }))
     .sort((a, b) => b.mtime - a.mtime);
   // Also check legacy path
-  const legacy = path.join(SOCKET_DIR, "terminator.sock");
-  if (fs.existsSync(legacy)) socks.push({ name: "terminator.sock", path: legacy, mtime: 0 });
+  const legacy = path.join(SOCKET_DIR, "shellfire.sock");
+  if (fs.existsSync(legacy)) socks.push({ name: "shellfire.sock", path: legacy, mtime: 0 });
   return socks.length > 0 ? socks[0].path : null;
 }
 const SOCKET_PATH = findSocketPath();
 
 const usage = `
-  terminator - Terminal multiplexer CLI
+  shellfire - Terminal multiplexer CLI
 
   Usage:
-    terminator list                       List all terminal sessions
-    terminator attach -t <name>           Attach/focus a session by name
-    terminator new [-t <name>] [-d <dir>] Create a new terminal session
-    terminator send -t <name> <text>      Send input to a named session
-    terminator kill -t <name>             Kill a terminal session by name
-    terminator rename -t <old> <new>      Rename a terminal session
-    terminator remote <user@host> [-p port] [-w password]
+    shellfire list                       List all terminal sessions
+    shellfire attach -t <name>           Attach/focus a session by name
+    shellfire new [-t <name>] [-d <dir>] Create a new terminal session
+    shellfire send -t <name> <text>      Send input to a named session
+    shellfire kill -t <name>             Kill a terminal session by name
+    shellfire rename -t <old> <new>      Rename a terminal session
+    shellfire remote <user@host> [-p port] [-w password]
                                           Discover & open remote sessions
 
   Options:
@@ -40,22 +40,22 @@ const usage = `
     -d, --dir <path>      Working directory for new terminal
     -p, --port <port>     SSH port (default: 22)
     -w, --password <pwd>  SSH password (WARNING: visible in process list via ps aux;
-                            prefer TERMINATOR_SSH_PASSWORD env var instead)
+                            prefer SHELLFIRE_SSH_PASSWORD env var instead)
     -h, --help            Show this help
     -v, --version         Show version
 
   Environment:
-    TERMINATOR_SSH_PASSWORD   SSH password (recommended over -w flag for security)
+    SHELLFIRE_SSH_PASSWORD   SSH password (recommended over -w flag for security)
 
   Examples:
-    terminator list
-    terminator new -t backend -d ~/projects/api
-    terminator attach -t backend
-    terminator send -t backend "npm start"
-    terminator rename -t backend "API Server"
-    terminator kill -t backend
-    terminator remote user@192.168.1.100 -w mypassword
-    terminator remote deploy@prod-server -p 2222
+    shellfire list
+    shellfire new -t backend -d ~/projects/api
+    shellfire attach -t backend
+    shellfire send -t backend "npm start"
+    shellfire rename -t backend "API Server"
+    shellfire kill -t backend
+    shellfire remote user@192.168.1.100 -w mypassword
+    shellfire remote deploy@prod-server -p 2222
 `.trim();
 
 function parseArgs(argv) {
@@ -94,7 +94,7 @@ function parseArgs(argv) {
 function sendCommand(cmd) {
   return new Promise((resolve, reject) => {
     if (!SOCKET_PATH || !fs.existsSync(SOCKET_PATH)) {
-      reject(new Error("Terminator is not running. Start the app first."));
+      reject(new Error("Shellfire is not running. Start the app first."));
       return;
     }
 
@@ -111,13 +111,13 @@ function sendCommand(cmd) {
       try {
         resolve(JSON.parse(data));
       } catch {
-        reject(new Error("Invalid response from Terminator"));
+        reject(new Error("Invalid response from Shellfire"));
       }
     });
 
     client.on("error", (err) => {
       if (err.code === "ECONNREFUSED" || err.code === "ENOENT") {
-        reject(new Error("Terminator is not running. Start the app first."));
+        reject(new Error("Shellfire is not running. Start the app first."));
       } else {
         reject(err);
       }
@@ -158,7 +158,7 @@ function formatTable(sessions) {
 function attachSession(target) {
   return new Promise((resolve, reject) => {
     if (!SOCKET_PATH || !fs.existsSync(SOCKET_PATH)) {
-      reject(new Error("Terminator is not running. Start the app first."));
+      reject(new Error("Shellfire is not running. Start the app first."));
       return;
     }
 
@@ -264,7 +264,7 @@ function attachSession(target) {
         process.stdin.setRawMode(false);
       }
       if (err.code === "ECONNREFUSED" || err.code === "ENOENT") {
-        reject(new Error("Terminator is not running. Start the app first."));
+        reject(new Error("Shellfire is not running. Start the app first."));
       } else {
         reject(err);
       }
@@ -299,7 +299,7 @@ async function main() {
           );
           version = pkg.version;
         } catch {}
-        console.log(`terminator v${version}`);
+        console.log(`shellfire v${version}`);
         break;
       }
 
@@ -310,7 +310,7 @@ async function main() {
           console.error(`Error: ${result.error}`);
           process.exit(1);
         }
-        console.log("\n  Terminator Sessions\n");
+        console.log("\n  Shellfire Sessions\n");
         console.log(formatTable(result.sessions));
         console.log(`\n  ${result.sessions.length} session(s) (* = active)\n`);
         break;
@@ -405,7 +405,7 @@ async function main() {
         const hostArg = rest[0];
         if (!hostArg) {
           console.error("Error: remote requires user@host argument");
-          console.error("  Usage: terminator remote <user@host> [-p port] [-w password]");
+          console.error("  Usage: shellfire remote <user@host> [-p port] [-w password]");
           process.exit(1);
         }
 
@@ -419,13 +419,13 @@ async function main() {
         }
 
         const sshPort = port || 22;
-        const sshPassword = password || process.env.TERMINATOR_SSH_PASSWORD || "";
+        const sshPassword = password || process.env.SHELLFIRE_SSH_PASSWORD || "";
 
-        console.log(`\n  Discovering Terminator sessions on ${user}@${host}${sshPort !== 22 ? ':' + sshPort : ''}...\n`);
+        console.log(`\n  Discovering Shellfire sessions on ${user}@${host}${sshPort !== 22 ? ':' + sshPort : ''}...\n`);
 
         // Create a temporary SSH_ASKPASS script for password auth
         const { execFile } = require("child_process");
-        const tmpAskpass = path.join(os.tmpdir(), `terminator-askpass-${Date.now()}.sh`);
+        const tmpAskpass = path.join(os.tmpdir(), `shellfire-askpass-${Date.now()}.sh`);
         let sshEnv = { ...process.env };
 
         if (sshPassword) {
@@ -433,7 +433,7 @@ async function main() {
           fs.writeFileSync(tmpAskpass, `#!/bin/sh\necho '${escaped}'\n`, { mode: 0o700 });
           sshEnv.SSH_ASKPASS = tmpAskpass;
           sshEnv.SSH_ASKPASS_REQUIRE = "force";
-          sshEnv.DISPLAY = "terminator:0";
+          sshEnv.DISPLAY = "shellfire:0";
         }
 
         const sshArgs = [
@@ -449,11 +449,11 @@ async function main() {
 
         const probe = `node -e '
           const net=require("net"),path=require("path"),os=require("os"),fs=require("fs");
-          const DIR=path.join(os.homedir(),".terminator");
+          const DIR=path.join(os.homedir(),".shellfire");
           let SOCK=null;
-          try{const ss=fs.readdirSync(DIR).filter(f=>f.startsWith("terminator-")&&f.endsWith(".sock")).map(f=>({p:path.join(DIR,f),m:fs.statSync(path.join(DIR,f)).mtimeMs})).sort((a,b)=>b.m-a.m);if(ss.length)SOCK=ss[0].p;}catch{}
-          if(!SOCK){const leg=path.join(DIR,"terminator.sock");if(fs.existsSync(leg))SOCK=leg;}
-          if(!SOCK){console.log(JSON.stringify({error:"Terminator is not running on this host"}));process.exit(0)}
+          try{const ss=fs.readdirSync(DIR).filter(f=>f.startsWith("shellfire-")&&f.endsWith(".sock")).map(f=>({p:path.join(DIR,f),m:fs.statSync(path.join(DIR,f)).mtimeMs})).sort((a,b)=>b.m-a.m);if(ss.length)SOCK=ss[0].p;}catch{}
+          if(!SOCK){const leg=path.join(DIR,"shellfire.sock");if(fs.existsSync(leg))SOCK=leg;}
+          if(!SOCK){console.log(JSON.stringify({error:"Shellfire is not running on this host"}));process.exit(0)}
           const c=net.createConnection(SOCK,()=>{c.write(JSON.stringify({action:"list"})+"\\n")});
           let d="";c.on("data",ch=>d+=ch.toString());c.on("end",()=>console.log(d));
           c.on("error",e=>{console.log(JSON.stringify({error:e.message}))});
@@ -491,7 +491,7 @@ async function main() {
 
         const sessions = remoteResult.sessions || [];
         if (sessions.length === 0) {
-          console.log("  No active Terminator sessions on remote host.\n");
+          console.log("  No active Shellfire sessions on remote host.\n");
           break;
         }
 
@@ -499,7 +499,7 @@ async function main() {
         console.log(formatTable(sessions));
         console.log();
 
-        // Open each remote session as a local terminal via the local Terminator socket
+        // Open each remote session as a local terminal via the local Shellfire socket
         console.log("  Opening sessions locally...\n");
         const portFlag = sshPort !== 22 ? `-p ${sshPort} ` : "";
         for (const s of sessions) {

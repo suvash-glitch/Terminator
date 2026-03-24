@@ -23,7 +23,7 @@ describe('JSON helpers', () => {
     function writeJSON(p, data) {
       fs.writeFileSync(p, JSON.stringify(data, null, 2));
     }
-    const tmpFile = path.join(tmpDir, 'terminator-test-' + Date.now() + '.json');
+    const tmpFile = path.join(tmpDir, 'shellfire-test-' + Date.now() + '.json');
     const data = { snippets: [{ name: 'test', command: 'echo hello' }] };
     writeJSON(tmpFile, data);
     const result = readJSON(tmpFile, null);
@@ -35,7 +35,7 @@ describe('JSON helpers', () => {
     function readJSON(p, fallback) {
       try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return fallback; }
     }
-    const tmpFile = path.join(tmpDir, 'terminator-test-bad-' + Date.now() + '.json');
+    const tmpFile = path.join(tmpDir, 'shellfire-test-bad-' + Date.now() + '.json');
     fs.writeFileSync(tmpFile, 'not valid json {{{');
     const result = readJSON(tmpFile, []);
     assert.deepStrictEqual(result, []);

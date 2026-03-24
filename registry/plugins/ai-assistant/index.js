@@ -1,5 +1,5 @@
 /**
- * AI Assistant Plugin for Terminator
+ * AI Assistant Plugin for Shellfire
  * Provides a side-panel AI chat UI with multi-provider support.
  */
 

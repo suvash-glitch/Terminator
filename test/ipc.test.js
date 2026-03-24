@@ -60,7 +60,7 @@ const tmpDir = os.tmpdir();
 
 describe('readJSON / writeJSON', () => {
   it('reads valid JSON file', () => {
-    const tmpFile = path.join(tmpDir, `terminator-ipc-test-${Date.now()}-1.json`);
+    const tmpFile = path.join(tmpDir, `shellfire-ipc-test-${Date.now()}-1.json`);
     fs.writeFileSync(tmpFile, '{"key": "value"}');
     const result = readJSON(tmpFile, null);
     assert.deepStrictEqual(result, { key: 'value' });
@@ -68,7 +68,7 @@ describe('readJSON / writeJSON', () => {
   });
 
   it('returns fallback for corrupt JSON', () => {
-    const tmpFile = path.join(tmpDir, `terminator-ipc-test-${Date.now()}-2.json`);
+    const tmpFile = path.join(tmpDir, `shellfire-ipc-test-${Date.now()}-2.json`);
     fs.writeFileSync(tmpFile, '{broken json!!!');
     const result = readJSON(tmpFile, { fallback: true });
     assert.deepStrictEqual(result, { fallback: true });
@@ -81,7 +81,7 @@ describe('readJSON / writeJSON', () => {
   });
 
   it('roundtrips empty object', () => {
-    const tmpFile = path.join(tmpDir, `terminator-ipc-test-${Date.now()}-3.json`);
+    const tmpFile = path.join(tmpDir, `shellfire-ipc-test-${Date.now()}-3.json`);
     writeJSON(tmpFile, {});
     const result = readJSON(tmpFile, null);
     assert.deepStrictEqual(result, {});
@@ -89,7 +89,7 @@ describe('readJSON / writeJSON', () => {
   });
 
   it('roundtrips nested data', () => {
-    const tmpFile = path.join(tmpDir, `terminator-ipc-test-${Date.now()}-4.json`);
+    const tmpFile = path.join(tmpDir, `shellfire-ipc-test-${Date.now()}-4.json`);
     const data = { sessions: [{ id: 1, name: 'test', nested: { deep: true } }] };
     writeJSON(tmpFile, data);
     const result = readJSON(tmpFile, null);
@@ -98,7 +98,7 @@ describe('readJSON / writeJSON', () => {
   });
 
   it('roundtrips array data', () => {
-    const tmpFile = path.join(tmpDir, `terminator-ipc-test-${Date.now()}-5.json`);
+    const tmpFile = path.join(tmpDir, `shellfire-ipc-test-${Date.now()}-5.json`);
     const data = ['snippet1', 'snippet2'];
     writeJSON(tmpFile, data);
     const result = readJSON(tmpFile, null);

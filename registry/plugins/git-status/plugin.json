@@ -1,1 +1,1 @@
-{"name":"git-status","version":"1.0.0","description":"Run git status in active terminal","type":"command","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}
+{"name":"git-status","version":"1.0.0","description":"Run git status in active terminal","type":"command","main":"index.js","author":"Shellfire","homepage":"https://github.com/suvash-glitch/Shellfire"}

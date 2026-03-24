@@ -1,1 +1,1 @@
-{"name":"timestamp-converter","version":"1.0.0","description":"Convert between timestamp formats (Unix, ISO, human-readable)","type":"extension","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}
+{"name":"timestamp-converter","version":"1.0.0","description":"Convert between timestamp formats (Unix, ISO, human-readable)","type":"extension","main":"index.js","author":"Shellfire","homepage":"https://github.com/suvash-glitch/Shellfire"}

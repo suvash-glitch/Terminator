@@ -8,13 +8,13 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Terminator, please report it responsibly.
+If you discover a security vulnerability in Shellfire, please report it responsibly.
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
 Instead, use one of the following methods:
 
-1. **GitHub Security Advisories** — [Report a vulnerability](https://github.com/suvash-glitch/Terminator/security/advisories/new) through GitHub's private disclosure process.
+1. **GitHub Security Advisories** — [Report a vulnerability](https://github.com/suvash-glitch/Shellfire/security/advisories/new) through GitHub's private disclosure process.
 2. **Email** — Send details to the project maintainer directly. Include:
    - Description of the vulnerability
    - Steps to reproduce
@@ -62,7 +62,7 @@ You should receive an acknowledgment within 48 hours. We will work with you to u
 
 ## Best Practices
 
-- Keep Terminator updated to the latest version.
+- Keep Shellfire updated to the latest version.
 - Use SSH keys instead of stored passwords when possible.
 - Be cautious with Broadcast Mode — keystrokes go to all panes.
 - Review session files before sharing them, as they may contain terminal output with sensitive information.

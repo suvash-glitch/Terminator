@@ -8,7 +8,7 @@
       "description": "Show active pane name or ID in statusbar",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📍",
       "tags": [
         "statusbar",
@@ -22,8 +22,8 @@
         "plugin.json": "registry/plugins/active-pane-widget/plugin.json",
         "index.js": "registry/plugins/active-pane-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/active-pane-widget/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/active-pane-widget.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/active-pane-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/active-pane-widget.termext"
     },
     {
       "id": "ai-assistant",
@@ -31,7 +31,7 @@
       "description": "AI chat assistant with multi-provider support (Anthropic, OpenAI, Google, Ollama)",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🤖",
       "tags": [
         "ai",
@@ -45,8 +45,8 @@
         "plugin.json": "registry/plugins/ai-assistant/plugin.json",
         "index.js": "registry/plugins/ai-assistant/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ai-assistant/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/ai-assistant.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/ai-assistant/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/ai-assistant.termext"
     },
     {
       "id": "atom-dark",
@@ -54,7 +54,7 @@
       "description": "Classic Atom editor dark theme with neutral gray tones and balanced colors",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "⚛️",
       "tags": [
         "dark",
@@ -68,7 +68,7 @@
         "plugin.json": "registry/plugins/atom-dark/plugin.json",
         "index.js": "registry/plugins/atom-dark/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/atom-dark/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/atom-dark/",
       "preview": [
         "#1D1F21",
         "#CC6666",
@@ -77,7 +77,7 @@
         "#F0C674",
         "#B294BB"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/atom-dark.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/atom-dark.termext"
     },
     {
       "id": "auto-rename",
@@ -85,7 +85,7 @@
       "description": "Auto-rename pane tabs based on cd/ssh commands",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "✏️",
       "tags": [
         "productivity",
@@ -99,8 +99,8 @@
         "plugin.json": "registry/plugins/auto-rename/plugin.json",
         "index.js": "registry/plugins/auto-rename/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/auto-rename/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/auto-rename.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/auto-rename/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/auto-rename.termext"
     },
     {
       "id": "ayu-dark",
@@ -108,7 +108,7 @@
       "description": "Ayu dark theme with warm accent colors on a deep black background",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌑",
       "tags": [
         "dark",
@@ -122,7 +122,7 @@
         "plugin.json": "registry/plugins/ayu-dark/plugin.json",
         "index.js": "registry/plugins/ayu-dark/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ayu-dark/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/ayu-dark/",
       "preview": [
         "#0A0E14",
         "#EA6C73",
@@ -131,7 +131,7 @@
         "#F9AF4F",
         "#FAE994"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/ayu-dark.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/ayu-dark.termext"
     },
     {
       "id": "ayu-mirage",
@@ -139,7 +139,7 @@
       "description": "Ayu mirage theme with soft blues and warm accents on a dusky background",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌆",
       "tags": [
         "dark",
@@ -153,7 +153,7 @@
         "plugin.json": "registry/plugins/ayu-mirage/plugin.json",
         "index.js": "registry/plugins/ayu-mirage/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ayu-mirage/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/ayu-mirage/",
       "preview": [
         "#1F2430",
         "#F28779",
@@ -162,7 +162,7 @@
         "#FFD580",
         "#D4BFFF"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/ayu-mirage.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/ayu-mirage.termext"
     },
     {
       "id": "base-converter",
@@ -170,7 +170,7 @@
       "description": "Side panel number base converter (dec/hex/bin/oct)",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔢",
       "tags": [
         "utility",
@@ -183,8 +183,8 @@
       "files": {
         "plugin.json": "registry/plugins/base-converter/plugin.json"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/base-converter/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/base-converter.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/base-converter/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/base-converter.termext"
     },
     {
       "id": "broadcast-groups",
@@ -192,7 +192,7 @@
       "description": "Broadcast input to grouped terminal panes simultaneously",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📡",
       "tags": [
         "productivity",
@@ -203,8 +203,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/broadcast-groups/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/broadcast-groups.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/broadcast-groups/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/broadcast-groups.termext"
     },
     {
       "id": "catppuccin-mocha",
@@ -212,7 +212,7 @@
       "description": "Warm dark base with soft pastel colors from the Catppuccin Mocha palette",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🐱",
       "tags": [
         "dark",
@@ -226,7 +226,7 @@
         "plugin.json": "registry/plugins/catppuccin-mocha/plugin.json",
         "index.js": "registry/plugins/catppuccin-mocha/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/catppuccin-mocha/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/catppuccin-mocha/",
       "preview": [
         "#1E1E2E",
         "#F38BA8",
@@ -235,7 +235,7 @@
         "#F9E2AF",
         "#F5C2E7"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/catppuccin-mocha.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/catppuccin-mocha.termext"
     },
     {
       "id": "cheatsheet",
@@ -243,7 +243,7 @@
       "description": "Side panel with command cheatsheets for git, docker, npm",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📋",
       "tags": [
         "reference",
@@ -257,8 +257,8 @@
         "plugin.json": "registry/plugins/cheatsheet/plugin.json",
         "index.js": "registry/plugins/cheatsheet/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/cheatsheet/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/cheatsheet.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/cheatsheet/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/cheatsheet.termext"
     },
     {
       "id": "claude-ai",
@@ -266,7 +266,7 @@
       "description": "AI autocomplete and chat — supports Anthropic, OpenAI, Google Gemini, Ollama, and OpenAI-compatible providers",
       "version": "2.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🧠",
       "tags": [
         "ai",
@@ -280,8 +280,8 @@
         "plugin.json": "registry/plugins/claude-ai/plugin.json",
         "index.js": "registry/plugins/claude-ai/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/claude-ai/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/claude-ai.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/claude-ai/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/claude-ai.termext"
     },
     {
       "id": "clear-all",
@@ -289,7 +289,7 @@
       "description": "Clear all terminal pane buffers",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🗑️",
       "tags": [
         "utility",
@@ -303,8 +303,8 @@
         "plugin.json": "registry/plugins/clear-all/plugin.json",
         "index.js": "registry/plugins/clear-all/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/clear-all/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/clear-all.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/clear-all/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/clear-all.termext"
     },
     {
       "id": "clock-widget",
@@ -312,7 +312,7 @@
       "description": "Show current time HH:MM:SS in statusbar",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🕐",
       "tags": [
         "statusbar",
@@ -326,8 +326,8 @@
         "plugin.json": "registry/plugins/clock-widget/plugin.json",
         "index.js": "registry/plugins/clock-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/clock-widget/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/clock-widget.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/clock-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/clock-widget.termext"
     },
     {
       "id": "cobalt2",
@@ -335,7 +335,7 @@
       "description": "Wes Bos' Cobalt2 theme with vivid blue background and high contrast",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "💎",
       "tags": [
         "dark",
@@ -349,7 +349,7 @@
         "plugin.json": "registry/plugins/cobalt2/plugin.json",
         "index.js": "registry/plugins/cobalt2/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/cobalt2/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/cobalt2/",
       "preview": [
         "#193549",
         "#FF628C",
@@ -358,7 +358,7 @@
         "#FFC600",
         "#FF9D00"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/cobalt2.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/cobalt2.termext"
     },
     {
       "id": "color-picker",
@@ -366,7 +366,7 @@
       "description": "Side panel color picker with hex/rgb/hsl values",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🎨",
       "tags": [
         "utility",
@@ -379,8 +379,8 @@
       "files": {
         "plugin.json": "registry/plugins/color-picker/plugin.json"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/color-picker/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/color-picker.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/color-picker/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/color-picker.termext"
     },
     {
       "id": "command-palette-plus",
@@ -388,7 +388,7 @@
       "description": "Enhanced command palette with fuzzy search and recent commands",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔎",
       "tags": [
         "productivity",
@@ -399,8 +399,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/command-palette-plus/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/command-palette-plus.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/command-palette-plus/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/command-palette-plus.termext"
     },
     {
       "id": "copy-cwd",
@@ -408,7 +408,7 @@
       "description": "Copy current working directory to clipboard",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📋",
       "tags": [
         "utility",
@@ -422,8 +422,8 @@
         "plugin.json": "registry/plugins/copy-cwd/plugin.json",
         "index.js": "registry/plugins/copy-cwd/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/copy-cwd/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/copy-cwd.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/copy-cwd/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/copy-cwd.termext"
     },
     {
       "id": "cyberpunk",
@@ -431,7 +431,7 @@
       "description": "Neon-drenched cyberpunk aesthetic with hot pink, electric cyan, and acid green accents",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌃",
       "tags": [
         "dark",
@@ -445,7 +445,7 @@
         "plugin.json": "registry/plugins/cyberpunk/plugin.json",
         "index.js": "registry/plugins/cyberpunk/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/cyberpunk/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/cyberpunk/",
       "preview": [
         "#0A0A0F",
         "#FF2E97",
@@ -454,7 +454,7 @@
         "#FFD700",
         "#BD00FF"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/cyberpunk.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/cyberpunk.termext"
     },
     {
       "id": "date-widget",
@@ -462,7 +462,7 @@
       "description": "Show current date in statusbar",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📅",
       "tags": [
         "statusbar",
@@ -476,8 +476,8 @@
         "plugin.json": "registry/plugins/date-widget/plugin.json",
         "index.js": "registry/plugins/date-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/date-widget/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/date-widget.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/date-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/date-widget.termext"
     },
     {
       "id": "day-progress",
@@ -485,7 +485,7 @@
       "description": "Show day progress percentage bar in statusbar",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📊",
       "tags": [
         "statusbar",
@@ -499,8 +499,8 @@
         "plugin.json": "registry/plugins/day-progress/plugin.json",
         "index.js": "registry/plugins/day-progress/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/day-progress/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/day-progress.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/day-progress/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/day-progress.termext"
     },
     {
       "id": "decode-base64",
@@ -508,7 +508,7 @@
       "description": "Decode base64 from clipboard",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔓",
       "tags": [
         "utility",
@@ -522,8 +522,8 @@
         "plugin.json": "registry/plugins/decode-base64/plugin.json",
         "index.js": "registry/plugins/decode-base64/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/decode-base64/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/decode-base64.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/decode-base64/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/decode-base64.termext"
     },
     {
       "id": "diff-viewer",
@@ -531,7 +531,7 @@
       "description": "Side-by-side diff viewer for comparing text and files",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔀",
       "tags": [
         "utility",
@@ -542,8 +542,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/diff-viewer/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/diff-viewer.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/diff-viewer/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/diff-viewer.termext"
     },
     {
       "id": "disk-usage",
@@ -551,7 +551,7 @@
       "description": "Show disk usage with df -h",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "💿",
       "tags": [
         "utility",
@@ -565,8 +565,8 @@
         "plugin.json": "registry/plugins/disk-usage/plugin.json",
         "index.js": "registry/plugins/disk-usage/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/disk-usage/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/disk-usage.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/disk-usage/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/disk-usage.termext"
     },
     {
       "id": "docker-dashboard",
@@ -574,7 +574,7 @@
       "description": "Docker container management dashboard with live status, actions, and command palette integration",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🐳",
       "tags": [
         "docker",
@@ -588,8 +588,8 @@
         "plugin.json": "registry/plugins/docker-dashboard/plugin.json",
         "index.js": "registry/plugins/docker-dashboard/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/docker-dashboard/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/docker-dashboard.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/docker-dashboard/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/docker-dashboard.termext"
     },
     {
       "id": "dracula-pro",
@@ -597,7 +597,7 @@
       "description": "Dracula Pro soft variant with muted pastels on a refined dark background",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🧛",
       "tags": [
         "dark",
@@ -611,7 +611,7 @@
         "plugin.json": "registry/plugins/dracula-pro/plugin.json",
         "index.js": "registry/plugins/dracula-pro/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/dracula-pro/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/dracula-pro/",
       "preview": [
         "#22212C",
         "#FF9580",
@@ -620,7 +620,7 @@
         "#FFFF80",
         "#FF80BF"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/dracula-pro.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/dracula-pro.termext"
     },
     {
       "id": "encode-base64",
@@ -628,7 +628,7 @@
       "description": "Encode clipboard contents to base64",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔒",
       "tags": [
         "utility",
@@ -642,8 +642,8 @@
         "plugin.json": "registry/plugins/encode-base64/plugin.json",
         "index.js": "registry/plugins/encode-base64/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/encode-base64/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/encode-base64.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/encode-base64/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/encode-base64.termext"
     },
     {
       "id": "env-manager",
@@ -651,7 +651,7 @@
       "description": "Environment variable manager for viewing and editing env vars",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔧",
       "tags": [
         "utility",
@@ -662,8 +662,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/env-manager/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/env-manager.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/env-manager/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/env-manager.termext"
     },
     {
       "id": "everforest",
@@ -671,7 +671,7 @@
       "description": "Comfortable and pleasant green forest color scheme for eyes",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌿",
       "tags": [
         "dark",
@@ -685,7 +685,7 @@
         "plugin.json": "registry/plugins/everforest/plugin.json",
         "index.js": "registry/plugins/everforest/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/everforest/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/everforest/",
       "preview": [
         "#2D353B",
         "#E67E80",
@@ -694,7 +694,7 @@
         "#DBBC7F",
         "#D699B6"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/everforest.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/everforest.termext"
     },
     {
       "id": "file-browser",
@@ -702,7 +702,7 @@
       "description": "Side panel file browser for navigating the filesystem",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📁",
       "tags": [
         "utility",
@@ -713,8 +713,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/file-browser/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/file-browser.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/file-browser/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/file-browser.termext"
     },
     {
       "id": "focus-mode",
@@ -722,7 +722,7 @@
       "description": "Toggle distraction-free focus mode hiding UI chrome",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🎯",
       "tags": [
         "productivity",
@@ -736,8 +736,8 @@
         "plugin.json": "registry/plugins/focus-mode/plugin.json",
         "index.js": "registry/plugins/focus-mode/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/focus-mode/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/focus-mode.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/focus-mode/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/focus-mode.termext"
     },
     {
       "id": "git-lens",
@@ -745,7 +745,7 @@
       "description": "Git integration panel with branch info, file status, recent commits, and quick git commands",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔍",
       "tags": [
         "git",
@@ -759,8 +759,8 @@
         "plugin.json": "registry/plugins/git-lens/plugin.json",
         "index.js": "registry/plugins/git-lens/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/git-lens/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/git-lens.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/git-lens/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/git-lens.termext"
     },
     {
       "id": "git-quick-commit",
@@ -768,7 +768,7 @@
       "description": "Git add all and quick commit",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "⚡",
       "tags": [
         "git",
@@ -782,8 +782,8 @@
         "plugin.json": "registry/plugins/git-quick-commit/plugin.json",
         "index.js": "registry/plugins/git-quick-commit/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/git-quick-commit/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/git-quick-commit.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/git-quick-commit/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/git-quick-commit.termext"
     },
     {
       "id": "git-status",
@@ -791,7 +791,7 @@
       "description": "Run git status in active terminal",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📊",
       "tags": [
         "git",
@@ -805,8 +805,8 @@
         "plugin.json": "registry/plugins/git-status/plugin.json",
         "index.js": "registry/plugins/git-status/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/git-status/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/git-status.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/git-status/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/git-status.termext"
     },
     {
       "id": "github-dark",
@@ -814,7 +814,7 @@
       "description": "GitHub's official dark theme with cool grays and familiar accent colors",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🐙",
       "tags": [
         "dark",
@@ -828,7 +828,7 @@
         "plugin.json": "registry/plugins/github-dark/plugin.json",
         "index.js": "registry/plugins/github-dark/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/github-dark/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/github-dark/",
       "preview": [
         "#0D1117",
         "#FF7B72",
@@ -837,7 +837,7 @@
         "#D29922",
         "#BC8CFF"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/github-dark.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/github-dark.termext"
     },
     {
       "id": "github-light",
@@ -845,7 +845,7 @@
       "description": "GitHub's official light theme with clean whites and crisp syntax colors",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🐙",
       "tags": [
         "light",
@@ -859,7 +859,7 @@
         "plugin.json": "registry/plugins/github-light/plugin.json",
         "index.js": "registry/plugins/github-light/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/github-light/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/github-light/",
       "preview": [
         "#FFFFFF",
         "#CF222E",
@@ -868,7 +868,7 @@
         "#4D2D00",
         "#8250DF"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/github-light.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/github-light.termext"
     },
     {
       "id": "greeting-widget",
@@ -876,7 +876,7 @@
       "description": "Show time-appropriate greeting in statusbar",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "👋",
       "tags": [
         "statusbar",
@@ -890,8 +890,8 @@
         "plugin.json": "registry/plugins/greeting-widget/plugin.json",
         "index.js": "registry/plugins/greeting-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/greeting-widget/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/greeting-widget.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/greeting-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/greeting-widget.termext"
     },
     {
       "id": "gruvbox-dark",
@@ -899,7 +899,7 @@
       "description": "Warm retro groove color scheme with earthy tones",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🟤",
       "tags": [
         "dark",
@@ -913,7 +913,7 @@
         "plugin.json": "registry/plugins/gruvbox-dark/plugin.json",
         "index.js": "registry/plugins/gruvbox-dark/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/gruvbox-dark/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/gruvbox-dark/",
       "preview": [
         "#282828",
         "#CC241D",
@@ -922,7 +922,7 @@
         "#D79921",
         "#B16286"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/gruvbox-dark.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/gruvbox-dark.termext"
     },
     {
       "id": "hash-generator",
@@ -930,7 +930,7 @@
       "description": "Generate MD5, SHA-1, SHA-256 hashes from input text",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "#️⃣",
       "tags": [
         "utility",
@@ -941,8 +941,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/hash-generator/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/hash-generator.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/hash-generator/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/hash-generator.termext"
     },
     {
       "id": "hello-command",
@@ -950,7 +950,7 @@
       "description": "A simple example command plugin that says hello",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "👋",
       "tags": [
         "example",
@@ -964,8 +964,8 @@
         "plugin.json": "registry/plugins/hello-command/plugin.json",
         "index.js": "registry/plugins/hello-command/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/hello-command/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/hello-command.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/hello-command/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/hello-command.termext"
     },
     {
       "id": "horizon",
@@ -973,7 +973,7 @@
       "description": "Horizon warm dark theme with rosy red and orange sunset accents",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌅",
       "tags": [
         "dark",
@@ -987,7 +987,7 @@
         "plugin.json": "registry/plugins/horizon/plugin.json",
         "index.js": "registry/plugins/horizon/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/horizon/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/horizon/",
       "preview": [
         "#1C1E26",
         "#E95678",
@@ -996,7 +996,7 @@
         "#FAB795",
         "#EE64AC"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/horizon.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/horizon.termext"
     },
     {
       "id": "http-client",
@@ -1004,7 +1004,7 @@
       "description": "Side panel HTTP client for making REST API requests",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌐",
       "tags": [
         "api",
@@ -1015,8 +1015,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/http-client/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/http-client.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/http-client/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/http-client.termext"
     },
     {
       "id": "ip-info",
@@ -1024,7 +1024,7 @@
       "description": "Show IP addresses via ifconfig",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌐",
       "tags": [
         "networking",
@@ -1038,8 +1038,8 @@
         "plugin.json": "registry/plugins/ip-info/plugin.json",
         "index.js": "registry/plugins/ip-info/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ip-info/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/ip-info.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/ip-info/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/ip-info.termext"
     },
     {
       "id": "json-viewer",
@@ -1047,7 +1047,7 @@
       "description": "Side panel JSON formatter and viewer",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📄",
       "tags": [
         "json",
@@ -1061,8 +1061,8 @@
         "plugin.json": "registry/plugins/json-viewer/plugin.json",
         "index.js": "registry/plugins/json-viewer/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/json-viewer/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/json-viewer.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/json-viewer/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/json-viewer.termext"
     },
     {
       "id": "jwt-decoder",
@@ -1070,7 +1070,7 @@
       "description": "Decode and inspect JSON Web Tokens",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔑",
       "tags": [
         "jwt",
@@ -1081,8 +1081,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/jwt-decoder/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/jwt-decoder.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/jwt-decoder/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/jwt-decoder.termext"
     },
     {
       "id": "k8s-status",
@@ -1090,7 +1090,7 @@
       "description": "Kubernetes cluster status and pod management dashboard",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "☸️",
       "tags": [
         "kubernetes",
@@ -1101,8 +1101,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/k8s-status/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/k8s-status.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/k8s-status/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/k8s-status.termext"
     },
     {
       "id": "kanagawa",
@@ -1110,7 +1110,7 @@
       "description": "Dark color scheme inspired by the colors of the famous painting by Katsushika Hokusai",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌊",
       "tags": [
         "dark",
@@ -1124,7 +1124,7 @@
         "plugin.json": "registry/plugins/kanagawa/plugin.json",
         "index.js": "registry/plugins/kanagawa/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/kanagawa/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/kanagawa/",
       "preview": [
         "#1F1F28",
         "#C34043",
@@ -1133,7 +1133,7 @@
         "#C0A36E",
         "#957FB8"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/kanagawa.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/kanagawa.termext"
     },
     {
       "id": "keyboard-widget",
@@ -1141,7 +1141,7 @@
       "description": "Show keyboard shortcuts hint in statusbar",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "⌨️",
       "tags": [
         "statusbar",
@@ -1155,8 +1155,8 @@
         "plugin.json": "registry/plugins/keyboard-widget/plugin.json",
         "index.js": "registry/plugins/keyboard-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/keyboard-widget/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/keyboard-widget.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/keyboard-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/keyboard-widget.termext"
     },
     {
       "id": "kill-process",
@@ -1164,7 +1164,7 @@
       "description": "Send Ctrl+C to active pane to kill running process",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "💀",
       "tags": [
         "utility",
@@ -1178,8 +1178,8 @@
         "plugin.json": "registry/plugins/kill-process/plugin.json",
         "index.js": "registry/plugins/kill-process/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/kill-process/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/kill-process.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/kill-process/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/kill-process.termext"
     },
     {
       "id": "log-highlighter",
@@ -1187,7 +1187,7 @@
       "description": "Syntax highlighting for log files with color-coded levels",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📝",
       "tags": [
         "logging",
@@ -1198,8 +1198,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/log-highlighter/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/log-highlighter.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/log-highlighter/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/log-highlighter.termext"
     },
     {
       "id": "lorem-ipsum",
@@ -1207,7 +1207,7 @@
       "description": "Paste lorem ipsum text into terminal",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📝",
       "tags": [
         "utility",
@@ -1221,8 +1221,8 @@
         "plugin.json": "registry/plugins/lorem-ipsum/plugin.json",
         "index.js": "registry/plugins/lorem-ipsum/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/lorem-ipsum/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/lorem-ipsum.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/lorem-ipsum/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/lorem-ipsum.termext"
     },
     {
       "id": "material-darker",
@@ -1230,7 +1230,7 @@
       "description": "Material Design darker variant with clean, modern colors",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🎨",
       "tags": [
         "dark",
@@ -1244,7 +1244,7 @@
         "plugin.json": "registry/plugins/material-darker/plugin.json",
         "index.js": "registry/plugins/material-darker/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/material-darker/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/material-darker/",
       "preview": [
         "#212121",
         "#F07178",
@@ -1253,7 +1253,7 @@
         "#FFCB6B",
         "#C792EA"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/material-darker.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/material-darker.termext"
     },
     {
       "id": "memory-widget",
@@ -1261,7 +1261,7 @@
       "description": "Show JS heap memory usage in statusbar",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "💾",
       "tags": [
         "statusbar",
@@ -1275,8 +1275,8 @@
         "plugin.json": "registry/plugins/memory-widget/plugin.json",
         "index.js": "registry/plugins/memory-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/memory-widget/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/memory-widget.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/memory-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/memory-widget.termext"
     },
     {
       "id": "minimal-clock",
@@ -1284,7 +1284,7 @@
       "description": "Show just HH:MM in monospace in statusbar",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🕑",
       "tags": [
         "statusbar",
@@ -1298,8 +1298,8 @@
         "plugin.json": "registry/plugins/minimal-clock/plugin.json",
         "index.js": "registry/plugins/minimal-clock/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/minimal-clock/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/minimal-clock.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/minimal-clock/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/minimal-clock.termext"
     },
     {
       "id": "moonlight",
@@ -1307,7 +1307,7 @@
       "description": "Moonlight theme with cool indigo background and dreamy pastel accents",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌙",
       "tags": [
         "dark",
@@ -1321,7 +1321,7 @@
         "plugin.json": "registry/plugins/moonlight/plugin.json",
         "index.js": "registry/plugins/moonlight/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/moonlight/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/moonlight/",
       "preview": [
         "#222436",
         "#FF757F",
@@ -1330,7 +1330,7 @@
         "#FFC777",
         "#C099FF"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/moonlight.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/moonlight.termext"
     },
     {
       "id": "new-here",
@@ -1338,7 +1338,7 @@
       "description": "Open a new terminal at the current directory",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📂",
       "tags": [
         "utility",
@@ -1352,8 +1352,8 @@
         "plugin.json": "registry/plugins/new-here/plugin.json",
         "index.js": "registry/plugins/new-here/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/new-here/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/new-here.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/new-here/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/new-here.termext"
     },
     {
       "id": "night-owl",
@@ -1361,7 +1361,7 @@
       "description": "Sarah Drasner's Night Owl with deep navy and vivid syntax highlights",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🦉",
       "tags": [
         "dark",
@@ -1375,7 +1375,7 @@
         "plugin.json": "registry/plugins/night-owl/plugin.json",
         "index.js": "registry/plugins/night-owl/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/night-owl/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/night-owl/",
       "preview": [
         "#011627",
         "#EF5350",
@@ -1384,7 +1384,7 @@
         "#ADDB67",
         "#C792EA"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/night-owl.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/night-owl.termext"
     },
     {
       "id": "nord-aurora",
@@ -1392,7 +1392,7 @@
       "description": "Cool blue-gray tones inspired by the Nord color palette with aurora borealis accents",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "❄️",
       "tags": [
         "dark",
@@ -1406,7 +1406,7 @@
         "plugin.json": "registry/plugins/nord-aurora/plugin.json",
         "index.js": "registry/plugins/nord-aurora/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/nord-aurora/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/nord-aurora/",
       "preview": [
         "#2E3440",
         "#BF616A",
@@ -1415,7 +1415,7 @@
         "#EBCB8B",
         "#B48EAD"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/nord-aurora.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/nord-aurora.termext"
     },
     {
       "id": "notification-rules",
@@ -1423,7 +1423,7 @@
       "description": "Custom notification rules for terminal events and output patterns",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔔",
       "tags": [
         "notifications",
@@ -1434,8 +1434,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/notification-rules/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/notification-rules.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/notification-rules/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/notification-rules.termext"
     },
     {
       "id": "npm-scripts",
@@ -1443,7 +1443,7 @@
       "description": "List npm scripts from package.json",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📦",
       "tags": [
         "npm",
@@ -1457,8 +1457,8 @@
         "plugin.json": "registry/plugins/npm-scripts/plugin.json",
         "index.js": "registry/plugins/npm-scripts/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/npm-scripts/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/npm-scripts.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/npm-scripts/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/npm-scripts.termext"
     },
     {
       "id": "ocean-theme",
@@ -1466,7 +1466,7 @@
       "description": "A calming blue ocean-themed color scheme",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌊",
       "tags": [
         "dark",
@@ -1480,7 +1480,7 @@
         "plugin.json": "registry/plugins/ocean-theme/plugin.json",
         "index.js": "registry/plugins/ocean-theme/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ocean-theme/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/ocean-theme/",
       "preview": [
         "#0B1A2D",
         "#E06C75",
@@ -1489,7 +1489,7 @@
         "#E5C07B",
         "#B668CD"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/ocean-theme.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/ocean-theme.termext"
     },
     {
       "id": "one-dark-pro",
@@ -1497,7 +1497,7 @@
       "description": "Atom One Dark Pro with rich syntax colors on a cool dark background",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌑",
       "tags": [
         "dark",
@@ -1511,7 +1511,7 @@
         "plugin.json": "registry/plugins/one-dark-pro/plugin.json",
         "index.js": "registry/plugins/one-dark-pro/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/one-dark-pro/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/one-dark-pro/",
       "preview": [
         "#282c34",
         "#e06c75",
@@ -1520,7 +1520,7 @@
         "#d19a66",
         "#c678dd"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/one-dark-pro.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/one-dark-pro.termext"
     },
     {
       "id": "one-monokai",
@@ -1528,7 +1528,7 @@
       "description": "One Monokai hybrid combining One Dark base with classic Monokai accents",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🎭",
       "tags": [
         "dark",
@@ -1542,7 +1542,7 @@
         "plugin.json": "registry/plugins/one-monokai/plugin.json",
         "index.js": "registry/plugins/one-monokai/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/one-monokai/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/one-monokai/",
       "preview": [
         "#282c34",
         "#F92672",
@@ -1551,7 +1551,7 @@
         "#E6DB74",
         "#AE81FF"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/one-monokai.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/one-monokai.termext"
     },
     {
       "id": "open-finder",
@@ -1559,7 +1559,7 @@
       "description": "Open current directory in Finder",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📁",
       "tags": [
         "utility",
@@ -1573,8 +1573,8 @@
         "plugin.json": "registry/plugins/open-finder/plugin.json",
         "index.js": "registry/plugins/open-finder/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/open-finder/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/open-finder.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/open-finder/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/open-finder.termext"
     },
     {
       "id": "palenight",
@@ -1582,7 +1582,7 @@
       "description": "Material palenight with muted purples and soft pastel syntax colors",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌃",
       "tags": [
         "dark",
@@ -1596,7 +1596,7 @@
         "plugin.json": "registry/plugins/palenight/plugin.json",
         "index.js": "registry/plugins/palenight/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/palenight/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/palenight/",
       "preview": [
         "#292D3E",
         "#F07178",
@@ -1605,7 +1605,7 @@
         "#FFCB6B",
         "#C792EA"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/palenight.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/palenight.termext"
     },
     {
       "id": "pane-activity",
@@ -1613,7 +1613,7 @@
       "description": "Show which panes have recent activity",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📡",
       "tags": [
         "statusbar",
@@ -1627,8 +1627,8 @@
         "plugin.json": "registry/plugins/pane-activity/plugin.json",
         "index.js": "registry/plugins/pane-activity/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/pane-activity/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/pane-activity.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/pane-activity/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/pane-activity.termext"
     },
     {
       "id": "pane-counter",
@@ -1636,7 +1636,7 @@
       "description": "Show number of open panes in statusbar",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔢",
       "tags": [
         "statusbar",
@@ -1650,8 +1650,8 @@
         "plugin.json": "registry/plugins/pane-counter/plugin.json",
         "index.js": "registry/plugins/pane-counter/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/pane-counter/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/pane-counter.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/pane-counter/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/pane-counter.termext"
     },
     {
       "id": "poimandres",
@@ -1659,7 +1659,7 @@
       "description": "Poimandres dark theme with ethereal blues and soft lavender accents",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "💫",
       "tags": [
         "dark",
@@ -1673,7 +1673,7 @@
         "plugin.json": "registry/plugins/poimandres/plugin.json",
         "index.js": "registry/plugins/poimandres/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/poimandres/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/poimandres/",
       "preview": [
         "#1B1E28",
         "#D0679D",
@@ -1682,7 +1682,7 @@
         "#FFFAC2",
         "#FCC5E9"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/poimandres.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/poimandres.termext"
     },
     {
       "id": "pomodoro-timer",
@@ -1690,7 +1690,7 @@
       "description": "25-minute pomodoro countdown timer",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🍅",
       "tags": [
         "productivity",
@@ -1704,8 +1704,8 @@
         "plugin.json": "registry/plugins/pomodoro-timer/plugin.json",
         "index.js": "registry/plugins/pomodoro-timer/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/pomodoro-timer/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/pomodoro-timer.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/pomodoro-timer/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/pomodoro-timer.termext"
     },
     {
       "id": "powershell",
@@ -1713,7 +1713,7 @@
       "description": "PowerShell ISE classic blue theme with familiar Windows terminal colors",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔵",
       "tags": [
         "dark",
@@ -1727,7 +1727,7 @@
         "plugin.json": "registry/plugins/powershell/plugin.json",
         "index.js": "registry/plugins/powershell/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/powershell/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/powershell/",
       "preview": [
         "#012456",
         "#FF6161",
@@ -1736,7 +1736,7 @@
         "#EAAB53",
         "#D681FF"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/powershell.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/powershell.termext"
     },
     {
       "id": "process-tree",
@@ -1744,7 +1744,7 @@
       "description": "Visualize running processes in a tree hierarchy",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌳",
       "tags": [
         "process",
@@ -1755,8 +1755,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/process-tree/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/process-tree.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/process-tree/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/process-tree.termext"
     },
     {
       "id": "quick-notes",
@@ -1764,7 +1764,7 @@
       "description": "Side panel with simple notes textarea",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📝",
       "tags": [
         "notes",
@@ -1778,8 +1778,8 @@
         "plugin.json": "registry/plugins/quick-notes/plugin.json",
         "index.js": "registry/plugins/quick-notes/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/quick-notes/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/quick-notes.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/quick-notes/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/quick-notes.termext"
     },
     {
       "id": "quick-ssh",
@@ -1787,7 +1787,7 @@
       "description": "SSH connection manager with saved hosts, one-click connect, and connection profiles",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔗",
       "tags": [
         "ssh",
@@ -1801,8 +1801,8 @@
         "plugin.json": "registry/plugins/quick-ssh/plugin.json",
         "index.js": "registry/plugins/quick-ssh/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/quick-ssh/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/quick-ssh.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/quick-ssh/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/quick-ssh.termext"
     },
     {
       "id": "regex-tester",
@@ -1810,7 +1810,7 @@
       "description": "Side panel regex tester with match highlighting",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔍",
       "tags": [
         "regex",
@@ -1824,8 +1824,8 @@
         "plugin.json": "registry/plugins/regex-tester/plugin.json",
         "index.js": "registry/plugins/regex-tester/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/regex-tester/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/regex-tester.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/regex-tester/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/regex-tester.termext"
     },
     {
       "id": "repeat-last",
@@ -1833,7 +1833,7 @@
       "description": "Repeat the last command in active terminal",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔄",
       "tags": [
         "utility",
@@ -1847,8 +1847,8 @@
         "plugin.json": "registry/plugins/repeat-last/plugin.json",
         "index.js": "registry/plugins/repeat-last/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/repeat-last/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/repeat-last.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/repeat-last/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/repeat-last.termext"
     },
     {
       "id": "rose-pine",
@@ -1856,7 +1856,7 @@
       "description": "Muted and elegant palette with rose and gold accents on a dark pine base",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌹",
       "tags": [
         "dark",
@@ -1870,7 +1870,7 @@
         "plugin.json": "registry/plugins/rose-pine/plugin.json",
         "index.js": "registry/plugins/rose-pine/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/rose-pine/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/rose-pine/",
       "preview": [
         "#191724",
         "#EB6F92",
@@ -1879,7 +1879,7 @@
         "#F6C177",
         "#C4A7E7"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/rose-pine.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/rose-pine.termext"
     },
     {
       "id": "session-timer",
@@ -1887,7 +1887,7 @@
       "description": "Show time since session start in statusbar",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "⏱️",
       "tags": [
         "statusbar",
@@ -1901,8 +1901,8 @@
         "plugin.json": "registry/plugins/session-timer/plugin.json",
         "index.js": "registry/plugins/session-timer/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/session-timer/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/session-timer.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/session-timer/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/session-timer.termext"
     },
     {
       "id": "shades-of-purple",
@@ -1910,7 +1910,7 @@
       "description": "Ahmad Awais' Shades of Purple with bold purple tones and neon highlights",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "💜",
       "tags": [
         "dark",
@@ -1924,7 +1924,7 @@
         "plugin.json": "registry/plugins/shades-of-purple/plugin.json",
         "index.js": "registry/plugins/shades-of-purple/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/shades-of-purple/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/shades-of-purple/",
       "preview": [
         "#2D2B55",
         "#EC3A37",
@@ -1933,7 +1933,7 @@
         "#FAD000",
         "#FF7200"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/shades-of-purple.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/shades-of-purple.termext"
     },
     {
       "id": "snippet-runner",
@@ -1941,7 +1941,7 @@
       "description": "Command snippet manager with categories, search, and one-click execution in terminal",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🚀",
       "tags": [
         "snippets",
@@ -1955,8 +1955,8 @@
         "plugin.json": "registry/plugins/snippet-runner/plugin.json",
         "index.js": "registry/plugins/snippet-runner/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/snippet-runner/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/snippet-runner.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/snippet-runner/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/snippet-runner.termext"
     },
     {
       "id": "solarized-light",
@@ -1964,7 +1964,7 @@
       "description": "Ethan Schoonover's Solarized light with precision-balanced colors",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "☀️",
       "tags": [
         "light",
@@ -1978,7 +1978,7 @@
         "plugin.json": "registry/plugins/solarized-light/plugin.json",
         "index.js": "registry/plugins/solarized-light/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/solarized-light/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/solarized-light/",
       "preview": [
         "#FDF6E3",
         "#DC322F",
@@ -1987,7 +1987,7 @@
         "#B58900",
         "#D33682"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/solarized-light.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/solarized-light.termext"
     },
     {
       "id": "split-layout-manager",
@@ -1995,7 +1995,7 @@
       "description": "Save and restore custom split pane layouts",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📐",
       "tags": [
         "layout",
@@ -2006,8 +2006,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/split-layout-manager/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/split-layout-manager.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/split-layout-manager/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/split-layout-manager.termext"
     },
     {
       "id": "synthwave-84",
@@ -2015,7 +2015,7 @@
       "description": "Retro neon synthwave theme inspired by the '80s aesthetic",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🎵",
       "tags": [
         "dark",
@@ -2029,7 +2029,7 @@
         "plugin.json": "registry/plugins/synthwave-84/plugin.json",
         "index.js": "registry/plugins/synthwave-84/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/synthwave-84/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/synthwave-84/",
       "preview": [
         "#262335",
         "#FE4450",
@@ -2038,7 +2038,7 @@
         "#FEDE5D",
         "#FF7EDB"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/synthwave-84.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/synthwave-84.termext"
     },
     {
       "id": "system-monitor",
@@ -2046,7 +2046,7 @@
       "description": "Statusbar widget showing active pane count, current time, and terminal process info",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📊",
       "tags": [
         "statusbar",
@@ -2060,8 +2060,8 @@
         "plugin.json": "registry/plugins/system-monitor/plugin.json",
         "index.js": "registry/plugins/system-monitor/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/system-monitor/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/system-monitor.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/system-monitor/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/system-monitor.termext"
     },
     {
       "id": "tab-colorizer",
@@ -2069,7 +2069,7 @@
       "description": "Color-code pane tabs via context menu",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🎨",
       "tags": [
         "tabs",
@@ -2083,8 +2083,8 @@
         "plugin.json": "registry/plugins/tab-colorizer/plugin.json",
         "index.js": "registry/plugins/tab-colorizer/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tab-colorizer/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/tab-colorizer.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/tab-colorizer/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/tab-colorizer.termext"
     },
     {
       "id": "tab-search",
@@ -2092,7 +2092,7 @@
       "description": "Quickly search and switch between open terminal tabs",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔍",
       "tags": [
         "search",
@@ -2103,8 +2103,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tab-search/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/tab-search.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/tab-search/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/tab-search.termext"
     },
     {
       "id": "terminal-recorder",
@@ -2112,7 +2112,7 @@
       "description": "Record and replay terminal sessions as animated GIFs",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🎬",
       "tags": [
         "recording",
@@ -2123,8 +2123,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/terminal-recorder/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/terminal-recorder.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/terminal-recorder/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/terminal-recorder.termext"
     },
     {
       "id": "timestamp-converter",
@@ -2132,7 +2132,7 @@
       "description": "Convert between Unix timestamps and human-readable dates",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🕰️",
       "tags": [
         "utility",
@@ -2143,8 +2143,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/timestamp-converter/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/timestamp-converter.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/timestamp-converter/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/timestamp-converter.termext"
     },
     {
       "id": "timestamp-insert",
@@ -2152,7 +2152,7 @@
       "description": "Insert current ISO timestamp into terminal",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🕐",
       "tags": [
         "utility",
@@ -2166,8 +2166,8 @@
         "plugin.json": "registry/plugins/timestamp-insert/plugin.json",
         "index.js": "registry/plugins/timestamp-insert/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/timestamp-insert/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/timestamp-insert.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/timestamp-insert/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/timestamp-insert.termext"
     },
     {
       "id": "todo-scanner",
@@ -2175,7 +2175,7 @@
       "description": "Scan project files for TODO, FIXME, and HACK comments",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "✅",
       "tags": [
         "todo",
@@ -2186,8 +2186,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/todo-scanner/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/todo-scanner.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/todo-scanner/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/todo-scanner.termext"
     },
     {
       "id": "tokyo-night",
@@ -2195,7 +2195,7 @@
       "description": "Deep navy background with vibrant neon accents inspired by Tokyo Night",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🗼",
       "tags": [
         "dark",
@@ -2209,7 +2209,7 @@
         "plugin.json": "registry/plugins/tokyo-night/plugin.json",
         "index.js": "registry/plugins/tokyo-night/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tokyo-night/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/tokyo-night/",
       "preview": [
         "#1A1B26",
         "#F7768E",
@@ -2218,7 +2218,7 @@
         "#E0AF68",
         "#BB9AF7"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/tokyo-night.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/tokyo-night.termext"
     },
     {
       "id": "top-processes",
@@ -2226,7 +2226,7 @@
       "description": "Show top processes by CPU usage",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📈",
       "tags": [
         "system",
@@ -2240,8 +2240,8 @@
         "plugin.json": "registry/plugins/top-processes/plugin.json",
         "index.js": "registry/plugins/top-processes/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/top-processes/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/top-processes.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/top-processes/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/top-processes.termext"
     },
     {
       "id": "tree-view",
@@ -2249,7 +2249,7 @@
       "description": "Show directory tree structure",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌲",
       "tags": [
         "files",
@@ -2263,8 +2263,8 @@
         "plugin.json": "registry/plugins/tree-view/plugin.json",
         "index.js": "registry/plugins/tree-view/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/tree-view/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/tree-view.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/tree-view/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/tree-view.termext"
     },
     {
       "id": "ubuntu",
@@ -2272,7 +2272,7 @@
       "description": "Classic Ubuntu terminal colors with the iconic aubergine purple background",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🟣",
       "tags": [
         "dark",
@@ -2286,7 +2286,7 @@
         "plugin.json": "registry/plugins/ubuntu/plugin.json",
         "index.js": "registry/plugins/ubuntu/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/ubuntu/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/ubuntu/",
       "preview": [
         "#300A24",
         "#CC0000",
@@ -2295,7 +2295,7 @@
         "#C4A000",
         "#75507B"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/ubuntu.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/ubuntu.termext"
     },
     {
       "id": "uptime-widget",
@@ -2303,7 +2303,7 @@
       "description": "Show session uptime in statusbar",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "⏳",
       "tags": [
         "statusbar",
@@ -2317,8 +2317,8 @@
         "plugin.json": "registry/plugins/uptime-widget/plugin.json",
         "index.js": "registry/plugins/uptime-widget/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/uptime-widget/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/uptime-widget.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/uptime-widget/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/uptime-widget.termext"
     },
     {
       "id": "uuid-gen",
@@ -2326,7 +2326,7 @@
       "description": "Generate a UUID using uuidgen",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🆔",
       "tags": [
         "utility",
@@ -2340,8 +2340,8 @@
         "plugin.json": "registry/plugins/uuid-gen/plugin.json",
         "index.js": "registry/plugins/uuid-gen/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/uuid-gen/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/uuid-gen.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/uuid-gen/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/uuid-gen.termext"
     },
     {
       "id": "vim-keybindings",
@@ -2349,7 +2349,7 @@
       "description": "Vim-style keybindings for terminal navigation and editing",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📗",
       "tags": [
         "vim",
@@ -2360,8 +2360,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/vim-keybindings/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/vim-keybindings.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/vim-keybindings/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/vim-keybindings.termext"
     },
     {
       "id": "vitesse-dark",
@@ -2369,7 +2369,7 @@
       "description": "Vitesse dark theme by Anthony Fu with warm earth tones and clean contrast",
       "version": "1.0.0",
       "type": "theme",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🍂",
       "tags": [
         "dark",
@@ -2383,7 +2383,7 @@
         "plugin.json": "registry/plugins/vitesse-dark/plugin.json",
         "index.js": "registry/plugins/vitesse-dark/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/vitesse-dark/",
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/vitesse-dark/",
       "preview": [
         "#121212",
         "#CB7676",
@@ -2392,7 +2392,7 @@
         "#E6CC77",
         "#D9739F"
       ],
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/vitesse-dark.termext"
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/vitesse-dark.termext"
     },
     {
       "id": "weather",
@@ -2400,7 +2400,7 @@
       "description": "Show current weather in terminal",
       "version": "1.0.0",
       "type": "command",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🌤️",
       "tags": [
         "weather",
@@ -2414,8 +2414,8 @@
         "plugin.json": "registry/plugins/weather/plugin.json",
         "index.js": "registry/plugins/weather/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/weather/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/weather.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/weather/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/weather.termext"
     },
     {
       "id": "week-info",
@@ -2423,7 +2423,7 @@
       "description": "Show week number and day of week in statusbar",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "📆",
       "tags": [
         "statusbar",
@@ -2437,8 +2437,8 @@
         "plugin.json": "registry/plugins/week-info/plugin.json",
         "index.js": "registry/plugins/week-info/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/week-info/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/week-info.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/week-info/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/week-info.termext"
     },
     {
       "id": "word-clock",
@@ -2446,7 +2446,7 @@
       "description": "Show time as words in statusbar",
       "version": "1.0.0",
       "type": "statusbar",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔤",
       "tags": [
         "statusbar",
@@ -2460,8 +2460,8 @@
         "plugin.json": "registry/plugins/word-clock/plugin.json",
         "index.js": "registry/plugins/word-clock/index.js"
       },
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/word-clock/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/word-clock.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/word-clock/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/word-clock.termext"
     },
     {
       "id": "workspace-switcher",
@@ -2469,7 +2469,7 @@
       "description": "Save and switch between named workspace configurations",
       "version": "1.0.0",
       "type": "extension",
-      "author": "Terminator",
+      "author": "Shellfire",
       "icon": "🔀",
       "tags": [
         "workspace",
@@ -2480,8 +2480,8 @@
       "featured": false,
       "downloads": 0,
       "files": {},
-      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins/workspace-switcher/",
-      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/workspace-switcher.termext"
+      "downloadUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins/workspace-switcher/",
+      "packageUrl": "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/workspace-switcher.termext"
     }
   ]
 }

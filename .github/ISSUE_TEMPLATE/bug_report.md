@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug to help us improve Terminator
+about: Report a bug to help us improve Shellfire
 title: "[Bug] "
 labels: bug
 assignees: ''
@@ -32,7 +32,7 @@ If applicable, add screenshots to help explain the problem.
 ## Environment
 
 - **OS:** (e.g., macOS 15.2, Windows 11, Ubuntu 24.04)
-- **Terminator version:** (e.g., 1.0.0 — check title bar or `terminator --version`)
+- **Shellfire version:** (e.g., 1.0.0 — check title bar or `shellfire --version`)
 - **Installation method:** (DMG, Homebrew, build from source)
 - **Shell:** (e.g., zsh, bash, fish)
 

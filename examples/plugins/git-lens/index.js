@@ -1,5 +1,5 @@
 /**
- * Git Lens — Extension plugin for Terminator
+ * Git Lens — Extension plugin for Shellfire
  *
  * Provides a side panel with git branch info, modified files,
  * and command palette entries for common git operations.

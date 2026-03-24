@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-Terminator is an AI-powered terminal multiplexer built with Electron. It provides split panes, tabs, AI autocomplete (Claude), SSH bookmarks, Docker management, a plugin system with 100+ extensions, and a CLI — all in a single desktop app for macOS, Windows, and Linux.
+Shellfire is an AI-powered terminal multiplexer built with Electron. It provides split panes, tabs, AI autocomplete (Claude), SSH bookmarks, Docker management, a plugin system with 100+ extensions, and a CLI — all in a single desktop app for macOS, Windows, and Linux.
 
 ## Commands
 
@@ -28,7 +28,7 @@ node --test test/main.test.js
 
 The app follows Electron's two-process model with strict context isolation:
 
-- **`main.js`** — Main process. Manages PTY lifecycles (node-pty), all IPC handlers, a Unix socket server for CLI communication (`~/.terminator/terminator.sock`), file I/O, git/docker/ssh/cron integrations, plugin loading, and the marketplace.
+- **`main.js`** — Main process. Manages PTY lifecycles (node-pty), all IPC handlers, a Unix socket server for CLI communication (`~/.shellfire/shellfire.sock`), file I/O, git/docker/ssh/cron integrations, plugin loading, and the marketplace.
 
 - **`preload.js`** — Context bridge. Exposes 100+ safe IPC methods to the renderer via `contextBridge.exposeInMainWorld`. All renderer↔main communication goes through this bridge.
 
@@ -49,7 +49,7 @@ Plugins live in the user's data directory and are hot-loaded at runtime. Each pl
 
 ### CLI
 
-`bin/terminator-cli.js` communicates with the running app over a Unix socket. Commands: `list`, `new`, `attach`, `send`, `kill`, `rename`, `remote`. Zsh completions in `bin/_terminator`.
+`bin/shellfire-cli.js` communicates with the running app over a Unix socket. Commands: `list`, `new`, `attach`, `send`, `kill`, `rename`, `remote`. Zsh completions in `bin/_shellfire`.
 
 ## Code Style
 

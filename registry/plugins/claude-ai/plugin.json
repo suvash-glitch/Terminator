@@ -4,6 +4,6 @@
   "description": "AI autocomplete and chat — supports Anthropic, OpenAI, Google Gemini, Ollama, and OpenAI-compatible providers",
   "type": "extension",
   "main": "index.js",
-  "author": "Terminator",
-  "homepage": "https://github.com/suvash-glitch/Terminator"
+  "author": "Shellfire",
+  "homepage": "https://github.com/suvash-glitch/Shellfire"
 }

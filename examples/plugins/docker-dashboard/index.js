@@ -1,5 +1,5 @@
 /**
- * Docker Dashboard — Extension plugin for Terminator
+ * Docker Dashboard — Extension plugin for Shellfire
  *
  * Container management side panel with live status, action buttons,
  * and command palette integration for common Docker operations.

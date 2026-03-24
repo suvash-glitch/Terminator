@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marketplace — Terminator Extensions</title>
-<meta name="description" content="Browse 100+ extensions for Terminator: themes, commands, status bar widgets, and full extensions. Customize your terminal experience.">
+<title>Marketplace — Shellfire Extensions</title>
+<meta name="description" content="Browse 100+ extensions for Shellfire: themes, commands, status bar widgets, and full extensions. Customize your terminal experience.">
 <meta name="theme-color" content="#06060e">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -234,21 +234,21 @@ footer a:hover{color:#fff}
         <rect x="253" y="148" width="6" height="220" rx="3" fill="#00f0ff"/>
         <rect x="240" y="340" width="32" height="6" rx="2" fill="#00f0ff" opacity="0.9"/>
       </svg>
-      Terminator
+      Shellfire
     </a>
     <div class="links">
       <a href="index.html">Home</a>
       <a href="index.html#features">Features</a>
       <a href="builder/">Builder</a>
       <a href="index.html#install">Install</a>
-      <a href="https://github.com/suvash-glitch/Terminator" class="btn-nav">GitHub</a>
+      <a href="https://github.com/suvash-glitch/Shellfire" class="btn-nav">GitHub</a>
     </div>
   </div>
 </nav>
 
 <div class="mp-hero">
   <h1>Extension <span class="gradient">Marketplace</span></h1>
-  <p>100 extensions to customize your Terminator experience. Themes, commands, widgets, and powerful add-ons.</p>
+  <p>100 extensions to customize your Shellfire experience. Themes, commands, widgets, and powerful add-ons.</p>
   <div class="mp-stats">
     <div class="mp-stat"><div class="mp-stat-num" id="stat-total">--</div><div class="mp-stat-label">Extensions</div></div>
     <div class="mp-stat"><div class="mp-stat-num" id="stat-themes">--</div><div class="mp-stat-label">Themes</div></div>
@@ -286,12 +286,12 @@ footer a:hover{color:#fff}
 </div>
 
 <footer>
-  <p><a href="index.html">Terminator</a> &mdash; AI-Powered Terminal Multiplexer &middot; <a href="https://github.com/suvash-glitch/Terminator">GitHub</a></p>
+  <p><a href="index.html">Shellfire</a> &mdash; AI-Powered Terminal Multiplexer &middot; <a href="https://github.com/suvash-glitch/Shellfire">GitHub</a></p>
 </footer>
 
 <script>
 (function(){
-  var REGISTRY_URL = "https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/plugins.json";
+  var REGISTRY_URL = "https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/plugins.json";
   var LOCAL_URL = "../registry/plugins.json";
   var grid = document.getElementById("mp-grid");
   var searchEl = document.getElementById("mp-search");
@@ -318,7 +318,7 @@ footer a:hover{color:#fff}
     card += '<div class="mp-card-icon">' + (p.icon||"\uD83D\uDCE6") + '</div>';
     card += '<div class="mp-card-info">';
     card += '<div class="mp-card-name">' + esc(p.name||p.id) + '</div>';
-    card += '<div class="mp-card-author">' + esc(p.author||"Terminator") + ' &middot; v' + esc(p.version||"1.0.0") + '</div>';
+    card += '<div class="mp-card-author">' + esc(p.author||"Shellfire") + ' &middot; v' + esc(p.version||"1.0.0") + '</div>';
     card += '</div></div>';
     card += '<div class="mp-card-desc">' + esc(p.description||"") + '</div>';
     if(p.type === "theme" && p.preview && p.preview.length){
@@ -330,7 +330,7 @@ footer a:hover{color:#fff}
     card += '<span class="mp-tag '+typeClass+'">' + esc(TYPE_LABELS[p.type]||p.type||"") + '</span>';
     if(p.tags){for(var j=0;j<Math.min(p.tags.length,2);j++) card += '<span class="mp-tag subtle">' + esc(p.tags[j]) + '</span>';}
     card += '</div>';
-    var pkgUrl = p.packageUrl || ("https://raw.githubusercontent.com/suvash-glitch/Terminator/main/registry/packages/"+esc(p.id)+".termext");
+    var pkgUrl = p.packageUrl || ("https://raw.githubusercontent.com/suvash-glitch/Shellfire/main/registry/packages/"+esc(p.id)+".termext");
     card += '<a class="mp-download-btn" href="'+pkgUrl+'" download="'+esc(p.id)+'.termext" title="Download .termext package"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</a>';
     card += '</div></div>';
     return card;

@@ -1,1 +1,1 @@
-{"name":"cheatsheet","version":"1.0.0","description":"Side panel with command cheatsheets for git, docker, npm","type":"extension","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}
+{"name":"cheatsheet","version":"1.0.0","description":"Side panel with command cheatsheets for git, docker, npm","type":"extension","main":"index.js","author":"Shellfire","homepage":"https://github.com/suvash-glitch/Shellfire"}

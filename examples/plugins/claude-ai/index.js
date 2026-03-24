@@ -1,5 +1,5 @@
 /**
- * Claude AI Extension Plugin for Terminator
+ * Claude AI Extension Plugin for Shellfire
  *
  * Extracts all AI/Claude features from the core app into an installable
  * extension. Provides ghost-text autocomplete, AI chat sidebar, error

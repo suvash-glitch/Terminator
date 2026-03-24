@@ -2,7 +2,7 @@ const { describe, it } = require('node:test');
 const assert = require('node:assert');
 
 // ============================================================
-// Re-implement parseArgs from bin/terminator-cli.js for direct testing
+// Re-implement parseArgs from bin/shellfire-cli.js for direct testing
 // (The CLI file runs main() on load, so we cannot require it directly)
 // ============================================================
 function parseArgs(argv) {
@@ -44,91 +44,91 @@ function parseArgs(argv) {
 
 describe('CLI parseArgs', () => {
   it('parses "list" command', () => {
-    const result = parseArgs(['node', 'terminator', 'list']);
+    const result = parseArgs(['node', 'shellfire', 'list']);
     assert.strictEqual(result.command, 'list');
     assert.strictEqual(result.target, null);
   });
 
   it('parses "new" with -t and -d flags', () => {
-    const result = parseArgs(['node', 'terminator', 'new', '-t', 'myname', '-d', '/tmp']);
+    const result = parseArgs(['node', 'shellfire', 'new', '-t', 'myname', '-d', '/tmp']);
     assert.strictEqual(result.command, 'new');
     assert.strictEqual(result.target, 'myname');
     assert.strictEqual(result.dir, '/tmp');
   });
 
   it('parses "new" with long flags --target and --dir', () => {
-    const result = parseArgs(['node', 'terminator', 'new', '--target', 'srv', '--dir', '/home']);
+    const result = parseArgs(['node', 'shellfire', 'new', '--target', 'srv', '--dir', '/home']);
     assert.strictEqual(result.command, 'new');
     assert.strictEqual(result.target, 'srv');
     assert.strictEqual(result.dir, '/home');
   });
 
   it('parses "send" with target and rest text', () => {
-    const result = parseArgs(['node', 'terminator', 'send', '-t', 'backend', 'npm', 'start']);
+    const result = parseArgs(['node', 'shellfire', 'send', '-t', 'backend', 'npm', 'start']);
     assert.strictEqual(result.command, 'send');
     assert.strictEqual(result.target, 'backend');
     assert.deepStrictEqual(result.rest, ['npm', 'start']);
   });
 
   it('parses "kill" with target', () => {
-    const result = parseArgs(['node', 'terminator', 'kill', '-t', 'old-session']);
+    const result = parseArgs(['node', 'shellfire', 'kill', '-t', 'old-session']);
     assert.strictEqual(result.command, 'kill');
     assert.strictEqual(result.target, 'old-session');
   });
 
   it('parses "remote" with user@host and port', () => {
-    const result = parseArgs(['node', 'terminator', 'remote', 'user@host', '-p', '2222']);
+    const result = parseArgs(['node', 'shellfire', 'remote', 'user@host', '-p', '2222']);
     assert.strictEqual(result.command, 'remote');
     assert.deepStrictEqual(result.rest, ['user@host']);
     assert.strictEqual(result.port, 2222);
   });
 
   it('parses "remote" with password flag', () => {
-    const result = parseArgs(['node', 'terminator', 'remote', 'deploy@prod', '-w', 'secret123']);
+    const result = parseArgs(['node', 'shellfire', 'remote', 'deploy@prod', '-w', 'secret123']);
     assert.strictEqual(result.command, 'remote');
     assert.strictEqual(result.password, 'secret123');
   });
 
   it('returns help for no arguments', () => {
-    const result = parseArgs(['node', 'terminator']);
+    const result = parseArgs(['node', 'shellfire']);
     assert.strictEqual(result.command, 'help');
   });
 
   it('returns help for -h flag', () => {
-    const result = parseArgs(['node', 'terminator', '-h']);
+    const result = parseArgs(['node', 'shellfire', '-h']);
     assert.strictEqual(result.command, 'help');
   });
 
   it('returns help for --help flag', () => {
-    const result = parseArgs(['node', 'terminator', '--help']);
+    const result = parseArgs(['node', 'shellfire', '--help']);
     assert.strictEqual(result.command, 'help');
   });
 
   it('returns version for -v flag', () => {
-    const result = parseArgs(['node', 'terminator', '-v']);
+    const result = parseArgs(['node', 'shellfire', '-v']);
     assert.strictEqual(result.command, 'version');
   });
 
   it('returns version for --version flag', () => {
-    const result = parseArgs(['node', 'terminator', '--version']);
+    const result = parseArgs(['node', 'shellfire', '--version']);
     assert.strictEqual(result.command, 'version');
   });
 
   it('unknown command is returned as-is', () => {
-    const result = parseArgs(['node', 'terminator', 'foobar']);
+    const result = parseArgs(['node', 'shellfire', 'foobar']);
     assert.strictEqual(result.command, 'foobar');
   });
 
   it('missing -t value leaves target as null', () => {
     // -t at end with no following value: goes into rest
-    const result = parseArgs(['node', 'terminator', 'attach', '-t']);
+    const result = parseArgs(['node', 'shellfire', 'attach', '-t']);
     // -t is at the end so the condition `i + 1 < args.length` is false -> pushed to rest
     assert.strictEqual(result.target, null);
     assert.deepStrictEqual(result.rest, ['-t']);
   });
 
   it('password defaults to null when not provided', () => {
-    const result = parseArgs(['node', 'terminator', 'remote', 'user@host']);
+    const result = parseArgs(['node', 'shellfire', 'remote', 'user@host']);
     assert.strictEqual(result.password, null);
   });
 });
@@ -137,21 +137,21 @@ describe('CLI help text content', () => {
   it('usage string contains password visibility warning', () => {
     // The usage text from the CLI
     const usage = `
-  terminator - Terminal multiplexer CLI
+  shellfire - Terminal multiplexer CLI
 
   Usage:
-    terminator list                       List all terminal sessions
+    shellfire list                       List all terminal sessions
 
   Options:
     -w, --password <pwd>  SSH password (WARNING: visible in process list via ps aux;
-                            prefer TERMINATOR_SSH_PASSWORD env var instead)
+                            prefer SHELLFIRE_SSH_PASSWORD env var instead)
 
   Environment:
-    TERMINATOR_SSH_PASSWORD   SSH password (recommended over -w flag for security)
+    SHELLFIRE_SSH_PASSWORD   SSH password (recommended over -w flag for security)
 `.trim();
 
     assert.ok(usage.includes('WARNING'), 'help text should contain password WARNING');
-    assert.ok(usage.includes('TERMINATOR_SSH_PASSWORD'), 'help text should mention env var');
+    assert.ok(usage.includes('SHELLFIRE_SSH_PASSWORD'), 'help text should mention env var');
     assert.ok(usage.includes('ps aux'), 'help text should warn about ps visibility');
   });
 });

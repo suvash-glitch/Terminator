@@ -1,6 +1,6 @@
-# Contributing to Terminator
+# Contributing to Shellfire
 
-Thank you for your interest in contributing to Terminator! This guide covers everything you need to get started.
+Thank you for your interest in contributing to Shellfire! This guide covers everything you need to get started.
 
 ## Development Setup
 
@@ -14,8 +14,8 @@ Thank you for your interest in contributing to Terminator! This guide covers eve
 ### Getting Started
 
 ```bash
-git clone https://github.com/suvash-glitch/Terminator.git
-cd Terminator
+git clone https://github.com/suvash-glitch/Shellfire.git
+cd Shellfire
 npm install
 npm run rebuild   # compile native modules (node-pty)
 npm start         # launch the app
@@ -38,16 +38,16 @@ npm run build:linux   # Linux
 ## Project Structure
 
 ```
-Terminator/
+Shellfire/
   main.js          # Electron main process (PTY management, IPC, file I/O)
   preload.js       # Context bridge (exposes safe APIs to renderer)
   renderer.js      # Renderer process (UI, terminal management, all features)
   index.html       # App shell
   styles.css       # All styles
   bin/
-    terminator-cli.js   # CLI entry point
-    terminator          # Shell wrapper
-    _terminator         # Zsh completion script
+    shellfire-cli.js   # CLI entry point
+    shellfire          # Shell wrapper
+    _shellfire         # Zsh completion script
   test/            # Test files
   assets/          # Icons and images
 ```
@@ -91,17 +91,17 @@ Prefix with the type of change when helpful: `Add`, `Fix`, `Update`, `Remove`, `
 
 ## Reporting Bugs
 
-Open a [GitHub Issue](https://github.com/suvash-glitch/Terminator/issues/new?template=bug_report.md) with:
+Open a [GitHub Issue](https://github.com/suvash-glitch/Shellfire/issues/new?template=bug_report.md) with:
 
 - Steps to reproduce
 - Expected vs. actual behavior
 - OS and version
-- Terminator version (from `terminator --version` or the app title bar)
+- Shellfire version (from `shellfire --version` or the app title bar)
 - Any relevant terminal output or screenshots
 
 ## Requesting Features
 
-Open a [GitHub Issue](https://github.com/suvash-glitch/Terminator/issues/new?template=feature_request.md) with:
+Open a [GitHub Issue](https://github.com/suvash-glitch/Shellfire/issues/new?template=feature_request.md) with:
 
 - A clear description of the feature
 - Why it would be useful

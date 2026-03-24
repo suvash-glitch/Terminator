@@ -1,5 +1,5 @@
 /**
- * System Monitor — Statusbar plugin for Terminator
+ * System Monitor — Statusbar plugin for Shellfire
  *
  * Displays active pane count, current time, and active pane ID
  * in a compact monospace widget in the bottom status bar.

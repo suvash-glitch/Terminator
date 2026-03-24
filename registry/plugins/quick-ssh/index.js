@@ -1,5 +1,5 @@
 /**
- * Quick SSH — Extension plugin for Terminator
+ * Quick SSH — Extension plugin for Shellfire
  *
  * SSH connection manager with saved profiles, one-click connect,
  * and a side panel for managing connections.

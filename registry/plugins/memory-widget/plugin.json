@@ -1,1 +1,1 @@
-{"name":"memory-widget","version":"1.0.0","description":"Show JS heap memory usage in statusbar","type":"statusbar","main":"index.js","author":"Terminator","homepage":"https://github.com/suvash-glitch/Terminator"}
+{"name":"memory-widget","version":"1.0.0","description":"Show JS heap memory usage in statusbar","type":"statusbar","main":"index.js","author":"Shellfire","homepage":"https://github.com/suvash-glitch/Shellfire"}

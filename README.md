@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/icon.svg" alt="Terminator" width="128" height="128">
+  <img src="assets/icon.svg" alt="Shellfire" width="128" height="128">
 </p>
 
-<h1 align="center">Terminator</h1>
+<h1 align="center">Shellfire</h1>
 
 <p align="center">
   <strong>AI-powered terminal multiplexer</strong><br>
@@ -10,21 +10,21 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/suvash-glitch/Terminator/releases"><img src="https://img.shields.io/github/v/release/suvash-glitch/Terminator?style=flat-square&color=blue" alt="Release"></a>
+  <a href="https://github.com/suvash-glitch/Shellfire/releases"><img src="https://img.shields.io/github/v/release/suvash-glitch/Shellfire?style=flat-square&color=blue" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License"></a>
   <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey?style=flat-square" alt="Platform">
   <img src="https://img.shields.io/badge/electron-v35-blue?style=flat-square" alt="Electron">
 </p>
 
 <p align="center">
-  <img src="assets/screenshot.png" alt="Terminator Screenshot" width="800">
+  <img src="assets/screenshot.png" alt="Shellfire Screenshot" width="800">
 </p>
 
 ---
 
-## Why Terminator?
+## Why Shellfire?
 
-Terminator replaces your terminal, tmux, and half your DevOps dashboard. It gives you a modern, GPU-accelerated terminal multiplexer with AI autocomplete, an IDE-style sidebar, Docker management, SSH bookmarks, and a full CLI — all in one Electron app that feels native.
+Shellfire replaces your terminal, tmux, and half your DevOps dashboard. It gives you a modern, GPU-accelerated terminal multiplexer with AI autocomplete, an IDE-style sidebar, Docker management, SSH bookmarks, and a full CLI — all in one Electron app that feels native.
 
 ---
 
@@ -44,7 +44,7 @@ Terminator replaces your terminal, tmux, and half your DevOps dashboard. It give
 
 **6 Built-in Themes** — Dark, Solarized Dark, Dracula, Monokai, Nord, and Light. Cycle with a single shortcut.
 
-**CLI with Zsh Completion** — Control Terminator from any shell: create, list, attach, send commands, kill sessions. Full Zsh tab completion included.
+**CLI with Zsh Completion** — Control Shellfire from any shell: create, list, attach, send commands, kill sessions. Full Zsh tab completion included.
 
 **Broadcast Mode** — Send keystrokes to every pane simultaneously. Ideal for configuring multiple servers at once.
 
@@ -69,18 +69,18 @@ Terminator replaces your terminal, tmux, and half your DevOps dashboard. It give
 ### Homebrew (macOS)
 
 ```bash
-brew install --cask terminator-terminal
+brew install --cask shellfire-terminal
 ```
 
 ### Download
 
-Grab the latest DMG, EXE, or AppImage from [GitHub Releases](https://github.com/suvash-glitch/Terminator/releases).
+Grab the latest DMG, EXE, or AppImage from [GitHub Releases](https://github.com/suvash-glitch/Shellfire/releases).
 
 ### Build from Source
 
 ```bash
-git clone https://github.com/suvash-glitch/Terminator.git
-cd Terminator
+git clone https://github.com/suvash-glitch/Shellfire.git
+cd Shellfire
 npm install
 npm run rebuild   # rebuild native modules (node-pty)
 npm start
@@ -98,7 +98,7 @@ npm run build:linux   # Linux (.AppImage, .deb)
 
 ## Quick Start
 
-1. **Launch Terminator** — a single terminal pane opens.
+1. **Launch Shellfire** — a single terminal pane opens.
 2. **Split** — `Cmd+D` splits right, `Cmd+Shift+D` splits down.
 3. **Navigate** — `Cmd+Arrow` moves between panes, `Cmd+1-9` jumps directly.
 4. **Command Palette** — `Cmd+P` to search and run any action.
@@ -137,16 +137,16 @@ npm run build:linux   # Linux (.AppImage, .deb)
 
 ## CLI Usage
 
-Terminator includes a CLI for scripting and external control:
+Shellfire includes a CLI for scripting and external control:
 
 ```bash
-terminator list                             # List all sessions
-terminator new -t backend -d ~/projects/api # Create named session
-terminator attach -t backend                # Focus a session
-terminator send -t backend "npm start"      # Send input to a session
-terminator rename -t backend "API Server"   # Rename a session
-terminator kill -t backend                  # Kill a session
-terminator remote user@host -p 22           # Discover remote sessions
+shellfire list                             # List all sessions
+shellfire new -t backend -d ~/projects/api # Create named session
+shellfire attach -t backend                # Focus a session
+shellfire send -t backend "npm start"      # Send input to a session
+shellfire rename -t backend "API Server"   # Rename a session
+shellfire kill -t backend                  # Kill a session
+shellfire remote user@host -p 22           # Discover remote sessions
 ```
 
 ### Zsh Completion
@@ -154,7 +154,7 @@ terminator remote user@host -p 22           # Discover remote sessions
 Copy the completion file to your Zsh completions directory:
 
 ```bash
-cp bin/_terminator ~/.zsh/completions/_terminator
+cp bin/_shellfire ~/.zsh/completions/_shellfire
 # Then reload: exec zsh
 ```
 
@@ -173,9 +173,9 @@ Settings are stored in your OS user data directory:
 | `settings.json` | App settings (AI keys, auto-save interval, etc.) |
 
 **Location:**
-- macOS: `~/Library/Application Support/terminator/`
-- Windows: `%APPDATA%/terminator/`
-- Linux: `~/.config/terminator/`
+- macOS: `~/Library/Application Support/shellfire/`
+- Windows: `%APPDATA%/shellfire/`
+- Linux: `~/.config/shellfire/`
 
 ---
 

@@ -1,5 +1,5 @@
 /**
- * Snippet Runner — Extension plugin for Terminator
+ * Snippet Runner — Extension plugin for Shellfire
  *
  * Command snippet manager with categories, search, one-click execution,
  * and a side panel for organizing saved command snippets.
