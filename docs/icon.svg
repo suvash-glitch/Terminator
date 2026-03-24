@@ -4,15 +4,21 @@
       <stop offset="0%" stop-color="#1c1c1c"/>
       <stop offset="100%" stop-color="#111111"/>
     </linearGradient>
+    <linearGradient id="flame" x1="0.5" y1="1" x2="0.5" y2="0">
+      <stop offset="0%" stop-color="#ff4500"/>
+      <stop offset="50%" stop-color="#ff8c00"/>
+      <stop offset="100%" stop-color="#ffd700"/>
+    </linearGradient>
   </defs>
 
   <!-- Background -->
   <rect x="16" y="16" width="480" height="480" rx="110" ry="110" fill="url(#bg)"/>
 
-  <!-- > prompt -->
-  <path d="M148,188 L260,256 L148,324"
-        fill="none" stroke="#00e0f0" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Shell prompt > -->
+  <path d="M120,200 L220,268 L120,336"
+        fill="none" stroke="#ff8c00" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
 
-  <!-- _ cursor -->
-  <rect x="290" y="296" width="80" height="28" rx="6" fill="#00e0f0"/>
+  <!-- Flame -->
+  <path d="M300,370 C300,370 270,300 300,240 C320,195 285,140 285,140 C325,180 355,165 340,240 C380,210 380,255 365,300 C358,325 335,370 300,370Z"
+        fill="url(#flame)"/>
 </svg>

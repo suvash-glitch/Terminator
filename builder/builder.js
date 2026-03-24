@@ -399,7 +399,7 @@
       lines.push('    \'<div class="settings-section-title">' + (state.meta.name || "My Extension").replace(/'/g, "\\'") + '</div>\',');
       lines.push('    \'<div class="settings-row" style="display:flex;align-items:center;gap:10px;margin-bottom:8px">\',');
       lines.push('    \'<label>Enabled</label>\',');
-      lines.push('    \'<input type="checkbox" id="setting-' + (state.meta.id || "my-ext") + '-enabled" checked style="accent-color:#00f0ff">\',');
+      lines.push('    \'<input type="checkbox" id="setting-' + (state.meta.id || "my-ext") + '-enabled" checked style="accent-color:#ff8c00">\',');
       lines.push('    \'</div></div>\'');
       lines.push('  ].join("\\n"));');
       lines.push('');

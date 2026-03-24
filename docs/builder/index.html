@@ -12,16 +12,16 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#08080f;--bg2:#0e0e1a;--bg3:#141428;--bg4:#1a1a36;
-  --accent:#00f0ff;--accent-glow:rgba(0,240,255,0.2);--accent-dim:rgba(0,240,255,0.08);
+  --accent:#ff8c00;--accent-glow:rgba(255,140,0,0.2);--accent-dim:rgba(255,140,0,0.08);
   --green:#00e676;--red:#ff5252;--yellow:#ffd740;--purple:#a78bfa;--orange:#ff9f43;
   --text:#e8eaf0;--text2:#8b95b0;--text3:#4a5578;
-  --border:rgba(255,255,255,0.06);--border-accent:rgba(0,240,255,0.15);
+  --border:rgba(255,255,255,0.06);--border-accent:rgba(255,140,0,0.15);
   --font:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono','SF Mono',monospace;
   --radius:12px;
 }
 html{-webkit-font-smoothing:antialiased}
 body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column}
-::selection{background:rgba(0,240,255,0.3)}
+::selection{background:rgba(255,140,0,0.3)}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
@@ -302,7 +302,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh
 <!-- Header -->
 <div class="header">
   <a href="../docs/index.html" class="logo">
-    <svg viewBox="0 0 512 512"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a1a2e"/><stop offset="100%" stop-color="#0f0f1e"/></linearGradient></defs><rect x="16" y="16" width="480" height="480" rx="96" fill="url(#g)" stroke="rgba(0,240,255,0.15)" stroke-width="4"/><rect x="128" y="148" width="256" height="6" rx="3" fill="#00f0ff"/><rect x="253" y="148" width="6" height="220" rx="3" fill="#00f0ff"/><rect x="240" y="340" width="32" height="6" rx="2" fill="#00f0ff" opacity="0.9"/></svg>
+    <svg viewBox="0 0 512 512"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a1a2e"/><stop offset="100%" stop-color="#0f0f1e"/></linearGradient><linearGradient id="fl" x1="0.5" y1="1" x2="0.5" y2="0"><stop offset="0%" stop-color="#ff4500"/><stop offset="50%" stop-color="#ff8c00"/><stop offset="100%" stop-color="#ffd700"/></linearGradient></defs><rect x="16" y="16" width="480" height="480" rx="96" fill="url(#g)" stroke="rgba(255,140,0,0.2)" stroke-width="4"/><path d="M120,200 L200,256 L120,312" fill="none" stroke="#ff8c00" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/><path d="M280,340 C280,340 260,290 280,250 C295,220 270,180 270,180 C300,210 320,200 310,250 C340,230 340,260 330,290 C325,310 310,340 280,340Z" fill="url(#fl)" opacity="0.95"/></svg>
     Shellfire
   </a>
   <div class="sep"></div>
@@ -409,7 +409,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);height:100vh
         </div>
         <div class="cmd-field">
           <label>Display Template</label>
-          <textarea id="sb-template" placeholder="<span style='color:#00f0ff'>Hello</span>"></textarea>
+          <textarea id="sb-template" placeholder="<span style='color:#ff8c00'>Hello</span>"></textarea>
           <div class="hint">HTML to render. Available JS vars: <code>new Date()</code>, <code>ctx.allPanes.length</code>. Updates every 5s.</div>
         </div>
         <div class="cmd-field">

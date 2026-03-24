@@ -21,10 +21,10 @@
   --bg-primary:#0e0e1a;
   --bg-card:#111122;
   --bg-card-hover:#161632;
-  --accent:#00f0ff;
-  --accent-dim:#00a8b3;
-  --accent-glow:rgba(0,240,255,0.25);
-  --accent-subtle:rgba(0,240,255,0.08);
+  --accent:#ff8c00;
+  --accent-dim:#cc7000;
+  --accent-glow:rgba(255,140,0,0.25);
+  --accent-subtle:rgba(255,140,0,0.08);
   --green:#00e676;
   --purple:#a78bfa;
   --orange:#ff9f43;
@@ -32,7 +32,7 @@
   --text-muted:#7b8db0;
   --text-dim:#4a5578;
   --glass:rgba(14,14,30,0.7);
-  --glass-border:rgba(0,240,255,0.1);
+  --glass-border:rgba(255,140,0,0.1);
   --radius:16px;
   --radius-sm:10px;
   --font-sans:'Inter',system-ui,-apple-system,sans-serif;
@@ -73,8 +73,8 @@ section{padding:110px 0;text-align:center;position:relative}
 .grid-bg{
   position:fixed;top:0;left:0;width:100%;height:100%;
   background-image:
-    linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
+    linear-gradient(rgba(255,140,0,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,140,0,0.03) 1px, transparent 1px);
   background-size:60px 60px;
   pointer-events:none;z-index:0;
   mask-image:radial-gradient(ellipse 80% 60% at 50% 40%,black 20%,transparent 70%);
@@ -88,7 +88,7 @@ nav{
   border-bottom:1px solid rgba(255,255,255,0.04);
   transition:all .3s;
 }
-nav.scrolled{background:rgba(6,6,14,0.95);border-bottom-color:rgba(0,240,255,0.08)}
+nav.scrolled{background:rgba(6,6,14,0.95);border-bottom-color:rgba(255,140,0,0.08)}
 nav .inner{
   display:flex;align-items:center;justify-content:space-between;
   max-width:1200px;margin:0 auto;padding:14px 24px;
@@ -109,7 +109,7 @@ nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(-
   nav .links{
     display:none;position:absolute;top:100%;left:0;right:0;
     flex-direction:column;padding:16px 24px;gap:12px;
-    background:rgba(6,6,14,0.98);border-bottom:1px solid rgba(0,240,255,0.08);
+    background:rgba(6,6,14,0.98);border-bottom:1px solid rgba(255,140,0,0.08);
   }
   nav .links.open{display:flex}
   nav .links a{font-size:1rem}
@@ -123,7 +123,7 @@ nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(-
 }
 #hero::before{
   content:'';position:absolute;top:35%;left:50%;width:900px;height:900px;
-  background:radial-gradient(circle,rgba(0,240,255,0.06) 0%,transparent 65%);
+  background:radial-gradient(circle,rgba(255,140,0,0.06) 0%,transparent 65%);
   transform:translate(-50%,-50%);pointer-events:none;
 }
 .hero-content{
@@ -131,7 +131,7 @@ nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(-
 }
 .hero-badge{
   display:inline-flex;align-items:center;gap:8px;
-  background:rgba(0,240,255,0.08);border:1px solid rgba(0,240,255,0.15);
+  background:rgba(255,140,0,0.08);border:1px solid rgba(255,140,0,0.15);
   border-radius:100px;padding:6px 16px 6px 10px;
   font-size:.82rem;font-weight:500;color:var(--accent);
   margin-bottom:28px;
@@ -147,7 +147,7 @@ nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(-
   animation:fadeInUp .8s ease .3s both;
 }
 .hero-title .gradient{
-  background:linear-gradient(135deg,#ffffff 0%,#00f0ff 60%,#00b8d4 100%);
+  background:linear-gradient(135deg,#ffffff 0%,#ffd700 60%,#ff8c00 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
   background-clip:text;
 }
@@ -172,7 +172,7 @@ nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(-
   background:var(--accent);color:#0a0a14;
   box-shadow:0 4px 30px var(--accent-glow);
 }
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(0,240,255,0.35);color:#0a0a14}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(255,140,0,0.35);color:#0a0a14}
 .btn-secondary{
   background:rgba(255,255,255,0.05);color:#fff;
   border:1px solid rgba(255,255,255,0.1);
@@ -190,11 +190,11 @@ nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(-
   max-width:780px;margin:56px auto 0;
   border-radius:var(--radius);overflow:hidden;
   background:#0c0c18;
-  border:1px solid rgba(0,240,255,0.1);
+  border:1px solid rgba(255,140,0,0.1);
   box-shadow:
     0 24px 80px rgba(0,0,0,0.6),
     0 0 0 1px rgba(255,255,255,0.04),
-    0 0 120px rgba(0,240,255,0.06);
+    0 0 120px rgba(255,140,0,0.06);
   animation:fadeInUp .8s ease .75s both;
 }
 .terminal-titlebar{
@@ -269,8 +269,8 @@ nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(-
 }
 .feature-card:hover{
   transform:translateY(-4px);
-  border-color:rgba(0,240,255,0.25);
-  box-shadow:0 16px 48px rgba(0,0,0,0.3),0 0 0 1px rgba(0,240,255,0.1);
+  border-color:rgba(255,140,0,0.25);
+  box-shadow:0 16px 48px rgba(0,0,0,0.3),0 0 0 1px rgba(255,140,0,0.1);
   background:var(--bg-card-hover);
 }
 .feature-card:hover::before{opacity:1}
@@ -297,8 +297,8 @@ nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(-
   backdrop-filter:blur(12px);
 }
 .compare-card.highlight{
-  border-color:rgba(0,240,255,0.25);
-  box-shadow:0 0 60px rgba(0,240,255,0.06);
+  border-color:rgba(255,140,0,0.25);
+  box-shadow:0 0 60px rgba(255,140,0,0.06);
 }
 .compare-card h3{
   font-size:1.1rem;font-weight:700;margin-bottom:20px;
@@ -326,12 +326,12 @@ nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(-
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.06),
     0 32px 100px rgba(0,0,0,0.5),
-    0 0 140px rgba(0,240,255,0.06);
+    0 0 140px rgba(255,140,0,0.06);
 }
 .screenshot-wrap img{width:100%;display:block;border-radius:var(--radius)}
 .screenshot-glow{
   position:absolute;top:50%;left:50%;width:120%;height:120%;
-  background:radial-gradient(ellipse,rgba(0,240,255,0.05) 0%,transparent 60%);
+  background:radial-gradient(ellipse,rgba(255,140,0,0.05) 0%,transparent 60%);
   transform:translate(-50%,-50%);pointer-events:none;
 }
 
@@ -396,7 +396,7 @@ nav .links .btn-nav:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(-
 }
 #cta::before{
   content:'';position:absolute;top:0;left:50%;width:800px;height:400px;
-  background:radial-gradient(ellipse,rgba(0,240,255,0.06),transparent 70%);
+  background:radial-gradient(ellipse,rgba(255,140,0,0.06),transparent 70%);
   transform:translate(-50%,-30%);pointer-events:none;
 }
 .cta-content{position:relative;z-index:1}
@@ -426,7 +426,7 @@ footer{
 ::-webkit-scrollbar-track{background:var(--bg-deep)}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.2)}
-::selection{background:rgba(0,240,255,0.3)}
+::selection{background:rgba(255,140,0,0.3)}
 </style>
 </head>
 <body>
@@ -443,11 +443,17 @@ footer{
             <stop offset="0%" stop-color="#1a1a2e"/>
             <stop offset="100%" stop-color="#0f0f1e"/>
           </linearGradient>
+          <linearGradient id="nav-flame" x1="0.5" y1="1" x2="0.5" y2="0">
+            <stop offset="0%" stop-color="#ff4500"/>
+            <stop offset="50%" stop-color="#ff8c00"/>
+            <stop offset="100%" stop-color="#ffd700"/>
+          </linearGradient>
         </defs>
-        <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#nav-bg)" stroke="rgba(0,240,255,0.15)" stroke-width="4"/>
-        <rect x="128" y="148" width="256" height="6" rx="3" fill="#00f0ff"/>
-        <rect x="253" y="148" width="6" height="220" rx="3" fill="#00f0ff"/>
-        <rect x="240" y="340" width="32" height="6" rx="2" fill="#00f0ff" opacity="0.9"/>
+        <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#nav-bg)" stroke="rgba(255,140,0,0.2)" stroke-width="4"/>
+        <!-- Shell prompt -->
+        <path d="M120,200 L200,256 L120,312" fill="none" stroke="#ff8c00" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Flame -->
+        <path d="M280,340 C280,340 260,290 280,250 C295,220 270,180 270,180 C300,210 320,200 310,250 C340,230 340,260 330,290 C325,310 310,340 280,340Z" fill="url(#nav-flame)" opacity="0.95"/>
       </svg>
       Shellfire
     </a>
